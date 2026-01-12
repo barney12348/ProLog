@@ -20,7 +20,9 @@ import {
   Camera,
   Briefcase,
   Pencil,
-  X
+  X,
+  Trash2,
+  Calendar
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -32,10 +34,11 @@ function cn(...inputs) {
 
 // --- Components ---
 
-const SidebarItem = ({ icon, label, active }) => (
+const SidebarItem = ({ icon, label, active, onClick }) => (
   <button 
+    onClick={onClick}
     className={cn(
-      "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors",
+      "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors text-left",
       active 
         ? "bg-primary/10 text-primary" 
         : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
@@ -46,7 +49,7 @@ const SidebarItem = ({ icon, label, active }) => (
   </button>
 );
 
-const Sidebar = () => (
+const Sidebar = ({ activePage, onNavigate }) => (
   <aside className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col fixed left-0 top-0 z-10 hidden md:flex">
     <div className="p-6 flex items-center gap-2">
       <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg">P</div>
@@ -56,9 +59,24 @@ const Sidebar = () => (
     </div>
     
     <nav className="flex-1 px-4 space-y-2 mt-4">
-      <SidebarItem icon={<LayoutDashboard size={20} />} label="대시보드" active />
-      <SidebarItem icon={<History size={20} />} label="히스토리" />
-      <SidebarItem icon={<Settings size={20} />} label="설정" />
+      <SidebarItem 
+        icon={<LayoutDashboard size={20} />} 
+        label="대시보드" 
+        active={activePage === 'dashboard'} 
+        onClick={() => onNavigate('dashboard')}
+      />
+      <SidebarItem 
+        icon={<History size={20} />} 
+        label="히스토리" 
+        active={activePage === 'history'}
+        onClick={() => onNavigate('history')}
+      />
+      <SidebarItem 
+        icon={<Settings size={20} />} 
+        label="설정" 
+        active={activePage === 'settings'}
+        onClick={() => onNavigate('settings')}
+      />
     </nav>
 
     <div className="p-4 border-t border-gray-100">
@@ -157,9 +175,49 @@ const PersonaCard = ({ persona, onUpdate }) => {
   );
 };
 
+const HistoryView = ({ history, onDelete }) => {
+  if (history.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-gray-400 py-20">
+        <History size={48} className="mb-4 opacity-20" />
+        <p className="text-lg font-medium">아직 저장된 기록이 없습니다.</p>
+        <p className="text-sm">콘텐츠를 생성하고 '저장하기'를 눌러보세요.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      {history.map((item) => (
+        <div key={item.id} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative group">
+          <div className="flex justify-between items-start mb-3">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 text-blue-600 text-xs font-medium">
+              {item.categoryLabel}
+            </span>
+            <button 
+              onClick={() => onDelete(item.id)}
+              className="text-gray-300 hover:text-red-500 transition-colors p-1"
+            >
+              <Trash2 size={16} />
+            </button>
+          </div>
+          <p className="text-gray-800 text-sm line-clamp-4 whitespace-pre-wrap mb-4 leading-relaxed">
+            {item.text}
+          </p>
+          <div className="flex items-center gap-2 text-xs text-gray-400 border-t border-gray-50 pt-3 mt-auto">
+            <Calendar size={12} />
+            {item.date}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 // --- Main App ---
 
 function App() {
+  const [activePage, setActivePage] = useState('dashboard'); // dashboard, history, settings
   const [activeTab, setActiveTab] = useState('instagram');
   const [category, setCategory] = useState('award'); // award, certificate, activity, project
   const [tone, setTone] = useState('emotional'); // emotional, professional, witty
@@ -168,6 +226,7 @@ function App() {
   const [genStatus, setGenStatus] = useState('idle'); // idle, generating, success
   const [resultText, setResultText] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
+  const [history, setHistory] = useState([]);
   const fileInputRef = useRef(null);
   
   const [persona, setPersona] = useState({
@@ -175,6 +234,41 @@ function App() {
     major: '컴퓨터공학',
     jobGoal: '서비스 기획자'
   });
+
+  // Load history from localStorage on mount
+  useEffect(() => {
+    const savedHistory = localStorage.getItem('prolog_history');
+    if (savedHistory) {
+      setHistory(JSON.parse(savedHistory));
+    }
+  }, []);
+
+  // Save history to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('prolog_history', JSON.stringify(history));
+  }, [history]);
+
+  const handleSaveToHistory = () => {
+    if (!resultText) return;
+    
+    const newItem = {
+      id: Date.now(),
+      text: resultText,
+      category: category,
+      categoryLabel: categories.find(c => c.id === category)?.label,
+      date: new Date().toLocaleDateString(),
+      platform: activeTab
+    };
+    
+    setHistory([newItem, ...history]);
+    alert('히스토리에 저장되었습니다!');
+  };
+
+  const handleDeleteHistory = (id) => {
+    if (window.confirm('정말 삭제하시겠습니까?')) {
+      setHistory(history.filter(item => item.id !== id));
+    }
+  };
 
   const platforms = [
     { id: 'instagram', label: '인스타그램', icon: <Instagram size={18} /> },
@@ -285,273 +379,306 @@ function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-gray-900">
-      <Sidebar />
+      <Sidebar activePage={activePage} onNavigate={setActivePage} />
       
       <main className="md:ml-64 p-6 md:p-12 max-w-6xl mx-auto">
         {/* Header */}
         <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">안녕하세요, 사용자님! 👋</h1>
-          <p className="text-gray-500 text-lg">어떤 성취를 기록하고 싶으신가요?</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            {activePage === 'dashboard' && '안녕하세요, 사용자님! 👋'}
+            {activePage === 'history' && '히스토리 🕒'}
+            {activePage === 'settings' && '설정 ⚙️'}
+          </h1>
+          <p className="text-gray-500 text-lg">
+            {activePage === 'dashboard' && '어떤 성취를 기록하고 싶으신가요?'}
+            {activePage === 'history' && '지금까지 생성한 기록들을 모아보세요.'}
+            {activePage === 'settings' && '계정 및 알림 설정을 관리하세요.'}
+          </p>
         </header>
 
-        <PersonaCard persona={persona} onUpdate={setPersona} />
+        {activePage === 'dashboard' && (
+          <>
+            <PersonaCard persona={persona} onUpdate={setPersona} />
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
-          {/* Left Column: Input (5 cols) */}
-          <div className="lg:col-span-5 space-y-6">
-            
-            {/* Input Settings Panel */}
-            <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+            {/* Main Content Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
               
-              {/* 1. Category Selector */}
-              <div>
-                <label className="text-sm font-semibold text-gray-700 mb-3 block">기록 유형 선택</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {categories.map((c) => (
-                    <button
-                      key={c.id}
-                      onClick={() => setCategory(c.id)}
-                      className={cn(
-                        "flex items-center justify-center gap-2 py-3 px-2 text-sm font-medium rounded-xl border transition-all",
-                        category === c.id 
-                          ? "bg-blue-50 border-primary text-primary ring-1 ring-primary" 
-                          : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300"
-                      )}
-                    >
-                      {c.icon}
-                      {c.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* 2. Platform Selector */}
-              <div>
-                <label className="text-sm font-semibold text-gray-700 mb-3 block">업로드할 플랫폼</label>
-                <div className="flex bg-gray-100 p-1 rounded-xl">
-                  {platforms.map((p) => (
-                    <button
-                      key={p.id}
-                      onClick={() => setActiveTab(p.id)}
-                      className={cn(
-                        "flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all",
-                        activeTab === p.id 
-                          ? "bg-white text-primary shadow-sm ring-1 ring-black/5" 
-                          : "text-gray-500 hover:text-gray-900"
-                      )}
-                    >
-                      {p.icon}
-                      <span className="hidden sm:inline">{p.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* 3. Tone Selector */}
-              <div>
-                <label className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                  <PenTool size={16} /> 톤앤매너
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {tones.map((t) => (
-                    <button
-                      key={t.id}
-                      onClick={() => setTone(t.id)}
-                      className={cn(
-                        "px-4 py-2 rounded-full text-sm font-medium border transition-all",
-                        tone === t.id
-                          ? "bg-primary text-white border-primary shadow-md"
-                          : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
-                      )}
-                    >
-                      {t.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* 4. Keywords */}
-               <div>
-                <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                  <Hash size={16} /> 핵심 키워드 (선택)
-                </label>
-                <input 
-                  type="text" 
-                  value={keywords}
-                  onChange={(e) => setKeywords(e.target.value)}
-                  placeholder="예: 팀워크, 밤샘, 성장, 뿌듯함"
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm bg-gray-50 focus:bg-white"
-                />
-              </div>
-            </div>
-
-            {/* Upload Zone */}
-            <div 
-              onClick={handleUploadClick}
-              onDrop={onDrop}
-              onDragOver={onDragOver}
-              className={cn(
-                "group relative border-2 border-dashed rounded-2xl h-56 flex flex-col items-center justify-center text-center p-6 transition-all cursor-pointer overflow-hidden",
-                uploadStatus === 'idle' ? "border-gray-300 bg-white hover:border-primary/50 hover:bg-blue-50/30" : 
-                uploadStatus === 'uploading' ? "border-primary bg-blue-50/50" : 
-                "border-green-500 bg-green-50/50"
-              )}
-            >
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                onChange={(e) => handleFile(e.target.files[0])} 
-                className="hidden" 
-                accept="image/*"
-              />
-
-              {uploadStatus === 'idle' && (
-                <>
-                  <div className="w-12 h-12 bg-blue-50 text-primary rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                    <UploadCloud size={24} />
-                  </div>
-                  <h3 className="text-sm font-semibold text-gray-900">증빙 자료 업로드</h3>
-                  <p className="text-gray-400 mt-1 text-xs">이미지를 드래그하거나 클릭하여 선택하세요</p>
-                  <p className="text-gray-300 mt-1 text-[10px]">JPG, PNG (최대 10MB)</p>
-                </>
-              )}
-
-              {uploadStatus === 'uploading' && (
-                <div className="flex flex-col items-center animate-pulse">
-                  <Loader2 size={32} className="text-primary animate-spin mb-3" />
-                  <p className="text-primary font-medium text-sm">업로드 중...</p>
-                </div>
-              )}
-
-              {uploadStatus === 'success' && selectedImage && (
-                <>
-                  <div className="absolute inset-0 w-full h-full">
-                    <img src={selectedImage} alt="Preview" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <CheckCircle size={32} className="text-white mb-2" />
-                      <p className="text-white text-sm font-bold">변경하려면 클릭</p>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={resetUpload}
-                    className="absolute top-3 right-3 w-8 h-8 bg-white/90 hover:bg-white text-gray-900 rounded-full flex items-center justify-center shadow-lg z-20 transition-transform hover:scale-110"
-                  >
-                    <X size={18} />
-                  </button>
-                </>
-              )}
-            </div>
-
-            {/* Generate Button */}
-            <button
-              onClick={handleGenerate}
-              disabled={uploadStatus !== 'success' || genStatus === 'generating'}
-              className={cn(
-                "w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl active:scale-95",
-                uploadStatus === 'success' && genStatus !== 'generating'
-                  ? "bg-gradient-to-r from-primary to-blue-600 text-white"
-                  : "bg-gray-200 text-gray-400 cursor-not-allowed"
-              )}
-            >
-              {genStatus === 'generating' ? (
-                <>
-                  <Loader2 className="animate-spin" />
-                  분석 및 작성 중...
-                </>
-              ) : (
-                <>
-                  <Sparkles size={20} />
-                  AI 글 생성하기
-                </>
-              )}
-            </button>
-          </div>
-
-          {/* Right Column: Result (7 cols) */}
-          <div className="lg:col-span-7 h-full">
-            <div className="bg-white rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-100 h-full p-8 relative flex flex-col min-h-[600px]">
-              
-              {/* Result Header */}
-              <div className="flex items-center justify-between mb-6 pb-6 border-b border-gray-100">
-                <div>
-                  <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2">
-                    {category === 'certificate' && <ScrollText size={20} className="text-primary" />}
-                    {category === 'award' && <Award size={20} className="text-primary" />}
-                    {category === 'activity' && <Camera size={20} className="text-primary" />}
-                    {category === 'project' && <Briefcase size={20} className="text-primary" />}
-                    생성된 콘텐츠
-                  </h3>
-                  <p className="text-sm text-gray-500 mt-1">
-                    선택하신 <strong>{categories.find(c => c.id === category)?.label}</strong> 유형에 맞춰 작성되었습니다.
-                  </p>
-                </div>
+              {/* Left Column: Input (5 cols) */}
+              <div className="lg:col-span-5 space-y-6">
                 
-                {genStatus === 'success' && (
-                  <button 
-                    onClick={copyToClipboard}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm text-gray-600 font-medium transition-colors border border-gray-200" 
-                  >
-                    <Copy size={16} />
-                    복사하기
-                  </button>
-                )}
-              </div>
-
-              {/* Result Content */}
-              <div className="flex-1 relative">
-                {genStatus === 'idle' && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-300">
-                    <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
-                      <PenTool size={40} className="text-gray-300" />
+                {/* Input Settings Panel */}
+                <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm space-y-6">
+                  
+                  {/* 1. Category Selector */}
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700 mb-3 block">기록 유형 선택</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {categories.map((c) => (
+                        <button
+                          key={c.id}
+                          onClick={() => setCategory(c.id)}
+                          className={cn(
+                            "flex items-center justify-center gap-2 py-3 px-2 text-sm font-medium rounded-xl border transition-all",
+                            category === c.id 
+                              ? "bg-blue-50 border-primary text-primary ring-1 ring-primary" 
+                              : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300"
+                          )}
+                        >
+                          {c.icon}
+                          {c.label}
+                        </button>
+                      ))}
                     </div>
-                    <p className="text-lg font-medium text-gray-400">왼쪽에서 유형을 선택하고<br/>증빙 자료를 업로드하세요.</p>
                   </div>
-                )}
 
-                {genStatus === 'generating' && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center space-y-6">
-                    <div className="w-full max-w-md space-y-4">
-                      <div className="h-4 bg-gray-100 rounded animate-pulse w-full"></div>
-                      <div className="h-4 bg-gray-100 rounded animate-pulse w-5/6"></div>
-                      <div className="h-4 bg-gray-100 rounded animate-pulse w-full"></div>
-                      <div className="h-4 bg-gray-100 rounded animate-pulse w-4/5"></div>
+                  {/* 2. Platform Selector */}
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700 mb-3 block">업로드할 플랫폼</label>
+                    <div className="flex bg-gray-100 p-1 rounded-xl">
+                      {platforms.map((p) => (
+                        <button
+                          key={p.id}
+                          onClick={() => setActiveTab(p.id)}
+                          className={cn(
+                            "flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all",
+                            activeTab === p.id 
+                              ? "bg-white text-primary shadow-sm ring-1 ring-black/5" 
+                              : "text-gray-500 hover:text-gray-900"
+                          )}
+                        >
+                          {p.icon}
+                          <span className="hidden sm:inline">{p.label}</span>
+                        </button>
+                      ))}
                     </div>
-                    <p className="text-gray-500 animate-pulse font-medium">
-                      {category === 'certificate' && '자격증 번호와 발급 기관을 확인하는 중... 🔍'}
-                      {category === 'award' && '수상의 기쁨을 글로 표현하는 중... 🏆'}
-                      {category === 'activity' && '현장의 분위기를 담아내는 중... 📸'}
-                      {category === 'project' && '실무 경험을 회고하는 중... 💼'}
-                    </p>
                   </div>
-                )}
 
-                {genStatus === 'success' && (
-                  <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 h-full flex flex-col">
-                    <textarea 
-                      readOnly
-                      className="w-full flex-1 resize-none focus:outline-none text-gray-800 leading-8 text-lg bg-transparent p-2 whitespace-pre-wrap"
-                      value={resultText}
+                  {/* 3. Tone Selector */}
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                      <PenTool size={16} /> 톤앤매너
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {tones.map((t) => (
+                        <button
+                          key={t.id}
+                          onClick={() => setTone(t.id)}
+                          className={cn(
+                            "px-4 py-2 rounded-full text-sm font-medium border transition-all",
+                            tone === t.id
+                              ? "bg-primary text-white border-primary shadow-md"
+                              : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
+                          )}
+                        >
+                          {t.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 4. Keywords */}
+                  <div>
+                    <label className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                      <Hash size={16} /> 핵심 키워드 (선택)
+                    </label>
+                    <input 
+                      type="text" 
+                      value={keywords}
+                      onChange={(e) => setKeywords(e.target.value)}
+                      placeholder="예: 팀워크, 밤샘, 성장, 뿌듯함"
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all text-sm bg-gray-50 focus:bg-white"
                     />
                   </div>
-                )}
+                </div>
+
+                {/* Upload Zone */}
+                <div 
+                  onClick={handleUploadClick}
+                  onDrop={onDrop}
+                  onDragOver={onDragOver}
+                  className={cn(
+                    "group relative border-2 border-dashed rounded-2xl h-56 flex flex-col items-center justify-center text-center p-6 transition-all cursor-pointer overflow-hidden",
+                    uploadStatus === 'idle' ? "border-gray-300 bg-white hover:border-primary/50 hover:bg-blue-50/30" : 
+                    uploadStatus === 'uploading' ? "border-primary bg-blue-50/50" : 
+                    "border-green-500 bg-green-50/50"
+                  )}
+                >
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    onChange={(e) => handleFile(e.target.files[0])} 
+                    className="hidden" 
+                    accept="image/*"
+                  />
+
+                  {uploadStatus === 'idle' && (
+                    <>
+                      <div className="w-12 h-12 bg-blue-50 text-primary rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                        <UploadCloud size={24} />
+                      </div>
+                      <h3 className="text-sm font-semibold text-gray-900">증빙 자료 업로드</h3>
+                      <p className="text-gray-400 mt-1 text-xs">이미지를 드래그하거나 클릭하여 선택하세요</p>
+                      <p className="text-gray-300 mt-1 text-[10px]">JPG, PNG (최대 10MB)</p>
+                    </>
+                  )}
+
+                  {uploadStatus === 'uploading' && (
+                    <div className="flex flex-col items-center animate-pulse">
+                      <Loader2 size={32} className="text-primary animate-spin mb-3" />
+                      <p className="text-primary font-medium text-sm">업로드 중...</p>
+                    </div>
+                  )}
+
+                  {uploadStatus === 'success' && selectedImage && (
+                    <>
+                      <div className="absolute inset-0 w-full h-full">
+                        <img src={selectedImage} alt="Preview" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <CheckCircle size={32} className="text-white mb-2" />
+                          <p className="text-white text-sm font-bold">변경하려면 클릭</p>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={resetUpload}
+                        className="absolute top-3 right-3 w-8 h-8 bg-white/90 hover:bg-white text-gray-900 rounded-full flex items-center justify-center shadow-lg z-20 transition-transform hover:scale-110"
+                      >
+                        <X size={18} />
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                {/* Generate Button */}
+                <button
+                  onClick={handleGenerate}
+                  disabled={uploadStatus !== 'success' || genStatus === 'generating'}
+                  className={cn(
+                    "w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl active:scale-95",
+                    uploadStatus === 'success' && genStatus !== 'generating'
+                      ? "bg-gradient-to-r from-primary to-blue-600 text-white"
+                      : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  )}
+                >
+                  {genStatus === 'generating' ? (
+                    <>
+                      <Loader2 className="animate-spin" />
+                      분석 및 작성 중...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={20} />
+                      AI 글 생성하기
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Right Column: Result (7 cols) */}
+              <div className="lg:col-span-7 h-full">
+                <div className="bg-white rounded-2xl shadow-lg shadow-gray-200/50 border border-gray-100 h-full p-8 relative flex flex-col min-h-[600px]">
+                  
+                  {/* Result Header */}
+                  <div className="flex items-center justify-between mb-6 pb-6 border-b border-gray-100">
+                    <div>
+                      <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2">
+                        {category === 'certificate' && <ScrollText size={20} className="text-primary" />}
+                        {category === 'award' && <Award size={20} className="text-primary" />}
+                        {category === 'activity' && <Camera size={20} className="text-primary" />}
+                        {category === 'project' && <Briefcase size={20} className="text-primary" />}
+                        생성된 콘텐츠
+                      </h3>
+                      <p className="text-sm text-gray-500 mt-1">
+                        선택하신 <strong>{categories.find(c => c.id === category)?.label}</strong> 유형에 맞춰 작성되었습니다.
+                      </p>
+                    </div>
+                    
+                    {genStatus === 'success' && (
+                      <button 
+                        onClick={copyToClipboard}
+                        className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm text-gray-600 font-medium transition-colors border border-gray-200" 
+                      >
+                        <Copy size={16} />
+                        복사하기
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Result Content */}
+                  <div className="flex-1 relative">
+                    {genStatus === 'idle' && (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-300">
+                        <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                          <PenTool size={40} className="text-gray-300" />
+                        </div>
+                        <p className="text-lg font-medium text-gray-400">왼쪽에서 유형을 선택하고<br/>증빙 자료를 업로드하세요.</p>
+                      </div>
+                    )}
+
+                    {genStatus === 'generating' && (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center space-y-6">
+                        <div className="w-full max-w-md space-y-4">
+                          <div className="h-4 bg-gray-100 rounded animate-pulse w-full"></div>
+                          <div className="h-4 bg-gray-100 rounded animate-pulse w-5/6"></div>
+                          <div className="h-4 bg-gray-100 rounded animate-pulse w-full"></div>
+                          <div className="h-4 bg-gray-100 rounded animate-pulse w-4/5"></div>
+                        </div>
+                        <p className="text-gray-500 animate-pulse font-medium">
+                          {category === 'certificate' && '자격증 번호와 발급 기관을 확인하는 중... 🔍'}
+                          {category === 'award' && '수상의 기쁨을 글로 표현하는 중... 🏆'}
+                          {category === 'activity' && '현장의 분위기를 담아내는 중... 📸'}
+                          {category === 'project' && '실무 경험을 회고하는 중... 💼'}
+                        </p>
+                      </div>
+                    )}
+
+                    {genStatus === 'success' && (
+                      <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 h-full flex flex-col">
+                        <textarea 
+                          readOnly
+                          className="w-full flex-1 resize-none focus:outline-none text-gray-800 leading-8 text-lg bg-transparent p-2 whitespace-pre-wrap"
+                          value={resultText}
+                        />
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Result Footer */}
+                  {genStatus === 'success' && (
+                    <div className="pt-6 border-t border-gray-100 flex justify-between items-center mt-auto">
+                      <p className="text-xs text-gray-400">AI 생성 결과는 사실 여부를 확인해주세요.</p>
+                      <div className="flex gap-3">
+                        <button 
+                          onClick={handleGenerate}
+                          className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                        >
+                          다시 생성
+                        </button>
+                        <button 
+                          onClick={handleSaveToHistory}
+                          className="px-4 py-2 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors shadow-lg shadow-gray-200"
+                        >
+                          저장하기
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
               
-              {/* Result Footer */}
-              {genStatus === 'success' && (
-                <div className="pt-6 border-t border-gray-100 flex justify-between items-center mt-auto">
-                   <p className="text-xs text-gray-400">AI 생성 결과는 사실 여부를 확인해주세요.</p>
-                   <div className="flex gap-3">
-                    <button className="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">다시 생성</button>
-                    <button className="px-4 py-2 text-sm font-medium bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors shadow-lg shadow-gray-200">저장하기</button>
-                   </div>
-                </div>
-              )}
             </div>
+          </>
+        )}
+
+        {activePage === 'history' && (
+          <HistoryView history={history} onDelete={handleDeleteHistory} />
+        )}
+
+        {activePage === 'settings' && (
+          <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center h-64 text-gray-400">
+             <Settings size={48} className="mb-4 opacity-20" />
+             <p>설정 페이지 준비 중입니다.</p>
           </div>
-          
-        </div>
+        )}
       </main>
     </div>
   );
