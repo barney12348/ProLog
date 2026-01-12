@@ -822,7 +822,7 @@ function App() {
 
     try {
       const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
       // Convert data URL to base64 for Gemini
       const base64Data = selectedImage.split(',')[1];
