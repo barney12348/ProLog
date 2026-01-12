@@ -91,6 +91,41 @@ const Sidebar = ({ activePage, onNavigate }) => (
   </aside>
 );
 
+const BottomNav = ({ activePage, onNavigate }) => (
+  <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around p-2 z-20 md:hidden safe-area-bottom">
+    <button 
+      onClick={() => onNavigate('dashboard')}
+      className={cn(
+        "flex flex-col items-center gap-1 p-2 rounded-lg w-full transition-colors",
+        activePage === 'dashboard' ? "text-primary" : "text-gray-400 hover:text-gray-600"
+      )}
+    >
+      <LayoutDashboard size={24} />
+      <span className="text-[10px] font-medium">대시보드</span>
+    </button>
+    <button 
+      onClick={() => onNavigate('history')}
+      className={cn(
+        "flex flex-col items-center gap-1 p-2 rounded-lg w-full transition-colors",
+        activePage === 'history' ? "text-primary" : "text-gray-400 hover:text-gray-600"
+      )}
+    >
+      <History size={24} />
+      <span className="text-[10px] font-medium">히스토리</span>
+    </button>
+    <button 
+      onClick={() => onNavigate('settings')}
+      className={cn(
+        "flex flex-col items-center gap-1 p-2 rounded-lg w-full transition-colors",
+        activePage === 'settings' ? "text-primary" : "text-gray-400 hover:text-gray-600"
+      )}
+    >
+      <Settings size={24} />
+      <span className="text-[10px] font-medium">설정</span>
+    </button>
+  </nav>
+);
+
 const Badge = ({ icon, label }) => (
   <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-primary text-sm font-medium rounded-full border border-blue-100">
     {icon}
@@ -471,19 +506,25 @@ function App() {
     <div className="min-h-screen bg-slate-50 font-sans text-gray-900">
       <Sidebar activePage={activePage} onNavigate={setActivePage} />
       
-      <main className="md:ml-64 p-6 md:p-12 max-w-6xl mx-auto">
+      <main className="md:ml-64 p-6 md:p-12 pb-24 md:pb-12 max-w-6xl mx-auto">
         {/* Header */}
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            {activePage === 'dashboard' && '안녕하세요, 사용자님! 👋'}
-            {activePage === 'history' && '히스토리 🕒'}
-            {activePage === 'settings' && '설정 ⚙️'}
-          </h1>
-          <p className="text-gray-500 text-lg">
-            {activePage === 'dashboard' && '어떤 성취를 기록하고 싶으신가요?'}
-            {activePage === 'history' && '지금까지 생성한 기록들을 모아보세요.'}
-            {activePage === 'settings' && '계정 및 알림 설정을 관리하세요.'}
-          </p>
+        <header className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+              {activePage === 'dashboard' && '안녕하세요, 사용자님! 👋'}
+              {activePage === 'history' && '히스토리 🕒'}
+              {activePage === 'settings' && '설정 ⚙️'}
+            </h1>
+            <p className="text-gray-500 text-sm md:text-lg">
+              {activePage === 'dashboard' && '어떤 성취를 기록하고 싶으신가요?'}
+              {activePage === 'history' && '지금까지 생성한 기록들을 모아보세요.'}
+              {activePage === 'settings' && '계정 및 알림 설정을 관리하세요.'}
+            </p>
+          </div>
+          {/* Mobile Logo */}
+          <div className="md:hidden">
+            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg">P</div>
+          </div>
         </header>
 
         {activePage === 'dashboard' && (
@@ -770,6 +811,8 @@ function App() {
           </div>
         )}
       </main>
+
+      <BottomNav activePage={activePage} onNavigate={setActivePage} />
     </div>
   );
 }
