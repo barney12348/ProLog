@@ -25,10 +25,15 @@ import {
   Calendar,
   TrendingUp,
   MapPin,
-  PieChart
+  PieChart,
+  Download,
+  Image as ImageIcon,
+  Share2
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { toPng } from 'html-to-image';
+import download from 'downloadjs';
 
 // Utility for class merging
 function cn(...inputs) {
@@ -233,6 +238,91 @@ const PersonaCard = ({ persona, onUpdate }) => {
         <Badge icon={<Award size={16} />} label={persona.major} />
         <Badge icon={<Target size={16} />} label={persona.jobGoal} />
       </div>
+    </div>
+  );
+};
+
+const CardPreview = ({ image, categoryLabel, date, text, persona, onDownload }) => {
+  const cardRef = useRef(null);
+
+  const handleDownload = async () => {
+    if (cardRef.current) {
+      try {
+        const dataUrl = await toPng(cardRef.current, { cacheBust: true, pixelRatio: 2 });
+        download(dataUrl, `prolog-card-${Date.now()}.png`);
+        onDownload();
+      } catch (err) {
+        console.error('Error generating image:', err);
+        alert('이미지 저장 중 오류가 발생했습니다.');
+      }
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center gap-6 animate-in fade-in zoom-in-95 duration-300">
+      {/* Capture Area */}
+      <div 
+        ref={cardRef}
+        className="relative w-full aspect-square max-w-[400px] bg-gray-900 rounded-none overflow-hidden shadow-2xl flex flex-col justify-end group select-none"
+      >
+        {/* Background Image */}
+        {image && (
+          <img 
+            src={image} 
+            alt="Background" 
+            className="absolute inset-0 w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700"
+          />
+        )}
+        
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+
+        {/* Content */}
+        <div className="relative z-10 p-8 text-white space-y-4">
+          <div className="flex justify-between items-center border-b border-white/20 pb-4 mb-2">
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-1 bg-white/20 backdrop-blur-md rounded-md text-[10px] font-bold tracking-wider uppercase">
+                {categoryLabel}
+              </span>
+              <span className="text-[10px] font-medium opacity-80 tracking-widest uppercase">
+                {date}
+              </span>
+            </div>
+            <div className="flex items-center gap-1 opacity-80">
+              <div className="w-3 h-3 bg-primary rounded-full"></div>
+              <span className="text-xs font-bold tracking-tighter">ProLog</span>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-lg font-bold leading-relaxed line-clamp-3 text-shadow-sm">
+              {text.split('\n')[0].replace(/(\[.*?\])/g, '').trim()} {/* Taking first line as title-ish */}
+            </p>
+            <p className="text-xs text-gray-300 line-clamp-2 leading-relaxed font-light">
+               {text.replace(text.split('\n')[0], '').trim()}
+            </p>
+          </div>
+
+          <div className="pt-4 flex items-center justify-between text-[10px] text-gray-400 font-medium tracking-wide">
+             <div className="flex gap-2">
+               <span>{persona.university}</span>
+               <span>•</span>
+               <span>{persona.major}</span>
+             </div>
+             <div>@{persona.jobGoal}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Button */}
+      <button 
+        onClick={handleDownload}
+        className="flex items-center gap-2 px-8 py-3 bg-gray-900 text-white rounded-full hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl active:scale-95 font-bold"
+      >
+        <Download size={18} />
+        이미지로 저장하기
+      </button>
+      <p className="text-xs text-gray-400">인스타그램(1:1) 사이즈에 최적화되어 있습니다.</p>
     </div>
   );
 };
@@ -596,8 +686,9 @@ function App() {
   const [category, setCategory] = useState('award'); 
   const [tone, setTone] = useState('emotional');
   const [keywords, setKeywords] = useState('');
-  const [uploadStatus, setUploadStatus] = useState('idle');
-  const [genStatus, setGenStatus] = useState('idle');
+  const [uploadStatus, setUploadStatus] = useState('idle'); // idle, uploading, success
+  const [genStatus, setGenStatus] = useState('idle'); // idle, generating, success
+  const [resultMode, setResultMode] = useState('text'); // text, card
   const [resultText, setResultText] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
   const [history, setHistory] = useState([]);
@@ -980,7 +1071,7 @@ function App() {
                         {category === 'award' && <Award size={24} className="text-primary" />}
                         {category === 'activity' && <Camera size={24} className="text-primary" />}
                         {category === 'project' && <Briefcase size={24} className="text-primary" />}
-                        생성된 원고
+                        생성된 결과
                       </h3>
                       <p className="text-sm text-gray-500 mt-1.5 font-medium">
                         <strong>{categories.find(c => c.id === category)?.label}</strong> 유형에 최적화된 콘텐츠입니다.
@@ -988,13 +1079,28 @@ function App() {
                     </div>
                     
                     {genStatus === 'success' && (
-                      <button 
-                        onClick={copyToClipboard}
-                        className="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-xl text-sm text-gray-700 font-bold transition-colors border border-gray-200 active:scale-95" 
-                      >
-                        <Copy size={16} />
-                        복사
-                      </button>
+                      <div className="flex bg-gray-100 p-1 rounded-xl">
+                        <button 
+                          onClick={() => setResultMode('text')}
+                          className={cn(
+                            "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
+                            resultMode === 'text' ? "bg-white text-gray-900 shadow-sm" : "text-gray-400 hover:text-gray-600"
+                          )}
+                        >
+                          <FileText size={14} />
+                          글
+                        </button>
+                        <button 
+                          onClick={() => setResultMode('card')}
+                          className={cn(
+                            "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
+                            resultMode === 'card' ? "bg-white text-primary shadow-sm" : "text-gray-400 hover:text-gray-600"
+                          )}
+                        >
+                          <ImageIcon size={14} />
+                          카드
+                        </button>
+                      </div>
                     )}
                   </div>
 
@@ -1034,23 +1140,42 @@ function App() {
 
                     {genStatus === 'success' && (
                       <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 h-full flex flex-col">
-                        <textarea 
-                          readOnly
-                          className="w-full flex-1 resize-none focus:outline-none text-gray-800 leading-[1.8] text-lg bg-transparent p-2 whitespace-pre-wrap font-medium custom-scrollbar"
-                          value={resultText}
-                        />
+                        {resultMode === 'text' ? (
+                          <textarea 
+                            readOnly
+                            className="w-full flex-1 resize-none focus:outline-none text-gray-800 leading-[1.8] text-lg bg-transparent p-2 whitespace-pre-wrap font-medium custom-scrollbar"
+                            value={resultText}
+                          />
+                        ) : (
+                          <div className="flex-1 flex items-center justify-center py-4">
+                            <CardPreview 
+                              image={selectedImage}
+                              categoryLabel={categories.find(c => c.id === category)?.label}
+                              date={new Date().toLocaleDateString()}
+                              text={resultText}
+                              persona={persona}
+                              onDownload={() => {}}
+                            />
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
                   
                   {/* Result Footer */}
-                  {genStatus === 'success' && (
-                    <div className="pt-8 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center mt-auto gap-4">
+                  {genStatus === 'success' && resultMode === 'text' && (
+                    <div className="pt-8 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center mt-auto gap-4 animate-in fade-in">
                       <p className="text-xs text-gray-400 font-medium">AI 생성 결과는 사실 여부를 꼭 확인해주세요.</p>
                       <div className="flex gap-3 w-full sm:w-auto">
                         <button 
+                          onClick={copyToClipboard}
+                          className="flex-1 sm:flex-none px-6 py-3 text-sm font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
+                        >
+                          복사
+                        </button>
+                        <button 
                           onClick={handleGenerate}
-                          className="flex-1 sm:flex-none px-6 py-3 text-sm font-bold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
+                          className="flex-1 sm:flex-none px-6 py-3 text-sm font-bold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors border border-gray-200"
                         >
                           다시 생성
                         </button>
