@@ -7,6 +7,7 @@ ProLog는 취업 준비생이 업로드한 사진을 AI로 분석하여 SNS용 �
 - **저장소:** [GitHub Repository](https://github.com/barney12348/ProLog)에 코드 배포 완료.
 - **프레임워크:** React + Vite 초기화 완료.
 - **스타일링:** Tailwind CSS 구성 (Navy/Electric Blue 커스텀 컬러).
+- **SEO/검증:** Google Site Verification 메타 태그 추가.
 - **아이콘:** Lucide-React 통합.
 - **구현된 컴포넌트:**
     -   `Sidebar`: 활성 상태를 포함한 네비게이션.
