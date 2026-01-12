@@ -506,7 +506,7 @@ function App() {
     <div className="min-h-screen bg-slate-50 font-sans text-gray-900">
       <Sidebar activePage={activePage} onNavigate={setActivePage} />
       
-      <main className="md:ml-64 p-6 md:p-12 pb-24 md:pb-12 max-w-6xl mx-auto">
+      <main className="md:ml-64 p-6 md:p-12 pb-24 md:pb-12 max-w-6xl mx-auto flex-1">
         {/* Header */}
         <header className="mb-8 flex justify-between items-center">
           <div>
@@ -516,7 +516,7 @@ function App() {
               {activePage === 'settings' && '설정 ⚙️'}
             </h1>
             <p className="text-gray-500 text-sm md:text-lg">
-              {activePage === 'dashboard' && '어떤 성취를 기록하고 싶으신가요?'}
+              {activePage === 'dashboard' && '어떤 성취를 기록하고 싶으신가요? ProLog가 당신의 경험을 빛나는 콘텐츠로 만들어드립니다.'}
               {activePage === 'history' && '지금까지 생성한 기록들을 모아보세요.'}
               {activePage === 'settings' && '계정 및 알림 설정을 관리하세요.'}
             </p>
@@ -530,6 +530,16 @@ function App() {
         {activePage === 'dashboard' && (
           <>
             <PersonaCard persona={persona} onUpdate={setPersona} />
+
+            {/* Intro / Content Section for SEO & User Experience */}
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-2xl mb-8 border border-blue-100">
+               <h2 className="text-lg font-bold text-gray-800 mb-2">💡 ProLog 사용 가이드</h2>
+               <p className="text-sm text-gray-600 leading-relaxed">
+                 <strong>ProLog</strong>는 단순한 기록 도구가 아닙니다. 여러분의 소중한 경험(자격증, 수상, 대외활동, 인턴십)을 증빙하는 사진 한 장만 있으면, 
+                 각 플랫폼(인스타그램, 블로그, 링크드인)의 특성에 맞는 <strong>고품질의 퍼스널 브랜딩 원고</strong>를 AI가 자동으로 작성해드립니다. 
+                 취업 준비와 자기 브랜딩, 이제 ProLog로 똑똑하게 시작하세요.
+               </p>
+            </div>
 
             {/* Main Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -810,6 +820,16 @@ function App() {
              <p>설정 페이지 준비 중입니다.</p>
           </div>
         )}
+
+        {/* Footer for AdSense Compliance */}
+        <footer className="mt-12 pt-8 border-t border-gray-200 text-center text-gray-400 text-sm pb-8">
+          <p className="mb-2">&copy; 2026 ProLog. All rights reserved.</p>
+          <div className="flex justify-center gap-4">
+            <a href="/privacy.html" target="_blank" className="hover:text-gray-600 transition-colors">개인정보처리방침</a>
+            <span>|</span>
+            <a href="/terms.html" target="_blank" className="hover:text-gray-600 transition-colors">이용약관</a>
+          </div>
+        </footer>
       </main>
 
       <BottomNav activePage={activePage} onNavigate={setActivePage} />
