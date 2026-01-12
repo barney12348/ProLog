@@ -176,6 +176,8 @@ const PersonaCard = ({ persona, onUpdate }) => {
 };
 
 const HistoryView = ({ history, onDelete }) => {
+  const [selectedItem, setSelectedItem] = useState(null);
+
   if (history.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-gray-400 py-20">
@@ -187,30 +189,101 @@ const HistoryView = ({ history, onDelete }) => {
   }
 
   return (
-    <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-      {history.map((item) => (
-        <div key={item.id} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative group">
-          <div className="flex justify-between items-start mb-3">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 text-blue-600 text-xs font-medium">
-              {item.categoryLabel}
-            </span>
-            <button 
-              onClick={() => onDelete(item.id)}
-              className="text-gray-300 hover:text-red-500 transition-colors p-1"
-            >
-              <Trash2 size={16} />
-            </button>
+    <>
+      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        {history.map((item) => (
+          <div 
+            key={item.id} 
+            onClick={() => setSelectedItem(item)}
+            className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer relative group hover:-translate-y-1"
+          >
+            <div className="flex justify-between items-start mb-3">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 text-blue-600 text-xs font-medium">
+                {item.categoryLabel}
+              </span>
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(item.id);
+                }}
+                className="text-gray-300 hover:text-red-500 transition-colors p-1"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
+            <p className="text-gray-800 text-sm line-clamp-4 whitespace-pre-wrap mb-4 leading-relaxed">
+              {item.text}
+            </p>
+            <div className="flex items-center gap-2 text-xs text-gray-400 border-t border-gray-50 pt-3 mt-auto">
+              <Calendar size={12} />
+              {item.date}
+            </div>
           </div>
-          <p className="text-gray-800 text-sm line-clamp-4 whitespace-pre-wrap mb-4 leading-relaxed">
-            {item.text}
-          </p>
-          <div className="flex items-center gap-2 text-xs text-gray-400 border-t border-gray-50 pt-3 mt-auto">
-            <Calendar size={12} />
-            {item.date}
+        ))}
+      </div>
+
+      {/* Detail Modal */}
+      {selectedItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setSelectedItem(null)}>
+          <div 
+            className="bg-white rounded-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden shadow-2xl flex flex-col animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+              <div className="flex items-center gap-3">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-sm font-semibold">
+                  {selectedItem.categoryLabel}
+                </span>
+                <span className="text-gray-400 text-sm flex items-center gap-1">
+                  <Calendar size={14} />
+                  {selectedItem.date}
+                </span>
+              </div>
+              <button 
+                onClick={() => setSelectedItem(null)}
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-8 overflow-y-auto">
+              <div className="prose prose-sm sm:prose-base max-w-none text-gray-800 leading-relaxed whitespace-pre-wrap">
+                {selectedItem.text}
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-6 border-t border-gray-100 bg-gray-50/30 flex justify-end gap-3">
+              <button 
+                onClick={() => {
+                  if (window.confirm('정말 삭제하시겠습니까?')) {
+                    onDelete(selectedItem.id);
+                    setSelectedItem(null);
+                  }
+                }}
+                className="flex items-center gap-2 px-4 py-2.5 text-red-600 hover:bg-red-50 rounded-xl transition-colors font-medium text-sm"
+              >
+                <Trash2 size={16} />
+                삭제하기
+              </button>
+              <button 
+                onClick={() => {
+                  navigator.clipboard.writeText(selectedItem.text);
+                  alert('복사되었습니다!');
+                }}
+                className="flex items-center gap-2 px-6 py-2.5 bg-gray-900 text-white hover:bg-gray-800 rounded-xl transition-all shadow-lg shadow-gray-200 font-medium text-sm active:scale-95"
+              >
+                <Copy size={16} />
+                내용 복사
+              </button>
+            </div>
           </div>
         </div>
-      ))}
-    </div>
+      )}
+    </>
   );
 };
 
