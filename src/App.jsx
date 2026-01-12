@@ -805,6 +805,18 @@ function App() {
       return;
     }
 
+    // Debug: List available models
+    const checkModels = async () => {
+      try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+        const data = await response.json();
+        console.log("Available Gemini Models:", data);
+      } catch (err) {
+        console.error("Error fetching models:", err);
+      }
+    };
+    checkModels();
+
     setGenStatus('generating');
     setResultText('');
 
