@@ -18,7 +18,8 @@ import {
   Hash,
   ScrollText,
   Camera,
-  Briefcase
+  Briefcase,
+  Pencil
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -71,19 +72,82 @@ const SidebarItem = ({ icon, label, active }) => (
   </button>
 );
 
-const PersonaCard = () => (
-  <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8 flex flex-col md:flex-row gap-6 md:items-center justify-between">
-    <div>
-      <h2 className="text-lg font-semibold text-gray-900 mb-1">페르소나 설정</h2>
-      <p className="text-gray-500 text-sm">AI가 이 프로필을 바탕으로 콘텐츠를 생성합니다.</p>
+const PersonaCard = ({ persona, onUpdate }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [tempPersona, setTempPersona] = useState(persona);
+
+  const handleSave = () => {
+    onUpdate(tempPersona);
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setTempPersona(persona);
+    setIsEditing(false);
+  };
+
+  if (isEditing) {
+    return (
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8 flex flex-col gap-4 animate-in fade-in zoom-in-95 duration-200">
+        <div className="flex justify-between items-center mb-2">
+           <h2 className="text-lg font-semibold text-gray-900">페르소나 수정</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">대학교</label>
+            <input 
+              type="text" 
+              value={tempPersona.university} 
+              onChange={(e) => setTempPersona({...tempPersona, university: e.target.value})}
+              className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
+            />
+          </div>
+          <div>
+             <label className="block text-xs font-medium text-gray-500 mb-1">전공</label>
+            <input 
+              type="text" 
+              value={tempPersona.major} 
+              onChange={(e) => setTempPersona({...tempPersona, major: e.target.value})}
+              className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
+            />
+          </div>
+          <div>
+             <label className="block text-xs font-medium text-gray-500 mb-1">희망 직무</label>
+            <input 
+              type="text" 
+              value={tempPersona.jobGoal} 
+              onChange={(e) => setTempPersona({...tempPersona, jobGoal: e.target.value})}
+              className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none"
+            />
+          </div>
+        </div>
+        <div className="flex justify-end gap-2 mt-2">
+          <button onClick={handleCancel} className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg">취소</button>
+          <button onClick={handleSave} className="px-4 py-2 text-sm bg-primary text-white rounded-lg hover:bg-primary/90">저장</button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8 flex flex-col md:flex-row gap-6 md:items-center justify-between group hover:border-primary/30 transition-colors">
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900 mb-1 flex items-center gap-2">
+          페르소나 설정
+          <button onClick={() => setIsEditing(true)} className="text-gray-400 hover:text-primary transition-colors">
+            <Pencil size={16} />
+          </button>
+        </h2>
+        <p className="text-gray-500 text-sm">AI가 이 프로필을 바탕으로 콘텐츠를 생성합니다.</p>
+      </div>
+      <div className="flex gap-4">
+        <Badge icon={<BookOpen size={14} />} label={persona.university} />
+        <Badge icon={<Award size={14} />} label={persona.major} />
+        <Badge icon={<Target size={14} />} label={persona.jobGoal} />
+      </div>
     </div>
-    <div className="flex gap-4">
-      <Badge icon={<BookOpen size={14} />} label="서울대학교" />
-      <Badge icon={<Award size={14} />} label="컴퓨터공학" />
-      <Badge icon={<Target size={14} />} label="서비스 기획자" />
-    </div>
-  </div>
-);
+  );
+};
 
 const Badge = ({ icon, label }) => (
   <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-primary text-sm font-medium rounded-full border border-blue-100">
@@ -102,6 +166,12 @@ function App() {
   const [uploadStatus, setUploadStatus] = useState('idle'); // idle, uploading, success
   const [genStatus, setGenStatus] = useState('idle'); // idle, generating, success
   const [resultText, setResultText] = useState('');
+  
+  const [persona, setPersona] = useState({
+    university: '서울대학교',
+    major: '컴퓨터공학',
+    jobGoal: '서비스 기획자'
+  });
 
   const platforms = [
     { id: 'instagram', label: '인스타그램', icon: <Instagram size={18} /> },
@@ -145,20 +215,20 @@ function App() {
       if (category === 'certificate') {
         // 자격증 모드: 구체적인 정보 포함
         if (tone === 'professional') {
-           text = `[자격증 취득 안내]\n\n• 자격명: 정보처리기사\n• 발급기관: 한국산업인력공단\n• 취득일자: 2024.06.15\n\n지난 3개월간 퇴근 후 매일 2시간씩 투자했던 노력이 결실을 맺었습니다. 이번 자격증 취득을 통해 소프트웨어 공학의 기초를 다시 한번 탄탄히 다질 수 있었습니다. 앞으로 실무에서 더욱 전문성 있는 엔지니어로 성장하겠습니다. #자기계발 #정보처리기사 #자격증 #합격`;
+           text = `[자격증 취득 안내]\n\n• 자격명: 정보처리기사\n• 발급기관: 한국산업인력공단\n• 취득일자: 2024.06.15\n\n지난 3개월간 퇴근 후 매일 2시간씩 투자했던 노력이 결실을 맺었습니다. ${persona.university} ${persona.major} 전공생으로서 소프트웨어 공학의 기초를 다시 한번 탄탄히 다질 수 있었습니다. 앞으로 ${persona.jobGoal}로서 더욱 전문성 있게 성장하겠습니다. #자기계발 #정보처리기사 #자격증 #합격`;
         } else {
-           text = `드디어 합격했다! 😭\n정보처리기사, 진짜 애증의 자격증...\n\n맨날 떨어질까봐 조마조마했는데 합격 목걸이 걸었습니다. 응원해준 친구들 다 고마워! 오늘 치킨 먹는다.\n\n📅 취득일: 2024.06.15\n📜 발급처: 큐넷\n\n#정처기 #기사자격증 #공부끝 #합격인증 #개발자꿈나무`;
+           text = `드디어 합격했다! 😭\n정보처리기사, 진짜 애증의 자격증...\n\n맨날 떨어질까봐 조마조마했는데 합격 목걸이 걸었습니다. 응원해준 친구들 다 고마워! 오늘 치킨 먹는다.\n\n📅 취득일: 2024.06.15\n📜 발급처: 큐넷\n\n#정처기 #기사자격증 #공부끝 #합격인증 #${persona.major} #${persona.jobGoal}꿈나무`;
         }
       } else if (category === 'award') {
         // 수상 모드: 스토리텔링
-        if (tone === 'emotional') text = `밤늦게까지 이어진 해커톤, 몸은 힘들었지만 마음은 그 어느 때보다 뜨거웠다. 🔥\n함께해 준 팀원들이 있었기에 가능했던 대상 수상. \n이 트로피보다 빛나는 건 우리가 함께한 시간들이다.\n\n#새벽감성 #성장기록 #해커톤 #팀워크 #대학생활`;
-        else text = `[2024 데이터 사이언스 해커톤 대상 수상]\n\n치열했던 48시간의 해커톤 여정이 '대상'이라는 값진 결과로 마무리되었습니다. 데이터 전처리의 난관을 팀원들과의 협업으로 극복하며, 문제 해결의 본질을 배울 수 있었습니다.`;
+        if (tone === 'emotional') text = `밤늦게까지 이어진 해커톤, 몸은 힘들었지만 마음은 그 어느 때보다 뜨거웠다. 🔥\n함께해 준 팀원들이 있었기에 가능했던 대상 수상. \n이 트로피보다 빛나는 건 우리가 함께한 시간들이다.\n\n#새벽감성 #성장기록 #해커톤 #팀워크 #${persona.university}`;
+        else text = `[2024 데이터 사이언스 해커톤 대상 수상]\n\n치열했던 48시간의 해커톤 여정이 '대상'이라는 값진 결과로 마무리되었습니다. 데이터 전처리의 난관을 팀원들과의 협업으로 극복하며, 문제 해결의 본질을 배울 수 있었습니다. ${persona.jobGoal}로 나아가는 큰 발판이 되리라 확신합니다.`;
       } else if (category === 'activity') {
         // 활동 모드: 현장감
-        text = `GDG DevFest 2024 현장 스케치 📸\n\n수많은 개발자들의 열기로 가득했던 코엑스! \n특히 'AI 에이전트의 미래' 세션에서 많은 영감을 받았습니다. \n\n✔️ Key Takeaways:\n1. LLM은 도구일 뿐, 핵심은 기획이다.\n2. 프롬프트 엔지니어링의 중요성\n3. 커뮤니티의 힘\n\n좋은 에너지 잔뜩 받아갑니다! #DevFest #개발자컨퍼런스 #네트워킹 #성장`;
+        text = `GDG DevFest 2024 현장 스케치 📸\n\n수많은 개발자들의 열기로 가득했던 코엑스! \n특히 'AI 에이전트의 미래' 세션에서 많은 영감을 받았습니다. \n\n✔️ Key Takeaways:\n1. LLM은 도구일 뿐, 핵심은 기획이다.\n2. 프롬프트 엔지니어링의 중요성\n3. 커뮤니티의 힘\n\n좋은 에너지 잔뜩 받아갑니다! #DevFest #개발자컨퍼런스 #네트워킹 #성장 #${persona.major}`;
       } else {
         // 실무 모드
-        text = `[인턴십 중간 회고]\n\n어느덧 서비스 기획팀 인턴 2개월 차입니다. \n학교에서는 배울 수 없었던 '실제 유저 데이터'를 다루며 매일 깨지고 배우는 중입니다. \n사수님의 꼼꼼한 피드백 덕분에 기획서 퀄리티가 조금씩 나아지는 게 느껴져 뿌듯하네요. 남은 1개월도 후회 없이 달리겠습니다! 🏃‍♂️`;
+        text = `[인턴십 중간 회고]\n\n어느덧 서비스 기획팀 인턴 2개월 차입니다. \n${persona.university}에서는 배울 수 없었던 '실제 유저 데이터'를 다루며 매일 깨지고 배우는 중입니다. \n사수님의 꼼꼼한 피드백 덕분에 기획서 퀄리티가 조금씩 나아지는 게 느껴져 뿌듯하네요. 남은 1개월도 후회 없이 달리겠습니다! 🏃‍♂️`;
       }
       
       if (keywords) {
@@ -185,7 +255,7 @@ function App() {
           <p className="text-gray-500 text-lg">어떤 성취를 기록하고 싶으신가요?</p>
         </header>
 
-        <PersonaCard />
+        <PersonaCard persona={persona} onUpdate={setPersona} />
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
