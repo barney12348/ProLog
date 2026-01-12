@@ -34,7 +34,6 @@ import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { toPng } from 'html-to-image';
 import download from 'downloadjs';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 
 // Utility for class merging
 function cn(...inputs) {
@@ -796,73 +795,43 @@ function App() {
     fileInputRef.current?.click();
   };
 
-  const handleGenerate = async () => {
+  const handleGenerate = () => {
     if (uploadStatus !== 'success') return;
     
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-    if (!apiKey || apiKey === 'YOUR_API_KEY_HERE') {
-      alert('API Key가 설정되지 않았습니다. .env 파일을 확인해주세요.');
-      return;
-    }
-
-    // Debug: List available models
-    const checkModels = async () => {
-      try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-        const data = await response.json();
-        console.log("Available Gemini Models:", data);
-      } catch (err) {
-        console.error("Error fetching models:", err);
-      }
-    };
-    checkModels();
-
     setGenStatus('generating');
     setResultText('');
-
-    try {
-      const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-
-      // Convert data URL to base64 for Gemini
-      const base64Data = selectedImage.split(',')[1];
-      
-      const prompt = `
-        당신은 퍼스널 브랜딩 전문가입니다. 이 이미지를 분석해서 SNS에 올릴 매력적인 글을 작성해주세요.
-        
-        [작성 조건]
-        1. 플랫폼: ${platforms.find(p => p.id === activeTab)?.label} (해당 플랫폼의 문체와 해시태그 스타일 반영)
-        2. 카테고리: ${categories.find(c => c.id === category)?.label}
-        3. 톤앤매너: ${tones.find(t => t.id === tone)?.label}
-        4. 사용자 페르소나: ${persona.university} ${persona.major} 전공, ${persona.jobGoal} 지망생
-        5. 추가 키워드: ${keywords}
-        
-        [필수 포함 내용]
-        - 이미지에서 보이는 텍스트(자격증명, 상장명, 날짜 등)가 있다면 정확히 인용할 것.
-        - 성취감, 배운 점, 앞으로의 포부를 자연스럽게 녹여낼 것.
-        - 가독성 좋게 줄바꿈과 이모지를 적절히 사용할 것.
-        - 첫 문장은 사람들의 시선을 끌 수 있는 '훅(Hook)'으로 시작할 것.
-      `;
-
-      const imagePart = {
-        inlineData: {
-          data: base64Data,
-          mimeType: "image/jpeg", // Assuming jpeg/png, Gemini handles standard image formats
-        },
-      };
-
-      const result = await model.generateContent([prompt, imagePart]);
-      const response = await result.response;
-      const text = response.text();
-      
-      setResultText(text);
+    
+    setTimeout(() => {
       setGenStatus('success');
+      
+      let text = "";
+      
+      // Mock logic based on Category & Tone
+      if (category === 'certificate') {
+        // 자격증 모드: 구체적인 정보 포함
+        if (tone === 'professional') {
+           text = `[자격증 취득 안내]\n\n• 자격명: 정보처리기사\n• 발급기관: 한국산업인력공단\n• 취득일자: 2024.06.15\n\n지난 3개월간 퇴근 후 매일 2시간씩 투자했던 노력이 결실을 맺었습니다. ${persona.university} ${persona.major} 전공생으로서 소프트웨어 공학의 기초를 다시 한번 탄탄히 다질 수 있었습니다. 앞으로 ${persona.jobGoal}로서 더욱 전문성 있게 성장하겠습니다. #자기계발 #정보처리기사 #자격증 #합격`;
+        } else {
+           text = `드디어 합격했다! 😭\n정보처리기사, 진짜 애증의 자격증...\n\n맨날 떨어질까봐 조마조마했는데 합격 목걸이 걸었습니다. 응원해준 친구들 다 고마워! 오늘 치킨 먹는다.\n\n📅 취득일: 2024.06.15\n📜 발급처: 큐넷\n\n#정처기 #기사자격증 #공부끝 #합격인증 #${persona.major} #${persona.jobGoal}꿈나무`;
+        }
+      } else if (category === 'award') {
+        // 수상 모드: 스토리텔링
+        if (tone === 'emotional') text = `밤늦게까지 이어진 해커톤, 몸은 힘들었지만 마음은 그 어느 때보다 뜨거웠다. 🔥\n함께해 준 팀원들이 있었기에 가능했던 대상 수상. \n이 트로피보다 빛나는 건 우리가 함께한 시간들이다.\n\n#새벽감성 #성장기록 #해커톤 #팀워크 #${persona.university}`;
+        else text = `[2024 데이터 사이언스 해커톤 대상 수상]\n\n치열했던 48시간의 해커톤 여정이 '대상'이라는 값진 결과로 마무리되었습니다. 데이터 전처리의 난관을 팀원들과의 협업으로 극복하며, 문제 해결의 본질을 배울 수 있었습니다. ${persona.jobGoal}로 나아가는 큰 발판이 되리라 확신합니다.`;
+      } else if (category === 'activity') {
+        // 활동 모드: 현장감
+        text = `GDG DevFest 2024 현장 스케치 📸\n\n수많은 개발자들의 열기로 가득했던 코엑스! \n특히 'AI 에이전트의 미래' 세션에서 많은 영감을 받았습니다. \n\n✔️ Key Takeaways:\n1. LLM은 도구일 뿐, 핵심은 기획이다.\n2. 프롬프트 엔지니어링의 중요성\n3. 커뮤니티의 힘\n\n좋은 에너지 잔뜩 받아갑니다! #DevFest #개발자컨퍼런스 #네트워킹 #성장 #${persona.major}`;
+      } else {
+        // 실무 모드
+        text = `[인턴십 중간 회고]\n\n어느덧 서비스 기획팀 인턴 2개월 차입니다. \n${persona.university}에서는 배울 수 없었던 '실제 유저 데이터'를 다루며 매일 깨지고 배우는 중입니다. \n사수님의 꼼꼼한 피드백 덕분에 기획서 퀄리티가 조금씩 나아지는 게 느껴져 뿌듯하네요. 남은 1개월도 후회 없이 달리겠습니다! 🏃‍♂️`;
+      }
+      
+      if (keywords) {
+        text += `\n\n(✨ Key Point: ${keywords})`;
+      }
 
-    } catch (error) {
-      console.error("Gemini API Error:", error);
-      alert(`글 생성 중 오류가 발생했습니다: ${error.message}`);
-      setGenStatus('idle');
-    }
+      setResultText(text);
+    }, 2000);
   };
 
   const copyToClipboard = () => {
