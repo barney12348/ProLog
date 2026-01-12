@@ -175,7 +175,7 @@ const PersonaCard = ({ persona, onUpdate }) => {
   );
 };
 
-const HistoryView = ({ history, onDelete }) => {
+const HistoryView = ({ history, onDelete, platforms }) => {
   const [selectedItem, setSelectedItem] = useState(null);
 
   if (history.length === 0) {
@@ -188,38 +188,51 @@ const HistoryView = ({ history, onDelete }) => {
     );
   }
 
+  const getPlatformInfo = (platformId) => {
+    return platforms.find(p => p.id === platformId) || { label: '알 수 없음', icon: <FileText size={16} /> };
+  };
+
   return (
     <>
       <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        {history.map((item) => (
-          <div 
-            key={item.id} 
-            onClick={() => setSelectedItem(item)}
-            className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer relative group hover:-translate-y-1"
-          >
-            <div className="flex justify-between items-start mb-3">
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 text-blue-600 text-xs font-medium">
-                {item.categoryLabel}
-              </span>
-              <button 
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete(item.id);
-                }}
-                className="text-gray-300 hover:text-red-500 transition-colors p-1"
-              >
-                <Trash2 size={16} />
-              </button>
+        {history.map((item) => {
+          const platform = getPlatformInfo(item.platform);
+          return (
+            <div 
+              key={item.id} 
+              onClick={() => setSelectedItem(item)}
+              className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer relative group hover:-translate-y-1"
+            >
+              <div className="flex justify-between items-start mb-3">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 text-blue-600 text-xs font-medium">
+                    {item.categoryLabel}
+                  </span>
+                  <span className="flex items-center gap-1 text-gray-500 text-xs bg-gray-100 px-2 py-1 rounded-md">
+                    {platform.icon}
+                    {platform.label}
+                  </span>
+                </div>
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(item.id);
+                  }}
+                  className="text-gray-300 hover:text-red-500 transition-colors p-1"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+              <p className="text-gray-800 text-sm line-clamp-4 whitespace-pre-wrap mb-4 leading-relaxed">
+                {item.text}
+              </p>
+              <div className="flex items-center gap-2 text-xs text-gray-400 border-t border-gray-50 pt-3 mt-auto">
+                <Calendar size={12} />
+                {item.date}
+              </div>
             </div>
-            <p className="text-gray-800 text-sm line-clamp-4 whitespace-pre-wrap mb-4 leading-relaxed">
-              {item.text}
-            </p>
-            <div className="flex items-center gap-2 text-xs text-gray-400 border-t border-gray-50 pt-3 mt-auto">
-              <Calendar size={12} />
-              {item.date}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Detail Modal */}
@@ -235,7 +248,11 @@ const HistoryView = ({ history, onDelete }) => {
                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-sm font-semibold">
                   {selectedItem.categoryLabel}
                 </span>
-                <span className="text-gray-400 text-sm flex items-center gap-1">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100 text-gray-600 text-sm font-semibold">
+                  {getPlatformInfo(selectedItem.platform).icon}
+                  {getPlatformInfo(selectedItem.platform).label}
+                </span>
+                <span className="text-gray-400 text-sm flex items-center gap-1 ml-2">
                   <Calendar size={14} />
                   {selectedItem.date}
                 </span>
@@ -743,7 +760,7 @@ function App() {
         )}
 
         {activePage === 'history' && (
-          <HistoryView history={history} onDelete={handleDeleteHistory} />
+          <HistoryView history={history} onDelete={handleDeleteHistory} platforms={platforms} />
         )}
 
         {activePage === 'settings' && (
