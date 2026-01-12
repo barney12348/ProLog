@@ -24,7 +24,8 @@ import {
   Trash2,
   Calendar,
   TrendingUp,
-  MapPin
+  MapPin,
+  PieChart
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -74,6 +75,12 @@ const Sidebar = ({ activePage, onNavigate }) => (
         onClick={() => onNavigate('timeline')}
       />
       <SidebarItem 
+        icon={<PieChart size={20} />} 
+        label="통계" 
+        active={activePage === 'stats'}
+        onClick={() => onNavigate('stats')}
+      />
+      <SidebarItem 
         icon={<History size={20} />} 
         label="히스토리" 
         active={activePage === 'history'}
@@ -120,6 +127,16 @@ const BottomNav = ({ activePage, onNavigate }) => (
     >
       <TrendingUp size={24} />
       <span className="text-[10px] font-medium">타임라인</span>
+    </button>
+    <button 
+      onClick={() => onNavigate('stats')}
+      className={cn(
+        "flex flex-col items-center gap-1 p-2 rounded-lg w-full transition-colors",
+        activePage === 'stats' ? "text-primary" : "text-gray-400 hover:text-gray-600"
+      )}
+    >
+      <PieChart size={24} />
+      <span className="text-[10px] font-medium">통계</span>
     </button>
     <button 
       onClick={() => onNavigate('history')}
@@ -230,6 +247,158 @@ const TimelineView = ({ history, categories }) => {
     </div>
   );
 };
+
+const StatsView = ({ history, categories, platforms }) => {
+  if (history.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-gray-400 py-20">
+        <PieChart size={48} className="mb-4 opacity-20" />
+        <p className="text-lg font-medium">분석할 데이터가 없습니다.</p>
+        <p className="text-sm">기록을 쌓으면 통계를 확인하실 수 있습니다.</p>
+      </div>
+    );
+  }
+
+  // 1. Calculate Category Counts
+  const categoryCounts = categories.map(cat => ({
+    ...cat,
+    count: history.filter(item => item.category === cat.id).length
+  }));
+  
+  const totalCount = history.length;
+
+  // 2. Calculate Platform Counts
+  const platformCounts = platforms.map(p => ({
+    ...p,
+    count: history.filter(item => item.platform === p.id).length
+  }));
+
+  // 3. Find most active month (simple implementation)
+  const monthCounts = history.reduce((acc, item) => {
+    // Assuming item.date format is YYYY.MM.DD or similar that starts with Year/Month
+    // Or just extracting month from local date string if it varies. 
+    // Let's use a simpler approach: key by first 7 chars (YYYY.MM) if format allows, else raw
+    const month = item.date.substring(0, 7); 
+    acc[month] = (acc[month] || 0) + 1;
+    return acc;
+  }, {});
+  
+  const bestMonth = Object.entries(monthCounts).sort((a, b) => b[1] - a[1])[0] || ['-', 0];
+
+
+  return (
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      
+      {/* Top Overview Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+          <div>
+            <p className="text-sm text-gray-500 font-medium">총 기록 수</p>
+            <p className="text-3xl font-bold text-gray-900 mt-1">{totalCount}개</p>
+          </div>
+          <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center">
+            <FileText size={24} />
+          </div>
+        </div>
+        
+        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+          <div>
+            <p className="text-sm text-gray-500 font-medium">최다 기록 유형</p>
+            <p className="text-3xl font-bold text-gray-900 mt-1">
+              {categoryCounts.sort((a, b) => b.count - a.count)[0].label}
+            </p>
+          </div>
+          <div className="w-12 h-12 bg-green-50 text-green-600 rounded-full flex items-center justify-center">
+            <Target size={24} />
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between">
+          <div>
+            <p className="text-sm text-gray-500 font-medium">가장 열정적인 달</p>
+            <p className="text-3xl font-bold text-gray-900 mt-1">{bestMonth[0]}</p>
+          </div>
+          <div className="w-12 h-12 bg-orange-50 text-orange-600 rounded-full flex items-center justify-center">
+            <Sparkles size={24} />
+          </div>
+        </div>
+      </div>
+
+      {/* Charts Area */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        {/* Category Breakdown (Bar Chart representation) */}
+        <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
+          <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <PieChart size={20} className="text-primary" />
+            활동 유형 분석
+          </h3>
+          <div className="space-y-4">
+            {categoryCounts.map((cat) => {
+              const percentage = Math.round((cat.count / totalCount) * 100) || 0;
+              return (
+                <div key={cat.id}>
+                  <div className="flex justify-between text-sm mb-1.5">
+                    <span className="font-medium text-gray-700 flex items-center gap-2">
+                      {cat.icon} {cat.label}
+                    </span>
+                    <span className="text-gray-500">{cat.count}회 ({percentage}%)</span>
+                  </div>
+                  <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                    <div 
+                      className="bg-primary h-2.5 rounded-full transition-all duration-1000 ease-out" 
+                      style={{ width: `${percentage}%` }}
+                    ></div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          <p className="text-xs text-gray-400 mt-6 text-center">
+             💡 팁: 다양한 활동을 골고루 경험하여 육각형 인재로 거듭나세요!
+          </p>
+        </div>
+
+        {/* Platform Breakdown & Insights */}
+        <div className="space-y-6">
+           {/* Platform Usage */}
+           <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
+              <h3 className="text-lg font-bold text-gray-900 mb-6">플랫폼 활용도</h3>
+              <div className="flex justify-around items-end h-32 mb-2">
+                 {platformCounts.map((p) => {
+                   const height = p.count > 0 ? (p.count / totalCount) * 100 : 5; // min height 5%
+                   return (
+                     <div key={p.id} className="flex flex-col items-center gap-2 w-1/3 group">
+                        <div className="text-xs font-bold text-primary opacity-0 group-hover:opacity-100 transition-opacity mb-1">{p.count}회</div>
+                        <div 
+                          className="w-12 bg-blue-100 rounded-t-lg group-hover:bg-blue-200 transition-colors relative"
+                          style={{ height: `${height}%` }}
+                        ></div>
+                        <div className="text-sm text-gray-600 font-medium flex flex-col items-center gap-1">
+                          {p.icon}
+                          <span className="text-xs">{p.label}</span>
+                        </div>
+                     </div>
+                   );
+                 })}
+              </div>
+           </div>
+
+           {/* Simple Insight Text */}
+           <div className="bg-indigo-50 p-6 rounded-2xl border border-indigo-100">
+             <h4 className="font-bold text-indigo-900 mb-2">🚀 성장 리포트</h4>
+             <p className="text-sm text-indigo-700 leading-relaxed">
+               사용자님은 현재 <strong>{categoryCounts.sort((a,b)=>b.count-a.count)[0].label}</strong> 관련 활동에 강점이 있으시네요. 
+               {totalCount < 5 ? ' 아직 초기 단계지만 꾸준히 기록하면 멋진 포트폴리오가 될 거예요!' : ' 꾸준한 기록이 돋보입니다! 이제 다른 분야의 경험도 넓혀보시는 건 어떨까요?'}
+             </p>
+           </div>
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
 
 const PersonaCard = ({ persona, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -611,12 +780,14 @@ function App() {
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
               {activePage === 'dashboard' && '안녕하세요, 사용자님! 👋'}
               {activePage === 'timeline' && '성장 타임라인 📅'}
+              {activePage === 'stats' && '활동 통계 📊'}
               {activePage === 'history' && '히스토리 🕒'}
               {activePage === 'settings' && '설정 ⚙️'}
             </h1>
             <p className="text-gray-500 text-sm md:text-lg">
               {activePage === 'dashboard' && '어떤 성취를 기록하고 싶으신가요? ProLog가 당신의 경험을 빛나는 콘텐츠로 만들어드립니다.'}
               {activePage === 'timeline' && '시간의 흐름에 따른 당신의 눈부신 성취를 확인하세요.'}
+              {activePage === 'stats' && '데이터로 보는 나의 커리어 강점과 활동 패턴입니다.'}
               {activePage === 'history' && '지금까지 생성한 기록들을 모아보세요.'}
               {activePage === 'settings' && '계정 및 알림 설정을 관리하세요.'}
             </p>
@@ -912,6 +1083,10 @@ function App() {
 
         {activePage === 'timeline' && (
           <TimelineView history={history} categories={categories} />
+        )}
+
+        {activePage === 'stats' && (
+          <StatsView history={history} categories={categories} platforms={platforms} />
         )}
 
         {activePage === 'history' && (
