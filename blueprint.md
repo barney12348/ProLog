@@ -1,21 +1,22 @@
-# ProLog - AI Career Agent Blueprint
+# ProLog - AI 커리어 에이전트 청사진
 
-## Overview
-ProLog is a web service that helps job seekers create personal branding content for SNS by analyzing their uploaded photos using AI. This prototype focuses on the frontend user flow, including a dashboard for uploading images and generating text for different platforms.
+## 개요
+ProLog는 취업 준비생이 업로드한 사진을 AI로 분석하여 SNS용 퍼스널 브랜딩 콘텐츠 생성을 돕는 웹 서비스입니다. 이 프로토타입은 이미지 업로드 및 플랫폼별(인스타그램, 블로그, 링크드인) 텍스트 생성을 포함한 프론트엔드 사용자 흐름에 집중합니다.
 
-## Implementation Status (React + Tailwind Prototype)
-- **Framework:** React + Vite initialized.
-- **Styling:** Tailwind CSS configured with custom colors (Navy/Electric Blue).
-- **Icons:** Lucide-React integrated.
-- **Components Implemented:**
-    -   `Sidebar`: Navigation with active states.
-    -   `PersonaCard`: Displaying user context (University, Major).
-    -   `App`: Main dashboard logic.
-        -   **Platform Selector:** Toggles between Instagram, Blog, LinkedIn.
-        -   **Upload Zone:** Simulates upload delay and success state.
-        -   **Generation:** Simulates AI processing delay and renders mock text.
-        -   **Result Area:** Displays generated content with copy functionality.
+## 구현 상태 (React + Tailwind 프로토타입)
+- **프레임워크:** React + Vite 초기화 완료.
+- **스타일링:** Tailwind CSS 구성 (Navy/Electric Blue 커스텀 컬러).
+- **아이콘:** Lucide-React 통합.
+- **구현된 컴포넌트:**
+    -   `Sidebar`: 활성 상태를 포함한 네비게이션.
+    -   `PersonaCard`: 사용자 컨텍스트 표시 (대학교, 전공).
+    -   `App`: 메인 대시보드 로직.
+        -   **플랫폼 선택기:** 인스타그램, 블로그, 링크드인 전환.
+        -   **업로드 영역:** 업로드 지연 및 성공 상태 시뮬레이션.
+        -   **생성 로직:** AI 처리 지연 시뮬레이션 및 모의 텍스트 렌더링.
+        -   **결과 영역:** 생성된 콘텐츠 표시 및 복사 기능.
 
-## Next Steps
--   Run `npm run dev` to start the development server.
--   Open the provided local URL to interact with the prototype.
+## 다음 단계
+-   `npm run dev`를 실행하여 개발 서버 시작.
+-   제공된 로컬 URL을 열어 프로토타입 확인.
+-   실제 Gemini API 연동을 통한 실제 콘텐츠 생성 기능 추가.
