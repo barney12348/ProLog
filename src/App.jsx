@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   LayoutDashboard, 
   History, 
@@ -19,7 +19,8 @@ import {
   ScrollText,
   Camera,
   Briefcase,
-  Pencil
+  Pencil,
+  X
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -166,6 +167,8 @@ function App() {
   const [uploadStatus, setUploadStatus] = useState('idle'); // idle, uploading, success
   const [genStatus, setGenStatus] = useState('idle'); // idle, generating, success
   const [resultText, setResultText] = useState('');
+  const [selectedImage, setSelectedImage] = useState(null);
+  const fileInputRef = useRef(null);
   
   const [persona, setPersona] = useState({
     university: '서울대학교',
@@ -173,31 +176,48 @@ function App() {
     jobGoal: '서비스 기획자'
   });
 
-  const platforms = [
-    { id: 'instagram', label: '인스타그램', icon: <Instagram size={18} /> },
-    { id: 'blog', label: '블로그', icon: <FileText size={18} /> },
-    { id: 'linkedin', label: '링크드인', icon: <Linkedin size={18} /> },
-  ];
+  const handleFile = (file) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 업로드 가능합니다.');
+      return;
+    }
 
-  const categories = [
-    { id: 'award', label: '수상/상장', icon: <Award size={16} /> },
-    { id: 'certificate', label: '자격증', icon: <ScrollText size={16} /> },
-    { id: 'activity', label: '대외활동', icon: <Camera size={16} /> },
-    { id: 'project', label: '인턴/실무', icon: <Briefcase size={16} /> },
-  ];
-
-  const tones = [
-    { id: 'emotional', label: '감성적인 🌿' },
-    { id: 'professional', label: '전문적인 💼' },
-    { id: 'witty', label: '유쾌한 ⚡' },
-  ];
-
-  const handleUpload = () => {
-    if (uploadStatus === 'success') return;
     setUploadStatus('uploading');
+    
+    // Simulate upload delay
     setTimeout(() => {
-      setUploadStatus('success');
-    }, 1000);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedImage(reader.result);
+        setUploadStatus('success');
+      };
+      reader.readAsDataURL(file);
+    }, 800);
+  };
+
+  const onDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    handleFile(file);
+  };
+
+  const onDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const resetUpload = (e) => {
+    e.stopPropagation();
+    setSelectedImage(null);
+    setUploadStatus('idle');
+    setGenStatus('idle');
+    setResultText('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleUploadClick = () => {
+    if (uploadStatus === 'success') return;
+    fileInputRef.current?.click();
   };
 
   const handleGenerate = () => {
@@ -350,7 +370,9 @@ function App() {
 
             {/* Upload Zone */}
             <div 
-              onClick={handleUpload}
+              onClick={handleUploadClick}
+              onDrop={onDrop}
+              onDragOver={onDragOver}
               className={cn(
                 "group relative border-2 border-dashed rounded-2xl h-56 flex flex-col items-center justify-center text-center p-6 transition-all cursor-pointer overflow-hidden",
                 uploadStatus === 'idle' ? "border-gray-300 bg-white hover:border-primary/50 hover:bg-blue-50/30" : 
@@ -358,13 +380,22 @@ function App() {
                 "border-green-500 bg-green-50/50"
               )}
             >
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={(e) => handleFile(e.target.files[0])} 
+                className="hidden" 
+                accept="image/*"
+              />
+
               {uploadStatus === 'idle' && (
                 <>
                   <div className="w-12 h-12 bg-blue-50 text-primary rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                     <UploadCloud size={24} />
                   </div>
                   <h3 className="text-sm font-semibold text-gray-900">증빙 자료 업로드</h3>
-                  <p className="text-gray-400 mt-1 text-xs">JPG, PNG (최대 10MB)</p>
+                  <p className="text-gray-400 mt-1 text-xs">이미지를 드래그하거나 클릭하여 선택하세요</p>
+                  <p className="text-gray-300 mt-1 text-[10px]">JPG, PNG (최대 10MB)</p>
                 </>
               )}
 
@@ -375,15 +406,21 @@ function App() {
                 </div>
               )}
 
-              {uploadStatus === 'success' && (
+              {uploadStatus === 'success' && selectedImage && (
                 <>
-                  <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-3 animate-bounce">
-                    <CheckCircle size={24} />
+                  <div className="absolute inset-0 w-full h-full">
+                    <img src={selectedImage} alt="Preview" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <CheckCircle size={32} className="text-white mb-2" />
+                      <p className="text-white text-sm font-bold">변경하려면 클릭</p>
+                    </div>
                   </div>
-                  <h3 className="text-sm font-semibold text-green-700">업로드 완료!</h3>
-                  
-                  {/* Fake Image Preview */}
-                  <div className="absolute inset-0 -z-10 opacity-20 bg-[url('https://images.unsplash.com/photo-1596495578065-6e0763fa1178?q=80&w=2671&auto=format&fit=crop')] bg-cover bg-center" />
+                  <button 
+                    onClick={resetUpload}
+                    className="absolute top-3 right-3 w-8 h-8 bg-white/90 hover:bg-white text-gray-900 rounded-full flex items-center justify-center shadow-lg z-20 transition-transform hover:scale-110"
+                  >
+                    <X size={18} />
+                  </button>
                 </>
               )}
             </div>
