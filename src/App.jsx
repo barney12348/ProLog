@@ -22,7 +22,9 @@ import {
   Pencil,
   X,
   Trash2,
-  Calendar
+  Calendar,
+  TrendingUp,
+  MapPin
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -66,6 +68,12 @@ const Sidebar = ({ activePage, onNavigate }) => (
         onClick={() => onNavigate('dashboard')}
       />
       <SidebarItem 
+        icon={<TrendingUp size={20} />} 
+        label="타임라인" 
+        active={activePage === 'timeline'}
+        onClick={() => onNavigate('timeline')}
+      />
+      <SidebarItem 
         icon={<History size={20} />} 
         label="히스토리" 
         active={activePage === 'history'}
@@ -104,6 +112,16 @@ const BottomNav = ({ activePage, onNavigate }) => (
       <span className="text-[10px] font-medium">대시보드</span>
     </button>
     <button 
+      onClick={() => onNavigate('timeline')}
+      className={cn(
+        "flex flex-col items-center gap-1 p-2 rounded-lg w-full transition-colors",
+        activePage === 'timeline' ? "text-primary" : "text-gray-400 hover:text-gray-600"
+      )}
+    >
+      <TrendingUp size={24} />
+      <span className="text-[10px] font-medium">타임라인</span>
+    </button>
+    <button 
       onClick={() => onNavigate('history')}
       className={cn(
         "flex flex-col items-center gap-1 p-2 rounded-lg w-full transition-colors",
@@ -132,6 +150,86 @@ const Badge = ({ icon, label }) => (
     <span>{label}</span>
   </div>
 );
+
+const TimelineView = ({ history, categories }) => {
+  if (history.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-gray-400 py-20">
+        <TrendingUp size={48} className="mb-4 opacity-20" />
+        <p className="text-lg font-medium">타임라인을 채울 기록이 없습니다.</p>
+        <p className="text-sm">성취를 기록하고 나만의 성장 궤적을 확인하세요.</p>
+      </div>
+    );
+  }
+
+  // Sort history by date (newest first) - assuming id or a date string
+  const sortedHistory = [...history].sort((a, b) => b.id - a.id);
+
+  return (
+    <div className="relative max-w-4xl mx-auto py-10 px-4">
+      {/* Vertical Line */}
+      <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary/5 via-primary/20 to-primary/5 -translate-x-1/2 hidden md:block"></div>
+      <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary/5 via-primary/20 to-primary/5 md:hidden"></div>
+
+      <div className="space-y-12">
+        {sortedHistory.map((item, index) => {
+          const categoryIcon = categories.find(c => c.id === item.category)?.icon || <Sparkles size={16} />;
+          const isEven = index % 2 === 0;
+
+          return (
+            <div key={item.id} className={cn(
+              "relative flex flex-col md:flex-row items-center",
+              isEven ? "md:flex-row-reverse" : ""
+            )}>
+              {/* Dot */}
+              <div className="absolute left-8 md:left-1/2 w-4 h-4 rounded-full bg-white border-4 border-primary shadow-sm -translate-x-1/2 z-10"></div>
+
+              {/* Date Label (Desktop) */}
+              <div className={cn(
+                "hidden md:block w-1/2 px-12 text-sm font-bold text-primary",
+                isEven ? "text-left" : "text-right"
+              )}>
+                {item.date}
+              </div>
+
+              {/* Card */}
+              <div className="w-full md:w-1/2 pl-16 md:pl-0 md:px-12">
+                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all group relative">
+                  <div className="md:hidden text-xs font-bold text-primary mb-2 flex items-center gap-1">
+                    <Calendar size={12} />
+                    {item.date}
+                  </div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="p-1.5 bg-blue-50 text-primary rounded-lg">
+                      {categoryIcon}
+                    </div>
+                    <span className="text-xs font-semibold text-blue-600">{item.categoryLabel}</span>
+                  </div>
+                  <p className="text-gray-800 text-sm leading-relaxed whitespace-pre-wrap line-clamp-3">
+                    {item.text}
+                  </p>
+                  
+                  {/* Decorative corner */}
+                  <div className="absolute -top-1 -right-1 w-8 h-8 bg-primary/5 rounded-tr-2xl rounded-bl-3xl -z-10 group-hover:scale-110 transition-transform"></div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Starting point indicator */}
+      <div className="mt-16 text-center">
+        <div className="inline-flex flex-col items-center">
+          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
+            <MapPin size={20} />
+          </div>
+          <p className="text-xs font-bold text-gray-400 tracking-widest uppercase">커리어 여정 시작</p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const PersonaCard = ({ persona, onUpdate }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -512,11 +610,13 @@ function App() {
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
               {activePage === 'dashboard' && '안녕하세요, 사용자님! 👋'}
+              {activePage === 'timeline' && '성장 타임라인 📅'}
               {activePage === 'history' && '히스토리 🕒'}
               {activePage === 'settings' && '설정 ⚙️'}
             </h1>
             <p className="text-gray-500 text-sm md:text-lg">
               {activePage === 'dashboard' && '어떤 성취를 기록하고 싶으신가요? ProLog가 당신의 경험을 빛나는 콘텐츠로 만들어드립니다.'}
+              {activePage === 'timeline' && '시간의 흐름에 따른 당신의 눈부신 성취를 확인하세요.'}
               {activePage === 'history' && '지금까지 생성한 기록들을 모아보세요.'}
               {activePage === 'settings' && '계정 및 알림 설정을 관리하세요.'}
             </p>
@@ -808,6 +908,10 @@ function App() {
               
             </div>
           </>
+        )}
+
+        {activePage === 'timeline' && (
+          <TimelineView history={history} categories={categories} />
         )}
 
         {activePage === 'history' && (
