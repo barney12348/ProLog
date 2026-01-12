@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  LayoutDashboard, 
-  History, 
-  Settings, 
-  UploadCloud, 
-  CheckCircle, 
-  Loader2, 
-  Copy, 
+import {
+  LayoutDashboard,
+  History,
+  Settings,
+  UploadCloud,
+  CheckCircle,
+  Loader2,
+  Copy,
   Sparkles,
   Instagram,
   FileText,
@@ -31,6 +31,20 @@ function cn(...inputs) {
 }
 
 // --- Components ---
+
+const SidebarItem = ({ icon, label, active }) => (
+  <button 
+    className={cn(
+      "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors",
+      active 
+        ? "bg-primary/10 text-primary" 
+        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+    )}
+  >
+    {icon}
+    {label}
+  </button>
+);
 
 const Sidebar = () => (
   <aside className="w-64 bg-white border-r border-gray-200 h-screen flex flex-col fixed left-0 top-0 z-10 hidden md:flex">
@@ -59,18 +73,11 @@ const Sidebar = () => (
   </aside>
 );
 
-const SidebarItem = ({ icon, label, active }) => (
-  <button 
-    className={cn(
-      "w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors",
-      active 
-        ? "bg-primary/10 text-primary" 
-        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-    )}
-  >
+const Badge = ({ icon, label }) => (
+  <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-primary text-sm font-medium rounded-full border border-blue-100">
     {icon}
-    {label}
-  </button>
+    <span>{label}</span>
+  </div>
 );
 
 const PersonaCard = ({ persona, onUpdate }) => {
@@ -150,13 +157,6 @@ const PersonaCard = ({ persona, onUpdate }) => {
   );
 };
 
-const Badge = ({ icon, label }) => (
-  <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-primary text-sm font-medium rounded-full border border-blue-100">
-    {icon}
-    <span>{label}</span>
-  </div>
-);
-
 // --- Main App ---
 
 function App() {
@@ -175,6 +175,25 @@ function App() {
     major: '컴퓨터공학',
     jobGoal: '서비스 기획자'
   });
+
+  const platforms = [
+    { id: 'instagram', label: '인스타그램', icon: <Instagram size={18} /> },
+    { id: 'blog', label: '블로그', icon: <FileText size={18} /> },
+    { id: 'linkedin', label: '링크드인', icon: <Linkedin size={18} /> },
+  ];
+
+  const categories = [
+    { id: 'award', label: '수상/상장', icon: <Award size={16} /> },
+    { id: 'certificate', label: '자격증', icon: <ScrollText size={16} /> },
+    { id: 'activity', label: '대외활동', icon: <Camera size={16} /> },
+    { id: 'project', label: '인턴/실무', icon: <Briefcase size={16} /> },
+  ];
+
+  const tones = [
+    { id: 'emotional', label: '감성적인 🌿' },
+    { id: 'professional', label: '전문적인 💼' },
+    { id: 'witty', label: '유쾌한 ⚡' },
+  ];
 
   const handleFile = (file) => {
     if (!file) return;
