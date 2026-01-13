@@ -13,6 +13,7 @@ import {
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+// Define local cn utility to avoid import errors
 function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
