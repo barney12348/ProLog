@@ -37,6 +37,7 @@ import { twMerge } from 'tailwind-merge';
 import { toPng } from 'html-to-image';
 import download from 'downloadjs';
 import ImageResizer from './components/ImageResizer';
+import DexView from './components/DexView';
 
 // Utility for class merging
 function cn(...inputs) {
@@ -81,6 +82,12 @@ const Sidebar = ({ activePage, onNavigate, darkMode, toggleDarkMode }) => (
         label="대시보드" 
         active={activePage === 'dashboard'} 
         onClick={() => onNavigate('dashboard')}
+      />
+      <SidebarItem 
+        icon={<Award size={20} />} 
+        label="자격증 도감" 
+        active={activePage === 'dex'}
+        onClick={() => onNavigate('dex')}
       />
       <SidebarItem 
         icon={<TrendingUp size={20} />} 
@@ -134,6 +141,16 @@ const BottomNav = ({ activePage, onNavigate }) => (
     >
       <LayoutDashboard size={24} className={activePage === 'dashboard' ? "fill-primary/20" : ""} />
       <span className="text-[10px] font-bold">홈</span>
+    </button>
+    <button 
+      onClick={() => onNavigate('dex')}
+      className={cn(
+        "flex flex-col items-center gap-1 p-3 rounded-2xl min-w-[64px] transition-all duration-200 active:scale-95",
+        activePage === 'dex' ? "text-primary dark:text-accent bg-primary/5 dark:bg-primary/10" : "text-gray-400 dark:text-gray-500"
+      )}
+    >
+      <Award size={24} />
+      <span className="text-[10px] font-medium">도감</span>
     </button>
     <button 
       onClick={() => onNavigate('timeline')}
@@ -708,6 +725,16 @@ function App() {
   const [history, setHistory] = useState([]);
   const [darkMode, setDarkMode] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(true);
+  const [certificates, setCertificates] = useState([
+    { id: 1, name: '정보처리기사', issuer: '한국산업인력공단', type: 'tech', status: 'acquired', icon: '💻' },
+    { id: 2, name: 'SQLD', issuer: '한국데이터산업진흥원', type: 'special', status: 'pending', icon: '💾' },
+    { id: 3, name: 'AWS SAA', issuer: 'AWS', type: 'global', status: 'locked', icon: '☁️' },
+    { id: 4, name: 'ADsP', issuer: '한국데이터산업진흥원', type: 'special', status: 'locked', icon: '📊' },
+    { id: 5, name: '토익 (TOEIC)', issuer: 'ETS', type: 'language', status: 'locked', icon: '🅰️' },
+    { id: 6, name: 'OPIC', issuer: 'ACTFL', type: 'language', status: 'locked', icon: '🗣️' },
+    { id: 7, name: '컴퓨터활용능력 1급', issuer: '대한상공회의소', type: 'tech', status: 'acquired', icon: '📑' },
+    { id: 8, name: '리눅스마스터 2급', issuer: 'KAIT', type: 'special', status: 'locked', icon: '🐧' },
+  ]);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -725,23 +752,6 @@ function App() {
     }
     localStorage.setItem('prolog_dark_mode', darkMode);
   }, [darkMode]);
-  
-  const [persona, setPersona] = useState({
-    university: '서울대학교',
-    major: '컴퓨터공학',
-    jobGoal: '서비스 기획자'
-  });
-
-  useEffect(() => {
-    const savedHistory = localStorage.getItem('prolog_history');
-    if (savedHistory) {
-      setHistory(JSON.parse(savedHistory));
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('prolog_history', JSON.stringify(history));
-  }, [history]);
 
   const handleSaveToHistory = () => {
     if (!resultText) return;
@@ -887,6 +897,7 @@ function App() {
           <div>
             <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">
               {activePage === 'dashboard' && '안녕하세요, 사용자님! 👋'}
+              {activePage === 'dex' && '나의 자격증 도감 🏆'}
               {activePage === 'timeline' && '성장 타임라인 📅'}
               {activePage === 'stats' && '활동 통계 📊'}
               {activePage === 'history' && '히스토리 🕒'}
@@ -894,6 +905,7 @@ function App() {
             </h1>
             <p className="text-gray-500 dark:text-gray-400 text-sm md:text-lg font-medium leading-relaxed max-w-2xl">
               {activePage === 'dashboard' && '오늘의 성취를 기록하고, 나만의 커리어 스토리를 완성하세요.'}
+              {activePage === 'dex' && '보유한 자격증을 인증하고 도감을 완성해보세요.'}
               {activePage === 'timeline' && '시간의 흐름에 따른 당신의 눈부신 성취를 확인하세요.'}
               {activePage === 'stats' && '데이터로 보는 나의 커리어 강점과 활동 패턴입니다.'}
               {activePage === 'history' && '차곡차곡 쌓인 당신의 모든 기록을 한눈에.'}
@@ -1275,6 +1287,24 @@ function App() {
               
             </div>
           </div>
+        )}
+
+        {activePage === 'dex' && (
+          <DexView 
+            certificates={certificates} 
+            onCertClick={(cert) => {
+              if (cert.status === 'locked') {
+                if (window.confirm(`${cert.name} 자격증을 인증하시겠습니까? (증빙 서류 업로드)`)) {
+                   // Mock process
+                   const newCerts = certificates.map(c => 
+                     c.id === cert.id ? { ...c, status: 'pending' } : c
+                   );
+                   setCertificates(newCerts);
+                   alert('인증 요청이 접수되었습니다! (관리자 승인 대기 중)');
+                }
+              }
+            }} 
+          />
         )}
 
         {activePage === 'timeline' && (
