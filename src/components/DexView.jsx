@@ -10,8 +10,6 @@ import {
   Globe, 
   BookOpen 
 } from 'lucide-react';
-import { cn } from '../utils/cn'; // Assuming you might move cn utility later, but I'll define local if needed or use from App. In this setup, I'll assume props or local definition. 
-// For this standalone file, I will import clsx/tailwind-merge directly to ensure it works.
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 

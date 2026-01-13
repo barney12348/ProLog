@@ -75,7 +75,7 @@ const Sidebar = ({ activePage, onNavigate, darkMode, toggleDarkMode }) => (
       </div>
     </div>
     
-    <nav className="flex-1 px-6 space-y-2 mt-8">
+    <nav className="flex-1 px-6 space-y-2 mt-8 overflow-y-auto custom-scrollbar">
       <p className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Menu</p>
       <SidebarItem 
         icon={<LayoutDashboard size={20} />} 
