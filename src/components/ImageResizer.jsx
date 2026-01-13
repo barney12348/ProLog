@@ -8,7 +8,8 @@ import {
   Layout, 
   Maximize2,
   Image as ImageIcon,
-  Columns
+  Minimize2,
+  Scaling
 } from 'lucide-react';
 
 const ASPECT_RATIOS = [
@@ -32,10 +33,10 @@ const BACKGROUND_COLORS = [
 
 const ImageResizer = ({ imageSrc, onSave, onCancel }) => {
   const [selectedRatio, setSelectedRatio] = useState('square');
+  const [fitMode, setFitMode] = useState('contain'); // 'contain' (여백) or 'cover' (채우기)
   const [bgColor, setBgColor] = useState('#ffffff');
   const [padding, setPadding] = useState(0); // For "border" effect
   const canvasRef = useRef(null);
-  const [previewUrl, setPreviewUrl] = useState(null);
 
   // Draw the image onto the canvas whenever dependencies change
   useEffect(() => {
@@ -73,41 +74,53 @@ const ImageResizer = ({ imageSrc, onSave, onCancel }) => {
       ctx.fillStyle = bgColor;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // 3. Draw Image (Fit Center)
-      // Calculate scaled dimensions to fit within canvas minus padding
+      // 3. Draw Image
+      // Calculate scaled dimensions to fit/cover within canvas minus padding
       const availableWidth = targetWidth - (padding * 2);
       const availableHeight = targetHeight - (padding * 2);
 
-      const scale = Math.min(
-        availableWidth / img.width,
-        availableHeight / img.height
-      );
+      let scale;
+      if (fitMode === 'cover') {
+        // Cover: Resize to fill the entire area (crop excess)
+        scale = Math.max(availableWidth / img.width, availableHeight / img.height);
+      } else {
+        // Contain: Resize to see the whole image (add letterbox)
+        scale = Math.min(availableWidth / img.width, availableHeight / img.height);
+      }
 
       const drawWidth = img.width * scale;
       const drawHeight = img.height * scale;
 
-      const x = (targetWidth - drawWidth) / 2;
-      const y = (targetHeight - drawHeight) / 2;
+      // Center the image in the available area + padding offset
+      const x = (availableWidth - drawWidth) / 2 + padding;
+      const y = (availableHeight - drawHeight) / 2 + padding;
 
-      // Optional: Shadow effect behind image if there's padding/background visible
-      if (scale < 1 || padding > 0) {
+      // Optional: Shadow effect behind image if using "contain" mode with visible background
+      if (fitMode === 'contain' && (scale < 1 || padding > 0)) {
         ctx.shadowColor = "rgba(0, 0, 0, 0.1)";
         ctx.shadowBlur = 20;
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 10;
       }
 
+      // Save context to clip for padding if needed (ensures image doesn't bleed out of padding area in cover mode)
+      ctx.save();
+      if (padding > 0) {
+        ctx.beginPath();
+        ctx.rect(padding, padding, availableWidth, availableHeight);
+        ctx.clip();
+      }
+
       ctx.drawImage(img, x, y, drawWidth, drawHeight);
+      ctx.restore();
       
-      // Reset shadow
+      // Reset shadow for future draws
       ctx.shadowColor = "transparent";
-      
-      // Update preview URL for simple display if needed, but we rely on canvas being visible
     };
 
     img.src = imageSrc;
 
-  }, [imageSrc, selectedRatio, bgColor, padding]);
+  }, [imageSrc, selectedRatio, fitMode, bgColor, padding]);
 
   const handleSave = () => {
     if (canvasRef.current) {
@@ -122,7 +135,7 @@ const ImageResizer = ({ imageSrc, onSave, onCancel }) => {
         
         {/* Left: Canvas Preview Area */}
         <div className="flex-1 bg-gray-100 relative flex items-center justify-center p-8 overflow-hidden">
-           {/* Checkerboard pattern for transparency indication (though we fill bg) */}
+           {/* Checkerboard pattern */}
            <div className="absolute inset-0 opacity-5 pointer-events-none" 
                 style={{ 
                     backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', 
@@ -170,7 +183,32 @@ const ImageResizer = ({ imageSrc, onSave, onCancel }) => {
               </div>
             </div>
 
-            {/* 2. Background Color */}
+            {/* 2. Fit Mode (Contain vs Cover) - NEW FEATURE */}
+            <div>
+               <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 block">채우기 모드</label>
+               <div className="flex bg-gray-50 p-1 rounded-xl border border-gray-100">
+                  <button 
+                     onClick={() => setFitMode('contain')}
+                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold transition-all ${
+                        fitMode === 'contain' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-400 hover:text-gray-600'
+                     }`}
+                  >
+                     <Minimize2 size={14} />
+                     전체 보기 (Fit)
+                  </button>
+                  <button 
+                     onClick={() => setFitMode('cover')}
+                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-bold transition-all ${
+                        fitMode === 'cover' ? 'bg-white text-primary shadow-sm' : 'text-gray-400 hover:text-gray-600'
+                     }`}
+                  >
+                     <Scaling size={14} />
+                     꽉 채우기 (Fill)
+                  </button>
+               </div>
+            </div>
+
+            {/* 3. Background Color */}
             <div>
               <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 block">배경 색상</label>
               <div className="flex flex-wrap gap-3">
@@ -188,7 +226,7 @@ const ImageResizer = ({ imageSrc, onSave, onCancel }) => {
               </div>
             </div>
 
-            {/* 3. Padding/Border Slider */}
+            {/* 4. Padding/Border Slider */}
             <div>
               <div className="flex justify-between items-center mb-3">
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">여백 (Padding)</label>
@@ -217,7 +255,7 @@ const ImageResizer = ({ imageSrc, onSave, onCancel }) => {
               편집 완료 & 적용
             </button>
             <p className="text-center text-xs text-gray-400">
-              이미지가 선택한 비율에 맞춰 자동으로 리사이징됩니다.
+              {fitMode === 'contain' ? '이미지 전체가 보이도록 여백을 추가합니다.' : '이미지를 확대하여 화면을 꽉 채웁니다 (잘림 발생).'}
             </p>
           </div>
         </div>
