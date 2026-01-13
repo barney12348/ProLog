@@ -34,6 +34,7 @@ import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { toPng } from 'html-to-image';
 import download from 'downloadjs';
+import ImageResizer from './components/ImageResizer';
 
 // Utility for class merging
 function cn(...inputs) {
@@ -691,6 +692,7 @@ function App() {
   const [resultMode, setResultMode] = useState('text'); // text, card
   const [resultText, setResultText] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
+  const [showResizer, setShowResizer] = useState(false);
   const [history, setHistory] = useState([]);
   const fileInputRef = useRef(null);
   
@@ -1036,12 +1038,26 @@ function App() {
                           <p className="text-white text-sm font-bold">이미지 변경하기</p>
                         </div>
                       </div>
-                      <button 
-                        onClick={resetUpload}
-                        className="absolute top-4 right-4 w-9 h-9 bg-white/90 hover:bg-white text-gray-900 rounded-full flex items-center justify-center shadow-lg z-20 transition-transform hover:scale-110 active:scale-95"
-                      >
-                        <X size={18} />
-                      </button>
+                      
+                      {/* Action Buttons */}
+                      <div className="absolute top-4 right-4 flex gap-2 z-20">
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowResizer(true);
+                          }}
+                          className="w-9 h-9 bg-white/90 hover:bg-white text-primary rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
+                          title="이미지 편집 (리사이징)"
+                        >
+                          <Pencil size={16} />
+                        </button>
+                        <button 
+                          onClick={resetUpload}
+                          className="w-9 h-9 bg-white/90 hover:bg-white text-gray-900 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
+                        >
+                          <X size={18} />
+                        </button>
+                      </div>
                     </>
                   )}
                 </div>
@@ -1239,6 +1255,17 @@ function App() {
           </div>
         </footer>
       </main>
+
+      {showResizer && (
+        <ImageResizer 
+          imageSrc={selectedImage}
+          onSave={(newImage) => {
+            setSelectedImage(newImage);
+            setShowResizer(false);
+          }}
+          onCancel={() => setShowResizer(false)}
+        />
+      )}
 
       <BottomNav activePage={activePage} onNavigate={setActivePage} />
     </div>
