@@ -4,11 +4,7 @@ import {
   CheckCircle, 
   Clock, 
   Search, 
-  Filter, 
-  Award, 
-  ShieldCheck, 
-  Globe, 
-  BookOpen 
+  Award
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -41,7 +37,7 @@ const DexView = ({ certificates, onCertClick }) => {
   // 2. Stats Calculation
   const totalCount = certificates.length;
   const acquiredCount = certificates.filter(c => c.status === 'acquired').length;
-  const progressPercentage = Math.round((acquiredCount / totalCount) * 100);
+  const progressPercentage = totalCount > 0 ? Math.round((acquiredCount / totalCount) * 100) : 0;
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
