@@ -725,6 +725,11 @@ function App() {
   const [history, setHistory] = useState([]);
   const [darkMode, setDarkMode] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(true);
+  const [persona, setPersona] = useState({
+    university: '서울대학교',
+    major: '컴퓨터공학',
+    jobGoal: '서비스 기획자'
+  });
   const [certificates, setCertificates] = useState([
     { id: 1, name: '정보처리기사', issuer: '한국산업인력공단', type: 'tech', status: 'acquired', icon: '💻' },
     { id: 2, name: 'SQLD', issuer: '한국데이터산업진흥원', type: 'special', status: 'pending', icon: '💾' },
