@@ -36,9 +36,9 @@ import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { toPng } from 'html-to-image';
 import download from 'downloadjs';
-import ImageResizer from './components/ImageResizer';
-import DexView from './components/DexView';
-import { getCertIcon } from './utils/certUtils';
+import ImageResizer from './components/ImageResizer.jsx';
+import DexView from './components/DexView.jsx';
+import { getCertIcon } from './utils/certUtils.js';
 
 // Utility for class merging
 function cn(...inputs) {
@@ -755,7 +755,13 @@ function App() {
   useEffect(() => {
     const fetchCertificates = async () => {
       try {
-        const response = await fetch(`${import.meta.env.BASE_URL}data/certificates.json`);
+        const fetchUrl = `${import.meta.env.BASE_URL}data/certificates.json`;
+        console.log('Fetching certificates from:', fetchUrl);
+        
+        const response = await fetch(fetchUrl);
+        if (!response.ok) {
+           throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         
         // Load saved statuses from localStorage
@@ -781,6 +787,8 @@ function App() {
         setCertificates(initialCerts);
       } catch (error) {
         console.error('Failed to load certificates:', error);
+        // Fallback: If fetch fails, we could load a minimal set or just show empty state.
+        // For now, allow it to be empty but log clearly.
       }
     };
 
