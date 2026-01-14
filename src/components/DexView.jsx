@@ -27,13 +27,15 @@ const DexView = ({ certificates, onCertClick }) => {
   const [selectedIssuer, setSelectedIssuer] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
 
-  // 0. Extract Unique Issuers for 'tech' category
-  const techIssuers = ['all', ...new Set(certificates.filter(c => c.type === 'tech').map(c => c.issuer))];
+  // 0. Extract Unique Issuers for current active tab (if not 'all')
+  const currentIssuers = activeTab === 'all' 
+    ? [] 
+    : ['all', ...new Set(certificates.filter(c => c.type === activeTab).map(c => c.issuer))];
 
   // 1. Filter Logic
   const filteredCerts = certificates.filter(cert => {
     const matchesTab = activeTab === 'all' || cert.type === activeTab;
-    const matchesIssuer = activeTab !== 'tech' || selectedIssuer === 'all' || cert.issuer === selectedIssuer;
+    const matchesIssuer = activeTab === 'all' || selectedIssuer === 'all' || cert.issuer === selectedIssuer;
     const matchesSearch = cert.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           cert.issuer.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesTab && matchesIssuer && matchesSearch;
@@ -41,7 +43,7 @@ const DexView = ({ certificates, onCertClick }) => {
 
   // Reset issuer filter when changing tabs
   React.useEffect(() => {
-    if (activeTab !== 'tech') setSelectedIssuer('all');
+    setSelectedIssuer('all');
   }, [activeTab]);
 
   // 2. Stats Calculation
