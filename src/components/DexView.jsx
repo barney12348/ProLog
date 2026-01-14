@@ -17,6 +17,7 @@ function cn(...inputs) {
 
 const CATEGORY_TABS = [
   { id: 'all', label: '전체' },
+  { id: 'acquired', label: '✅ 보유 중' },
   { id: 'wishlist', label: '⭐️ 목표' },
   { id: 'tech', label: '국가기술' },
   { id: 'special', label: '국가전문' },
@@ -33,6 +34,7 @@ const DexView = ({ certificates, wishlist = [], onToggleWishlist, onCertClick })
   const currentIssuers = ['all', ...new Set(
     (activeTab === 'all' ? certificates : 
      activeTab === 'wishlist' ? certificates.filter(c => wishlist.includes(c.id)) :
+     activeTab === 'acquired' ? certificates.filter(c => c.status === 'acquired') :
      certificates.filter(c => c.type === activeTab))
     .map(c => c.issuer)
     .filter(Boolean)
@@ -41,9 +43,10 @@ const DexView = ({ certificates, wishlist = [], onToggleWishlist, onCertClick })
   // 1. Filter Logic
   const filteredCerts = certificates.filter(cert => {
     const isWishlisted = wishlist.includes(cert.id);
-    const matchesTab = activeTab === 'wishlist' 
-      ? isWishlisted 
-      : (activeTab === 'all' || cert.type === activeTab);
+    const matchesTab = 
+      activeTab === 'wishlist' ? isWishlisted :
+      activeTab === 'acquired' ? cert.status === 'acquired' :
+      (activeTab === 'all' || cert.type === activeTab);
     const matchesIssuer = selectedIssuer === 'all' || cert.issuer === selectedIssuer;
     const matchesSearch = cert.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           cert.issuer.toLowerCase().includes(searchTerm.toLowerCase());
@@ -122,6 +125,11 @@ const DexView = ({ certificates, wishlist = [], onToggleWishlist, onCertClick })
                   {wishlistCount}
                 </span>
               )}
+              {tab.id === 'acquired' && acquiredCount > 0 && (
+                <span className="bg-blue-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center">
+                  {acquiredCount}
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -155,9 +163,17 @@ const DexView = ({ certificates, wishlist = [], onToggleWishlist, onCertClick })
 
       {/* 3. Certificate Grid */}
       {filteredCerts.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 bg-gray-50/50 dark:bg-gray-900/20 rounded-3xl border border-dashed border-gray-200 dark:border-gray-800">
-           <Star size={48} className="text-gray-200 dark:text-gray-800 mb-4" />
-           <p className="text-gray-400 font-medium">표시할 자격증이 없습니다.</p>
+        <div className="flex flex-col items-center justify-center py-20 bg-gray-50/50 dark:bg-gray-900/20 rounded-3xl border border-dashed border-gray-200 dark:border-gray-800 animate-in fade-in zoom-in-95 duration-300">
+           <div className="text-gray-200 dark:text-gray-800 mb-4">
+              {activeTab === 'acquired' ? <Award size={48} /> : 
+               activeTab === 'wishlist' ? <Star size={48} /> : 
+               <Search size={48} />}
+           </div>
+           <p className="text-gray-400 font-medium text-center px-6">
+             {activeTab === 'acquired' ? '아직 획득한 자격증이 없습니다.\n자격증을 클릭하여 첫 인증을 시작해보세요!' :
+              activeTab === 'wishlist' ? '목표로 설정한 자격증이 없습니다.\n관심 있는 자격증에 별표를 눌러보세요.' :
+              '검색 결과와 일치하는 자격증이 없습니다.'}
+           </p>
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">

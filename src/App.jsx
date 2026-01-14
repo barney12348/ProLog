@@ -758,23 +758,27 @@ function App() {
         const response = await fetch(`${import.meta.env.BASE_URL}data/certificates.json`);
         const data = await response.json();
         
+        // Load saved statuses from localStorage
+        const savedStatuses = JSON.parse(localStorage.getItem('prolog_cert_statuses') || '{}');
+        
         const initialCerts = data.map(cert => ({
           ...cert,
-          status: 'locked',
+          status: savedStatuses[cert.id] || 'locked',
           icon: getCertIcon(cert)
         }));
 
-        // Mock: Set some as 'acquired' or 'pending' for demo purposes
-        const demoAcquiredIds = ['it_003', 'it_009', 'cook_002']; // 정보처리기사, 컴활1급, 한식조리
-        const demoPendingIds = ['elec_006', 'biz_009']; // 전기기사, 공인중개사
+        // Mock: Set some demo data ONLY IF no saved data exists
+        if (Object.keys(savedStatuses).length === 0) {
+          const demoAcquiredIds = ['it_003', 'it_009', 'cook_002'];
+          const demoPendingIds = ['elec_006', 'biz_009'];
 
-        const processedCerts = initialCerts.map(cert => {
-          if (demoAcquiredIds.includes(cert.id)) return { ...cert, status: 'acquired' };
-          if (demoPendingIds.includes(cert.id)) return { ...cert, status: 'pending' };
-          return cert;
-        });
+          initialCerts.forEach(cert => {
+            if (demoAcquiredIds.includes(cert.id)) cert.status = 'acquired';
+            else if (demoPendingIds.includes(cert.id)) cert.status = 'pending';
+          });
+        }
 
-        setCertificates(processedCerts);
+        setCertificates(initialCerts);
       } catch (error) {
         console.error('Failed to load certificates:', error);
       }
@@ -782,6 +786,17 @@ function App() {
 
     fetchCertificates();
   }, []);
+
+  // Save certificate statuses to localStorage whenever they change
+  useEffect(() => {
+    if (certificates.length > 0) {
+      const statuses = certificates.reduce((acc, cert) => {
+        acc[cert.id] = cert.status;
+        return acc;
+      }, {});
+      localStorage.setItem('prolog_cert_statuses', JSON.stringify(statuses));
+    }
+  }, [certificates]);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -1347,14 +1362,25 @@ function App() {
             }}
             onCertClick={(cert) => {
               if (cert.status === 'locked') {
-                if (window.confirm(`${cert.name} 자격증을 인증하시겠습니까? (증빙 서류 업로드)`)) {
-                   // Mock process
+                if (window.confirm(`'${cert.name}' 자격증을 보유 중이신가요? 인증(이미지 업로드)을 시작합니다.`)) {
+                   // Step 1: Set to pending
                    const newCerts = certificates.map(c => 
                      c.id === cert.id ? { ...c, status: 'pending' } : c
                    );
                    setCertificates(newCerts);
-                   alert('인증 요청이 접수되었습니다! (관리자 승인 대기 중)');
+                   
+                   // Step 2: Simulate AI/Admin Approval for demo
+                   setTimeout(() => {
+                     setCertificates(currentCerts => 
+                       currentCerts.map(c => 
+                         c.id === cert.id ? { ...c, status: 'acquired' } : c
+                       )
+                     );
+                     alert(`🎉 축하합니다! '${cert.name}' 자격증이 도감에 등록되었습니다.`);
+                   }, 3000);
                 }
+              } else if (cert.status === 'acquired') {
+                alert(`이미 획득한 자격증입니다! (${cert.issuer})`);
               }
             }} 
           />
