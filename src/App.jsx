@@ -739,6 +739,16 @@ function App() {
     jobGoal: '서비스 기획자'
   });
   
+  // Wishlist state for certificates
+  const [wishlist, setWishlist] = useState(() => {
+    const saved = localStorage.getItem('prolog_wishlist');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('prolog_wishlist', JSON.stringify(wishlist));
+  }, [wishlist]);
+
   // Initialize certificates from data file
   const [certificates, setCertificates] = useState([]);
 
@@ -1329,6 +1339,12 @@ function App() {
         {activePage === 'dex' && (
           <DexView 
             certificates={certificates} 
+            wishlist={wishlist}
+            onToggleWishlist={(id) => {
+              setWishlist(prev => 
+                prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+              );
+            }}
             onCertClick={(cert) => {
               if (cert.status === 'locked') {
                 if (window.confirm(`${cert.name} 자격증을 인증하시겠습니까? (증빙 서류 업로드)`)) {
