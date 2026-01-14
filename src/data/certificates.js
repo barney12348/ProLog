@@ -1,151 +1,401 @@
-// 국가기술자격 및 국가전문자격 데이터베이스
+// 국가기술자격 및 국가전문자격 데이터베이스 (2025년 기준)
 // 분류(type): tech(국가기술), special(국가전문), global(해외/국제), language(어학)
 
 export const ALL_CERTIFICATES = [
-  // === IT / 정보통신 ===
-  { id: 'tech_001', name: '정보처리기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['컴퓨터', 'IT', '소프트웨어'] },
-  { id: 'tech_002', name: '정보처리산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['컴퓨터', 'IT'] },
-  { id: 'tech_003', name: '정보처리기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['컴퓨터', 'IT'] },
-  { id: 'tech_004', name: '정보보안기사', type: 'tech', issuer: 'KISA', keywords: ['보안', '해킹'] },
-  { id: 'tech_005', name: '정보보안산업기사', type: 'tech', issuer: 'KISA', keywords: ['보안'] },
-  { id: 'tech_006', name: '빅데이터분석기사', type: 'tech', issuer: '한국데이터산업진흥원', keywords: ['데이터', '분석'] },
-  { id: 'tech_007', name: '사무자동화산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['사무', '엑셀'] },
-  { id: 'tech_008', name: '컴퓨터활용능력 1급', type: 'tech', issuer: '대한상공회의소', keywords: ['엑셀', '데이터베이스'] },
-  { id: 'tech_009', name: '컴퓨터활용능력 2급', type: 'tech', issuer: '대한상공회의소', keywords: ['엑셀'] },
-  { id: 'tech_010', name: '워드프로세서', type: 'tech', issuer: '대한상공회의소', keywords: ['문서'] },
-  { id: 'tech_011', name: '전자계산기조직응용기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['하드웨어'] },
-  { id: 'tech_012', name: '정보통신기사', type: 'tech', issuer: '한국방송통신전파진흥원', keywords: ['통신', '네트워크'] },
-  { id: 'tech_013', name: '무선설비기사', type: 'tech', issuer: '한국방송통신전파진흥원', keywords: ['통신', '무선'] },
+  // ==========================================
+  // [1] 정보기술(IT) / 통신
+  // ==========================================
+  { id: 'it_001', name: '정보관리기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['IT', '기술사'] },
+  { id: 'it_002', name: '컴퓨터시스템응용기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['IT', '하드웨어'] },
+  { id: 'it_003', name: '정보처리기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['소프트웨어', '개발'] },
+  { id: 'it_004', name: '정보처리산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['소프트웨어'] },
+  { id: 'it_005', name: '정보보안기사', type: 'tech', issuer: 'KISA', keywords: ['보안', '해킹'] },
+  { id: 'it_006', name: '정보보안산업기사', type: 'tech', issuer: 'KISA', keywords: ['보안'] },
+  { id: 'it_007', name: '빅데이터분석기사', type: 'tech', issuer: '한국데이터산업진흥원', keywords: ['데이터', 'AI'] },
+  { id: 'it_008', name: '사무자동화산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['OA', '엑셀'] },
+  { id: 'it_009', name: '컴퓨터활용능력 1급', type: 'tech', issuer: '대한상공회의소', keywords: ['엑셀', '데이터베이스'] },
+  { id: 'it_010', name: '컴퓨터활용능력 2급', type: 'tech', issuer: '대한상공회의소', keywords: ['엑셀'] },
+  { id: 'it_011', name: '워드프로세서', type: 'tech', issuer: '대한상공회의소', keywords: ['문서'] },
+  { id: 'it_012', name: '정보통신기사', type: 'tech', issuer: '한국방송통신전파진흥원', keywords: ['네트워크', '통신'] },
+  { id: 'it_013', name: '무선설비기사', type: 'tech', issuer: '한국방송통신전파진흥원', keywords: ['무선', '통신'] },
+  { id: 'it_014', name: '전파전자통신기사', type: 'tech', issuer: '한국방송통신전파진흥원', keywords: ['전파', '통신'] },
+  { id: 'it_015', name: '방송통신기사', type: 'tech', issuer: '한국방송통신전파진흥원', keywords: ['방송', '통신'] },
+  { id: 'it_016', name: '정보통신산업기사', type: 'tech', issuer: '한국방송통신전파진흥원', keywords: ['네트워크'] },
+  { id: 'it_017', name: '정보처리기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['IT', '코딩'] }, // 2025 개편 예정
+  { id: 'it_018', name: '정보기기운용기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['IT', '운영'] },
+  { id: 'it_019', name: '웹디자인기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['웹', '디자인'] },
+  { id: 'it_020', name: '컴퓨터그래픽스운용기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['디자인', '그래픽'] },
+  { id: 'it_021', name: '멀티미디어콘텐츠제작전문가', type: 'tech', issuer: '한국산업인력공단', keywords: ['영상', '콘텐츠'] },
+  { id: 'it_022', name: '게임그래픽전문가', type: 'tech', issuer: 'KOCCA', keywords: ['게임', '그래픽'] },
+  { id: 'it_023', name: '게임기획전문가', type: 'tech', issuer: 'KOCCA', keywords: ['게임', '기획'] },
+  { id: 'it_024', name: '게임프로그래밍전문가', type: 'tech', issuer: 'KOCCA', keywords: ['게임', '개발'] },
+  { id: 'it_025', name: '전자계산기조직응용기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['하드웨어'] },
 
-  // === 전기 / 전자 ===
-  { id: 'tech_101', name: '전기기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['전기', '공사'] },
-  { id: 'tech_102', name: '전기산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['전기'] },
-  { id: 'tech_103', name: '전기공사기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['전기', '공사'] },
-  { id: 'tech_104', name: '전기기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['전기'] },
-  { id: 'tech_105', name: '소방설비기사(전기)', type: 'tech', issuer: '한국산업인력공단', keywords: ['소방', '전기'] },
-  { id: 'tech_106', name: '전자기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['전자', '회로'] },
-  { id: 'tech_107', name: '승강기기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['기계', '안전'] },
+  // ==========================================
+  // [2] 전기 / 전자
+  // ==========================================
+  { id: 'elec_001', name: '건축전기설비기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['전기', '건축'] },
+  { id: 'elec_002', name: '발송배전기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['전기', '발전'] },
+  { id: 'elec_003', name: '전기응용기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['전기'] },
+  { id: 'elec_004', name: '전기철도기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['철도', '전기'] },
+  { id: 'elec_005', name: '전기기능장', type: 'tech', issuer: '한국산업인력공단', keywords: ['전기'] },
+  { id: 'elec_006', name: '전기기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['전기'] },
+  { id: 'elec_007', name: '전기공사기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['전기', '공사'] },
+  { id: 'elec_008', name: '전기산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['전기'] },
+  { id: 'elec_009', name: '전기공사산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['전기'] },
+  { id: 'elec_010', name: '전기철도기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['철도'] },
+  { id: 'elec_011', name: '철도신호기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['철도', '신호'] },
+  { id: 'elec_012', name: '전기기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['전기'] },
+  { id: 'elec_013', name: '철도전기신호기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['철도'] },
+  { id: 'elec_014', name: '전자기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['전자'] },
+  { id: 'elec_015', name: '전자산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['전자'] },
+  { id: 'elec_016', name: '전자기기기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['전자', '기기'] },
+  { id: 'elec_017', name: '전자계산기기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['전자'] },
+  { id: 'elec_018', name: '전자캐드기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['CAD', '전자'] },
+  { id: 'elec_019', name: '광학기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['광학'] },
+  { id: 'elec_020', name: '반도체설계산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['반도체'] },
+  { id: 'elec_021', name: '3D프린터개발산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['3D프린터'] },
+  { id: 'elec_022', name: '3D프린터운용기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['3D프린터'] },
+  { id: 'elec_023', name: '로봇소프트웨어개발기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['로봇', '개발'] },
+  { id: 'elec_024', name: '로봇기구개발기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['로봇', '기구'] },
+  { id: 'elec_025', name: '로봇하드웨어개발기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['로봇', '하드웨어'] },
 
-  // === 안전 / 환경 / 에너지 ===
-  { id: 'tech_201', name: '산업안전기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['안전'] },
-  { id: 'tech_202', name: '산업안전산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['안전'] },
-  { id: 'tech_203', name: '건설안전기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['건설', '안전'] },
-  { id: 'tech_204', name: '위험물산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['화학', '안전'] },
-  { id: 'tech_205', name: '위험물기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['화학'] },
-  { id: 'tech_206', name: '대기환경기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['환경'] },
-  { id: 'tech_207', name: '수질환경기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['환경', '물'] },
-  { id: 'tech_208', name: '폐기물처리기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['환경'] },
-  { id: 'tech_209', name: '가스기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['가스', '에너지'] },
-  { id: 'tech_210', name: '에너지관리기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['에너지', '보일러'] },
-  { id: 'tech_211', name: '소방설비기사(기계)', type: 'tech', issuer: '한국산업인력공단', keywords: ['소방', '기계'] },
-  { id: 'tech_212', name: '산업위생관리기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['위생', '보건'] },
+  // ==========================================
+  // [3] 안전 / 소방 / 환경 / 에너지
+  // ==========================================
+  { id: 'safe_001', name: '가스기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['가스'] },
+  { id: 'safe_002', name: '건설안전기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['건설', '안전'] },
+  { id: 'safe_003', name: '기계안전기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['기계', '안전'] },
+  { id: 'safe_004', name: '산업위생관리기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['위생'] },
+  { id: 'safe_005', name: '소방기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['소방'] },
+  { id: 'safe_006', name: '인간공학기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['인간공학'] },
+  { id: 'safe_007', name: '전기안전기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['전기', '안전'] },
+  { id: 'safe_008', name: '화공안전기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['화학', '안전'] },
+  { id: 'safe_009', name: '가스기능장', type: 'tech', issuer: '한국산업인력공단', keywords: ['가스'] },
+  { id: 'safe_010', name: '위험물기능장', type: 'tech', issuer: '한국산업인력공단', keywords: ['위험물'] },
+  { id: 'safe_011', name: '산업안전기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['안전'] },
+  { id: 'safe_012', name: '산업안전산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['안전'] },
+  { id: 'safe_013', name: '건설안전기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['건설', '안전'] },
+  { id: 'safe_014', name: '건설안전산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['건설', '안전'] },
+  { id: 'safe_015', name: '소방설비기사(전기)', type: 'tech', issuer: '한국산업인력공단', keywords: ['소방', '전기'] },
+  { id: 'safe_016', name: '소방설비기사(기계)', type: 'tech', issuer: '한국산업인력공단', keywords: ['소방', '기계'] },
+  { id: 'safe_017', name: '소방설비산업기사(전기)', type: 'tech', issuer: '한국산업인력공단', keywords: ['소방'] },
+  { id: 'safe_018', name: '소방설비산업기사(기계)', type: 'tech', issuer: '한국산업인력공단', keywords: ['소방'] },
+  { id: 'safe_019', name: '산업위생관리기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['위생'] },
+  { id: 'safe_020', name: '인간공학기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['인간공학'] },
+  { id: 'safe_021', name: '가스기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['가스'] },
+  { id: 'safe_022', name: '가스산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['가스'] },
+  { id: 'safe_023', name: '가스기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['가스'] },
+  { id: 'safe_024', name: '위험물산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['위험물'] },
+  { id: 'safe_025', name: '위험물기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['위험물'] },
+  { id: 'safe_026', name: '대기환경기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['환경', '대기'] },
+  { id: 'safe_027', name: '수질환경기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['환경', '수질'] },
+  { id: 'safe_028', name: '소음진동기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['소음'] },
+  { id: 'safe_029', name: '토양환경기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['토양'] },
+  { id: 'safe_030', name: '폐기물처리기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['폐기물'] },
+  { id: 'safe_031', name: '자연생태복원기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['생태'] },
+  { id: 'safe_032', name: '온실가스관리기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['온실가스'] },
+  { id: 'safe_033', name: '에너지관리기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['에너지'] },
+  { id: 'safe_034', name: '에너지관리산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['에너지'] },
+  { id: 'safe_035', name: '에너지관리기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['에너지'] },
+  { id: 'safe_036', name: '신재생에너지발전설비기사(태양광)', type: 'tech', issuer: '한국산업인력공단', keywords: ['태양광'] },
+  { id: 'safe_037', name: '원자력기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['원자력'] },
+  { id: 'safe_038', name: '방사선관리기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['방사선'] },
+  { id: 'safe_039', name: '광해방지기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['광산'] },
 
-  // === 건설 / 건축 / 토목 ===
-  { id: 'tech_301', name: '건축기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['건축', '설계'] },
-  { id: 'tech_302', name: '실내건축기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['인테리어', '건축'] },
-  { id: 'tech_303', name: '토목기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['토목', '건설'] },
-  { id: 'tech_304', name: '조경기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['조경', '식물'] },
-  { id: 'tech_305', name: '도시계획기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['도시'] },
-  { id: 'tech_306', name: '측량및지형공간정보기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['측량', '지도'] },
-  { id: 'tech_307', name: '전산응용건축제도기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['CAD', '건축'] },
-
-  // === 기계 / 운전 / 정비 ===
-  { id: 'tech_401', name: '일반기계기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['기계', '설계'] },
-  { id: 'tech_402', name: '공조냉동기계기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['에어컨', '기계'] },
-  { id: 'tech_403', name: '지게차운전기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['운전', '중장비'] },
-  { id: 'tech_404', name: '굴착기운전기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['운전', '중장비'] },
-  { id: 'tech_405', name: '자동차정비기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['자동차'] },
-  { id: 'tech_406', name: '자동차정비기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['자동차'] },
-
-  // === 조리 / 제과 / 제빵 / 미용 ===
-  { id: 'tech_501', name: '한식조리기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['요리'] },
-  { id: 'tech_502', name: '양식조리기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['요리'] },
-  { id: 'tech_503', name: '일식조리기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['요리'] },
-  { id: 'tech_504', name: '중식조리기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['요리'] },
-  { id: 'tech_505', name: '제과기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['빵'] },
-  { id: 'tech_506', name: '제빵기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['빵'] },
-  { id: 'tech_507', name: '미용사(일반)', type: 'tech', issuer: '한국산업인력공단', keywords: ['미용'] },
-  { id: 'tech_508', name: '미용사(피부)', type: 'tech', issuer: '한국산업인력공단', keywords: ['피부'] },
-  { id: 'tech_509', name: '미용사(네일)', type: 'tech', issuer: '한국산업인력공단', keywords: ['네일'] },
-
-  // === 국가전문자격 ===
-  { id: 'spec_001', name: '변호사', type: 'special', issuer: '법무부', keywords: ['법'] },
-  { id: 'spec_002', name: '공인회계사(CPA)', type: 'special', issuer: '금융감독원', keywords: ['회계'] },
-  { id: 'spec_003', name: '세무사', type: 'special', issuer: '국세청', keywords: ['세금'] },
-  { id: 'spec_004', name: '관세사', type: 'special', issuer: '관세청', keywords: ['무역'] },
-  { id: 'spec_005', name: '변리사', type: 'special', issuer: '특허청', keywords: ['특허'] },
-  { id: 'spec_006', name: '법무사', type: 'special', issuer: '법원행정처', keywords: ['법'] },
-  { id: 'spec_007', name: '감정평가사', type: 'special', issuer: '국토교통부', keywords: ['부동산'] },
-  { id: 'spec_008', name: '공인노무사', type: 'special', issuer: '고용노동부', keywords: ['노동'] },
-  { id: 'spec_009', name: '공인중개사', type: 'special', issuer: '국토교통부', keywords: ['부동산'] },
-  { id: 'spec_010', name: '주택관리사보', type: 'special', issuer: '국토교통부', keywords: ['아파트'] },
-  { id: 'spec_011', name: '사회복지사 1급', type: 'special', issuer: '보건복지부', keywords: ['복지'] },
-  { id: 'spec_012', name: '보육교사 1급', type: 'special', issuer: '보건복지부', keywords: ['교육'] },
-  { id: 'spec_013', name: '청소년상담사 1급', type: 'special', issuer: '여성가족부', keywords: ['상담'] },
-  { id: 'spec_014', name: '직업상담사 1급', type: 'special', issuer: '고용노동부', keywords: ['상담'] },
-  { id: 'spec_015', name: '직업상담사 2급', type: 'special', issuer: '고용노동부', keywords: ['상담'] },
-  { id: 'spec_016', name: '한국사능력검정시험(심화)', type: 'special', issuer: '국사편찬위원회', keywords: ['역사'] },
-  { id: 'spec_017', name: '물류관리사', type: 'special', issuer: '국토교통부', keywords: ['물류'] },
-  { id: 'spec_018', name: '유통관리사 2급', type: 'special', issuer: '대한상공회의소', keywords: ['유통'] },
-  { id: 'spec_019', name: '행정사', type: 'special', issuer: '행정안전부', keywords: ['행정'] },
-  { id: 'spec_020', name: '가맹거래사', type: 'special', issuer: '공정거래위원회', keywords: ['프랜차이즈'] },
-  { id: 'spec_021', name: '손해사정사', type: 'special', issuer: '금융감독원', keywords: ['보험'] },
-  { id: 'spec_022', name: '보험계리사', type: 'special', issuer: '금융감독원', keywords: ['보험'] },
-
-  // === 민간/기타 (유명한 것 몇 가지만 포함 요청에 따라 제외 가능하나 호환성 위해 유지) ===
-  { id: 'pvt_001', name: 'SQLD', type: 'special', issuer: '한국데이터산업진흥원', keywords: ['데이터'] },
-  { id: 'pvt_002', name: 'ADsP', type: 'special', issuer: '한국데이터산업진흥원', keywords: ['데이터'] },
-  { id: 'pvt_003', name: '리눅스마스터 2급', type: 'special', issuer: 'KAIT', keywords: ['리눅스'] },
-  { id: 'pvt_004', name: '네트워크관리사 2급', type: 'special', issuer: 'ICQA', keywords: ['네트워크'] },
-  { id: 'pvt_005', name: '재경관리사', type: 'special', issuer: '삼일회계법인', keywords: ['회계'] },
-  { id: 'pvt_006', name: '전산세무 1급', type: 'special', issuer: '한국세무사회', keywords: ['세무'] },
-  { id: 'pvt_007', name: '전산세무 2급', type: 'special', issuer: '한국세무사회', keywords: ['세무'] },
-  { id: 'pvt_008', name: '전산회계 1급', type: 'special', issuer: '한국세무사회', keywords: ['회계'] },
-  { id: 'pvt_009', name: 'GTQ 1급', type: 'special', issuer: 'KPC', keywords: ['디자인'] },
+  // ==========================================
+  // [4] 건설 / 건축 / 토목 / 조경
+  // ==========================================
+  { id: 'const_001', name: '건축구조기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['건축'] },
+  { id: 'const_002', name: '건축기계설비기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['건축'] },
+  { id: 'const_003', name: '건축시공기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['건축'] },
+  { id: 'const_004', name: '토목구조기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['토목'] },
+  { id: 'const_005', name: '토목시공기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['토목'] },
+  { id: 'const_006', name: '토질및기초기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['토질'] },
+  { id: 'const_007', name: '건축기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['건축'] },
+  { id: 'const_008', name: '건축산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['건축'] },
+  { id: 'const_009', name: '실내건축기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['인테리어'] },
+  { id: 'const_010', name: '실내건축산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['인테리어'] },
+  { id: 'const_011', name: '실내건축기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['인테리어'] },
+  { id: 'const_012', name: '건축설비기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['설비'] },
+  { id: 'const_013', name: '건설재료시험기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['재료'] },
+  { id: 'const_014', name: '토목기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['토목'] },
+  { id: 'const_015', name: '토목산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['토목'] },
+  { id: 'const_016', name: '측량및지형공간정보기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['측량', '지적'] },
+  { id: 'const_017', name: '측량및지형공간정보산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['측량'] },
+  { id: 'const_018', name: '측량기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['측량'] },
+  { id: 'const_019', name: '지적기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['지적'] },
+  { id: 'const_020', name: '지적산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['지적'] },
+  { id: 'const_021', name: '지적기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['지적'] },
+  { id: 'const_022', name: '조경기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['조경'] },
+  { id: 'const_023', name: '조경산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['조경'] },
+  { id: 'const_024', name: '조경기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['조경'] },
+  { id: 'const_025', name: '도시계획기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['도시'] },
+  { id: 'const_026', name: '교통기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['교통'] },
+  { id: 'const_027', name: '콘크리트기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['콘크리트'] },
+  { id: 'const_028', name: '전산응용건축제도기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['CAD', '건축'] },
+  { id: 'const_029', name: '전산응용토목제도기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['CAD', '토목'] },
+  { id: 'const_030', name: '방수기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['방수'] },
+  { id: 'const_031', name: '도배기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['도배'] },
+  { id: 'const_032', name: '미장기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['미장'] },
+  { id: 'const_033', name: '타일기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['타일'] },
+  { id: 'const_034', name: '거푸집기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['거푸집'] },
+  { id: 'const_035', name: '비계기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['비계'] },
+  { id: 'const_036', name: '철근기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['철근'] },
+  { id: 'const_037', name: '건축목공기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['목공'] },
+  { id: 'const_038', name: '창호기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['창호'] }, // 2025 통합 반영 고려
   
-  // === 어학 ===
-  { id: 'lang_001', name: '토익 (TOEIC)', type: 'language', issuer: 'ETS', keywords: ['영어'] },
-  { id: 'lang_002', name: '토익스피킹', type: 'language', issuer: 'ETS', keywords: ['영어', '말하기'] },
-  { id: 'lang_003', name: 'OPIC', type: 'language', issuer: 'ACTFL', keywords: ['영어', '말하기'] },
-  { id: 'lang_004', name: 'JLPT N1', type: 'language', issuer: '일본국제교류기금', keywords: ['일본어'] },
-  { id: 'lang_005', name: 'JLPT N2', type: 'language', issuer: '일본국제교류기금', keywords: ['일본어'] },
-  { id: 'lang_006', name: 'HSK 6급', type: 'language', issuer: '중국국가한반', keywords: ['중국어'] },
-  { id: 'lang_007', name: 'HSK 5급', type: 'language', issuer: '중국국가한반', keywords: ['중국어'] },
-  { id: 'lang_008', name: 'KBS한국어능력시험', type: 'language', issuer: 'KBS', keywords: ['한국어'] },
+  // ==========================================
+  // [5] 기계 / 금속 / 재료 / 용접
+  // ==========================================
+  { id: 'mech_001', name: '기계기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['기계'] },
+  { id: 'mech_002', name: '금형기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['금형'] },
+  { id: 'mech_003', name: '금속재료기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['금속'] },
+  { id: 'mech_004', name: '배관기능장', type: 'tech', issuer: '한국산업인력공단', keywords: ['배관'] },
+  { id: 'mech_005', name: '용접기능장', type: 'tech', issuer: '한국산업인력공단', keywords: ['용접'] },
+  { id: 'mech_006', name: '일반기계기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['기계'] },
+  { id: 'mech_007', name: '기계설계기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['기계', '설계'] }, // 일반기계로 통합 추세이나 아직 존재
+  { id: 'mech_008', name: '기계설계산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['기계'] },
+  { id: 'mech_009', name: '공조냉동기계기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['공조', '냉동'] },
+  { id: 'mech_010', name: '공조냉동기계산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['공조'] },
+  { id: 'mech_011', name: '공조냉동기계기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['공조'] },
+  { id: 'mech_012', name: '설비보전기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['설비'] },
+  { id: 'mech_013', name: '설비보전기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['설비'] }, // 2025 통합 종목
+  { id: 'mech_014', name: '메카트로닉스기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['메카트로닉스'] },
+  { id: 'mech_015', name: '승강기기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['승강기'] },
+  { id: 'mech_016', name: '승강기기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['승강기'] },
+  { id: 'mech_017', name: '정밀측정산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['측정'] },
+  { id: 'mech_018', name: '용접기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['용접'] },
+  { id: 'mech_019', name: '용접산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['용접'] },
+  { id: 'mech_020', name: '특수용접기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['용접'] }, // 피복아크용접 등 명칭 변경 유의
+  { id: 'mech_021', name: '피복아크용접기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['용접'] },
+  { id: 'mech_022', name: '이산화탄소가스아크용접기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['용접'] },
+  { id: 'mech_023', name: '가스텅스텐아크용접기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['용접'] },
+  { id: 'mech_024', name: '전산응용기계제도기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['CAD', '기계'] },
+  { id: 'mech_025', name: '금형기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['금형'] },
+  { id: 'mech_026', name: '사출금형기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['금형'] },
+  { id: 'mech_027', name: '프레스금형기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['금형'] },
+  { id: 'mech_028', name: '판금제관기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['판금'] },
+  { id: 'mech_029', name: '배관기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['배관'] }, // 2025년 에너지관리기능사와 통합 논의 있었으나 유지
+  { id: 'mech_030', name: '비파괴검사기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['검사'] }, // 실제론 종류별로 나뉨 (방사선, 초음파 등)
+  { id: 'mech_031', name: '방사선비파괴검사기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['비파괴'] },
+  { id: 'mech_032', name: '초음파비파괴검사기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['비파괴'] },
+  
+  // ==========================================
+  // [6] 운전 / 운송 / 자동차 / 항공 / 선박
+  // ==========================================
+  { id: 'drive_001', name: '차량기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['자동차'] },
+  { id: 'drive_002', name: '자동차정비기능장', type: 'tech', issuer: '한국산업인력공단', keywords: ['자동차'] },
+  { id: 'drive_003', name: '자동차정비기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['자동차'] },
+  { id: 'drive_004', name: '자동차정비산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['자동차'] },
+  { id: 'drive_005', name: '자동차정비기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['자동차'] },
+  { id: 'drive_006', name: '자동차보수도장기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['자동차', '도색'] },
+  { id: 'drive_007', name: '자동차차체수리기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['자동차', '수리'] },
+  { id: 'drive_008', name: '그린전동자동차기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['전기차'] },
+  { id: 'drive_009', name: '건설기계설비기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['중장비'] },
+  { id: 'drive_010', name: '건설기계정비기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['중장비', '정비'] },
+  { id: 'drive_011', name: '건설기계정비기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['중장비'] },
+  { id: 'drive_012', name: '지게차운전기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['지게차', '운전'] },
+  { id: 'drive_013', name: '굴착기운전기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['굴착기', '운전'] },
+  { id: 'drive_014', name: '로더운전기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['로더'] },
+  { id: 'drive_015', name: '롤러운전기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['롤러'] },
+  { id: 'drive_016', name: '불도저운전기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['불도저'] },
+  { id: 'drive_017', name: '기중기운전기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['크레인'] },
+  { id: 'drive_018', name: '타워크레인운전기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['크레인'] },
+  { id: 'drive_019', name: '철도차량기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['철도'] },
+  { id: 'drive_020', name: '항공기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['항공'] },
+  { id: 'drive_021', name: '항공산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['항공'] },
+  { id: 'drive_022', name: '항공정비사(면장)', type: 'special', issuer: '교통안전공단', keywords: ['항공'] },
+  { id: 'drive_023', name: '항공기관정비기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['항공'] },
+  { id: 'drive_024', name: '항공기체정비기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['항공'] },
+  { id: 'drive_025', name: '항공장비정비기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['항공'] },
+  { id: 'drive_026', name: '항공전자정비기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['항공'] },
+  { id: 'drive_027', name: '물류관리사', type: 'special', issuer: '국토교통부', keywords: ['물류'] },
+  { id: 'drive_028', name: '유통관리사 2급', type: 'special', issuer: '대한상공회의소', keywords: ['유통'] },
 
-  // === 해외/국제 ===
+  // ==========================================
+  // [7] 화학 / 화공 / 섬유 / 의류
+  // ==========================================
+  { id: 'chem_001', name: '화공기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['화학'] },
+  { id: 'chem_002', name: '화공기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['화학'] },
+  { id: 'chem_003', name: '정밀화학기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['화학'] },
+  { id: 'chem_004', name: '화학분석기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['분석'] },
+  { id: 'chem_005', name: '화학분석기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['분석'] },
+  { id: 'chem_006', name: '바이오화학제품제조기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['바이오'] },
+  { id: 'chem_007', name: '의류기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['의류'] },
+  { id: 'chem_008', name: '의류기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['의류'] },
+  { id: 'chem_009', name: '패션디자인산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['패션'] },
+  { id: 'chem_010', name: '양장기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['옷'] },
+  { id: 'chem_011', name: '한복기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['한복'] },
+  { id: 'chem_012', name: '세탁기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['세탁'] },
+
+  // ==========================================
+  // [8] 농림 / 어업
+  // ==========================================
+  { id: 'agri_001', name: '농화학기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['농업'] },
+  { id: 'agri_002', name: '종자기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['종자'] },
+  { id: 'agri_003', name: '종자기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['종자'] },
+  { id: 'agri_004', name: '유기농업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['농업'] },
+  { id: 'agri_005', name: '유기농업기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['농업'] },
+  { id: 'agri_006', name: '화훼장식기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['꽃'] },
+  { id: 'agri_007', name: '화훼장식기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['꽃'] },
+  { id: 'agri_008', name: '산림기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['산림'] },
+  { id: 'agri_009', name: '산림기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['산림'] },
+  { id: 'agri_010', name: '산림산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['산림'] },
+  { id: 'agri_011', name: '산림기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['산림'] },
+  { id: 'agri_012', name: '식물보호기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['식물'] },
+  { id: 'agri_013', name: '수산질병관리사', type: 'special', issuer: '해양수산부', keywords: ['수산'] },
+  { id: 'agri_014', name: '수산양식기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['양식'] },
+  { id: 'agri_015', name: '버섯종균기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['버섯'] },
+  { id: 'agri_016', name: '조경기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['조경'] },
+
+  // ==========================================
+  // [9] 조리 / 제과제빵 / 식음료
+  // ==========================================
+  { id: 'cook_001', name: '조리기능장', type: 'tech', issuer: '한국산업인력공단', keywords: ['요리'] },
+  { id: 'cook_002', name: '한식조리기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['요리', '한식'] },
+  { id: 'cook_003', name: '양식조리기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['요리', '양식'] },
+  { id: 'cook_004', name: '일식조리기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['요리', '일식'] },
+  { id: 'cook_005', name: '중식조리기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['요리', '중식'] },
+  { id: 'cook_006', name: '복어조리기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['요리', '복어'] },
+  { id: 'cook_007', name: '제과기능장', type: 'tech', issuer: '한국산업인력공단', keywords: ['빵'] },
+  { id: 'cook_008', name: '제과기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['빵'] },
+  { id: 'cook_009', name: '제빵기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['빵'] },
+  { id: 'cook_010', name: '조주기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['칵테일'] },
+  { id: 'cook_011', name: '식품기술사', type: 'tech', issuer: '한국산업인력공단', keywords: ['식품'] },
+  { id: 'cook_012', name: '식품기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['식품'] },
+  { id: 'cook_013', name: '식품산업기사', type: 'tech', issuer: '한국산업인력공단', keywords: ['식품'] },
+  { id: 'cook_014', name: '식품가공기능사', type: 'tech', issuer: '한국산업인력공단', keywords: ['식품'] },
+
+  // ==========================================
+  // [10] 미용 / 이용 / 숙박 / 여행
+  // ==========================================
+  { id: 'beauty_001', name: '미용장', type: 'tech', issuer: '한국산업인력공단', keywords: ['미용'] },
+  { id: 'beauty_002', name: '미용사(일반)', type: 'tech', issuer: '한국산업인력공단', keywords: ['미용', '헤어'] },
+  { id: 'beauty_003', name: '미용사(피부)', type: 'tech', issuer: '한국산업인력공단', keywords: ['피부'] },
+  { id: 'beauty_004', name: '미용사(네일)', type: 'tech', issuer: '한국산업인력공단', keywords: ['네일'] },
+  { id: 'beauty_005', name: '미용사(메이크업)', type: 'tech', issuer: '한국산업인력공단', keywords: ['메이크업'] },
+  { id: 'beauty_006', name: '이용장', type: 'tech', issuer: '한국산업인력공단', keywords: ['이발'] },
+  { id: 'beauty_007', name: '이용사', type: 'tech', issuer: '한국산업인력공단', keywords: ['이발'] },
+  { id: 'beauty_008', name: '스포츠경영관리사', type: 'tech', issuer: '한국산업인력공단', keywords: ['스포츠'] },
+  { id: 'beauty_009', name: '컨벤션기획사1급', type: 'tech', issuer: '한국산업인력공단', keywords: ['기획'] },
+  { id: 'beauty_010', name: '컨벤션기획사2급', type: 'tech', issuer: '한국산업인력공단', keywords: ['기획'] },
+  { id: 'beauty_011', name: '호텔경영사', type: 'special', issuer: '문화체육관광부', keywords: ['호텔'] },
+  { id: 'beauty_012', name: '호텔관리사', type: 'special', issuer: '문화체육관광부', keywords: ['호텔'] },
+  { id: 'beauty_013', name: '호텔서비스사', type: 'special', issuer: '문화체육관광부', keywords: ['호텔'] },
+  { id: 'beauty_014', name: '관광통역안내사(영어)', type: 'special', issuer: '문화체육관광부', keywords: ['관광'] },
+  { id: 'beauty_015', name: '관광통역안내사(일어)', type: 'special', issuer: '문화체육관광부', keywords: ['관광'] },
+  { id: 'beauty_016', name: '관광통역안내사(중국어)', type: 'special', issuer: '문화체육관광부', keywords: ['관광'] },
+  { id: 'beauty_017', name: '국내여행안내사', type: 'special', issuer: '문화체육관광부', keywords: ['관광'] },
+
+  // ==========================================
+  // [11] 전문사무 / 경영 / 금융 / 교육 (국가전문자격 포함)
+  // ==========================================
+  { id: 'biz_001', name: '변호사', type: 'special', issuer: '법무부', keywords: ['법'] },
+  { id: 'biz_002', name: '공인회계사(CPA)', type: 'special', issuer: '금융감독원', keywords: ['회계'] },
+  { id: 'biz_003', name: '세무사', type: 'special', issuer: '국세청', keywords: ['세무'] },
+  { id: 'biz_004', name: '관세사', type: 'special', issuer: '관세청', keywords: ['무역'] },
+  { id: 'biz_005', name: '변리사', type: 'special', issuer: '특허청', keywords: ['특허'] },
+  { id: 'biz_006', name: '법무사', type: 'special', issuer: '법원행정처', keywords: ['법'] },
+  { id: 'biz_007', name: '감정평가사', type: 'special', issuer: '국토교통부', keywords: ['부동산'] },
+  { id: 'biz_008', name: '공인노무사', type: 'special', issuer: '고용노동부', keywords: ['노동'] },
+  { id: 'biz_009', name: '공인중개사', type: 'special', issuer: '국토교통부', keywords: ['부동산'] },
+  { id: 'biz_010', name: '주택관리사보', type: 'special', issuer: '국토교통부', keywords: ['주택'] },
+  { id: 'biz_011', name: '경영지도사(마케팅)', type: 'special', issuer: '중소벤처기업부', keywords: ['경영'] },
+  { id: 'biz_012', name: '경영지도사(인적자원)', type: 'special', issuer: '중소벤처기업부', keywords: ['경영'] },
+  { id: 'biz_013', name: '경영지도사(재무)', type: 'special', issuer: '중소벤처기업부', keywords: ['경영'] },
+  { id: 'biz_014', name: '기술지도사', type: 'special', issuer: '중소벤처기업부', keywords: ['기술'] },
+  { id: 'biz_015', name: '사회복지사 1급', type: 'special', issuer: '보건복지부', keywords: ['복지'] },
+  { id: 'biz_016', name: '보육교사 1급', type: 'special', issuer: '보건복지부', keywords: ['보육'] },
+  { id: 'biz_017', name: '직업상담사 1급', type: 'tech', issuer: '한국산업인력공단', keywords: ['상담'] },
+  { id: 'biz_018', name: '직업상담사 2급', type: 'tech', issuer: '한국산업인력공단', keywords: ['상담'] },
+  { id: 'biz_019', name: '소비자전문상담사 1급', type: 'tech', issuer: '한국산업인력공단', keywords: ['상담'] },
+  { id: 'biz_020', name: '사회조사분석사 1급', type: 'tech', issuer: '한국산업인력공단', keywords: ['통계'] },
+  { id: 'biz_021', name: '사회조사분석사 2급', type: 'tech', issuer: '한국산업인력공단', keywords: ['통계'] },
+  { id: 'biz_022', name: '비서 1급', type: 'tech', issuer: '대한상공회의소', keywords: ['비서'] },
+  { id: 'biz_023', name: '전산회계운용사 1급', type: 'tech', issuer: '대한상공회의소', keywords: ['회계'] },
+  { id: 'biz_024', name: '전산회계운용사 2급', type: 'tech', issuer: '대한상공회의소', keywords: ['회계'] },
+  { id: 'biz_025', name: '행정사', type: 'special', issuer: '행정안전부', keywords: ['행정'] },
+  { id: 'biz_026', name: '가맹거래사', type: 'special', issuer: '공정거래위원회', keywords: ['가맹'] },
+  { id: 'biz_027', name: '손해사정사', type: 'special', issuer: '금융감독원', keywords: ['보험'] },
+  { id: 'biz_028', name: '보험계리사', type: 'special', issuer: '금융감독원', keywords: ['보험'] },
+  { id: 'biz_029', name: '청소년상담사 1급', type: 'special', issuer: '여성가족부', keywords: ['상담'] },
+  { id: 'biz_030', name: '한국사능력검정시험', type: 'special', issuer: '국사편찬위원회', keywords: ['역사'] },
+
+  // ==========================================
+  // [12] 의료 / 보건
+  // ==========================================
+  { id: 'med_001', name: '의사', type: 'special', issuer: '보건복지부', keywords: ['의료'] },
+  { id: 'med_002', name: '한의사', type: 'special', issuer: '보건복지부', keywords: ['의료'] },
+  { id: 'med_003', name: '치과의사', type: 'special', issuer: '보건복지부', keywords: ['의료'] },
+  { id: 'med_004', name: '약사', type: 'special', issuer: '보건복지부', keywords: ['의료'] },
+  { id: 'med_005', name: '간호사', type: 'special', issuer: '보건복지부', keywords: ['간호'] },
+  { id: 'med_006', name: '임상병리사', type: 'special', issuer: '보건복지부', keywords: ['의료'] },
+  { id: 'med_007', name: '방사선사', type: 'special', issuer: '보건복지부', keywords: ['의료'] },
+  { id: 'med_008', name: '물리치료사', type: 'special', issuer: '보건복지부', keywords: ['의료'] },
+  { id: 'med_009', name: '작업치료사', type: 'special', issuer: '보건복지부', keywords: ['의료'] },
+  { id: 'med_010', name: '치과기공사', type: 'special', issuer: '보건복지부', keywords: ['의료'] },
+  { id: 'med_011', name: '치과위생사', type: 'special', issuer: '보건복지부', keywords: ['의료'] },
+  { id: 'med_012', name: '보건의료정보관리사', type: 'special', issuer: '보건복지부', keywords: ['의료'] },
+  { id: 'med_013', name: '안경사', type: 'special', issuer: '보건복지부', keywords: ['안경'] },
+  { id: 'med_014', name: '영양사', type: 'special', issuer: '보건복지부', keywords: ['영양'] },
+  { id: 'med_015', name: '응급구조사 1급', type: 'special', issuer: '보건복지부', keywords: ['응급'] },
+  { id: 'med_016', name: '간호조무사', type: 'special', issuer: '보건복지부', keywords: ['간호'] },
+  { id: 'med_017', name: '요양보호사', type: 'special', issuer: '보건복지부', keywords: ['요양'] },
+  { id: 'med_018', name: '임상심리사 1급', type: 'tech', issuer: '한국산업인력공단', keywords: ['심리'] },
+  { id: 'med_019', name: '임상심리사 2급', type: 'tech', issuer: '한국산업인력공단', keywords: ['심리'] },
+
+  // ==========================================
+  // [13] 어학 및 해외자격 (필수 인기항목)
+  // ==========================================
+  { id: 'lang_001', name: '토익 (TOEIC)', type: 'language', issuer: 'ETS', keywords: ['영어'] },
+  { id: 'lang_002', name: '토익스피킹', type: 'language', issuer: 'ETS', keywords: ['영어'] },
+  { id: 'lang_003', name: '오픽 (OPIc)', type: 'language', issuer: 'ACTFL', keywords: ['영어'] },
+  { id: 'lang_004', name: '토플 (TOEFL)', type: 'language', issuer: 'ETS', keywords: ['영어'] },
+  { id: 'lang_005', name: '텝스 (TEPS)', type: 'language', issuer: 'SNU', keywords: ['영어'] },
+  { id: 'lang_006', name: '지텔프 (G-TELP)', type: 'language', issuer: 'ITSC', keywords: ['영어'] },
+  { id: 'lang_007', name: 'JLPT N1', type: 'language', issuer: '일본국제교류기금', keywords: ['일본어'] },
+  { id: 'lang_008', name: 'JLPT N2', type: 'language', issuer: '일본국제교류기금', keywords: ['일본어'] },
+  { id: 'lang_009', name: 'HSK 6급', type: 'language', issuer: '중국국가한반', keywords: ['중국어'] },
+  { id: 'lang_010', name: 'KBS한국어능력시험', type: 'language', issuer: 'KBS', keywords: ['한국어'] },
   { id: 'glob_001', name: 'AWS SAA', type: 'global', issuer: 'AWS', keywords: ['클라우드'] },
-  { id: 'glob_002', name: 'AWS SAP', type: 'global', issuer: 'AWS', keywords: ['클라우드'] },
-  { id: 'glob_003', name: 'PMP', type: 'global', issuer: 'PMI', keywords: ['매니지먼트'] },
-  { id: 'glob_004', name: 'CISA', type: 'global', issuer: 'ISACA', keywords: ['감사'] },
-  { id: 'glob_005', name: 'CISSP', type: 'global', issuer: 'ISC2', keywords: ['보안'] },
-  { id: 'glob_006', name: 'Google Analytics (GA4)', type: 'global', issuer: 'Google', keywords: ['마케팅'] },
+  { id: 'glob_002', name: 'PMP', type: 'global', issuer: 'PMI', keywords: ['매니지먼트'] },
+  { id: 'glob_003', name: 'CISA', type: 'global', issuer: 'ISACA', keywords: ['감사'] },
+  { id: 'glob_004', name: 'CISSP', type: 'global', issuer: 'ISC2', keywords: ['보안'] },
+  { id: 'glob_005', name: 'CFA Level 1', type: 'global', issuer: 'CFA Institute', keywords: ['금융'] }
 ];
 
-// Helper to determine icon based on keywords
+// 아이콘 매칭 헬퍼 함수
 export const getCertIcon = (cert) => {
-  const name = cert.name.toLowerCase();
+  const name = cert.name;
   const kws = cert.keywords || [];
   
-  if (kws.includes('전기') || kws.includes('에너지')) return '⚡';
-  if (kws.includes('컴퓨터') || kws.includes('소프트웨어') || kws.includes('IT')) return '💻';
-  if (kws.includes('보안') || kws.includes('해킹')) return '🛡️';
-  if (kws.includes('데이터') || kws.includes('분석')) return '📊';
-  if (kws.includes('클라우드')) return '☁️';
-  if (kws.includes('안전') || kws.includes('소방')) return '🧯';
-  if (kws.includes('환경') || kws.includes('물')) return '🌿';
-  if (kws.includes('건축') || kws.includes('건설') || kws.includes('토목')) return '🏗️';
-  if (kws.includes('기계') || kws.includes('설계')) return '⚙️';
-  if (kws.includes('운전') || kws.includes('자동차')) return '🚗';
-  if (kws.includes('요리') || kws.includes('빵')) return '👨‍🍳';
-  if (kws.includes('미용') || kws.includes('피부')) return '✂️';
-  if (kws.includes('법') || kws.includes('특허')) return '⚖️';
-  if (kws.includes('회계') || kws.includes('세무') || kws.includes('돈')) return '💰';
-  if (kws.includes('부동산')) return '🏠';
-  if (kws.includes('영어') || kws.includes('일본어') || kws.includes('중국어')) return '🗣️';
-  if (kws.includes('문서') || kws.includes('사무')) return '📝';
-  if (kws.includes('디자인')) return '🎨';
+  // 1. 등급별 뱃지
   if (name.includes('기술사')) return '👑';
-  
-  return '📜'; // Default
+  if (name.includes('기능장')) return '🏅';
+  if (name.includes('명장')) return '⚜️';
+
+  // 2. 전문직
+  if (name.includes('변호사') || name.includes('법무사') || name.includes('노무사')) return '⚖️';
+  if (name.includes('회계사') || name.includes('세무사')) return '💰';
+  if (name.includes('의사') || name.includes('약사') || name.includes('간호사')) return '⚕️';
+
+  // 3. 분야별
+  if (kws.includes('전기') || kws.includes('전자') || kws.includes('반도체')) return '⚡';
+  if (kws.includes('IT') || kws.includes('컴퓨터') || kws.includes('소프트웨어') || kws.includes('데이터')) return '💻';
+  if (kws.includes('보안') || kws.includes('해킹')) return '🛡️';
+  if (kws.includes('안전') || kws.includes('소방') || kws.includes('위험물')) return '🧯';
+  if (kws.includes('건설') || kws.includes('건축') || kws.includes('토목')) return '🏗️';
+  if (kws.includes('환경') || kws.includes('에너지')) return '🌿';
+  if (kws.includes('기계') || kws.includes('자동차') || kws.includes('설비')) return '⚙️';
+  if (kws.includes('운전') || kws.includes('중장비')) return '🚜';
+  if (kws.includes('항공') || kws.includes('드론')) return '✈️';
+  if (kws.includes('요리') || kws.includes('제과')) return '👨‍🍳';
+  if (kws.includes('미용')) return '✂️';
+  if (kws.includes('영어') || kws.includes('외국어')) return '🗣️';
+  if (kws.includes('사무') || kws.includes('회계')) return '📝';
+  if (kws.includes('디자인')) return '🎨';
+
+  // Default
+  return '📜';
 };
