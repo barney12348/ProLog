@@ -362,7 +362,26 @@ export const ALL_CERTIFICATES = [
   { id: 'glob_002', name: 'PMP', type: 'global', issuer: 'PMI', keywords: ['매니지먼트'] },
   { id: 'glob_003', name: 'CISA', type: 'global', issuer: 'ISACA', keywords: ['감사'] },
   { id: 'glob_004', name: 'CISSP', type: 'global', issuer: 'ISC2', keywords: ['보안'] },
-  { id: 'glob_005', name: 'CFA Level 1', type: 'global', issuer: 'CFA Institute', keywords: ['금융'] }
+  { id: 'glob_005', name: 'CFA Level 1', type: 'global', issuer: 'CFA Institute', keywords: ['금융'] },
+
+  // ==========================================
+  // [14] 국가공인 민간자격 (IT/데이터/금융)
+  // ==========================================
+  { id: 'pvt_001', name: 'ADsP (데이터분석준전문가)', type: 'special', issuer: '한국데이터산업진흥원', keywords: ['데이터', '분석'] },
+  { id: 'pvt_002', name: 'SQLD (SQL 개발자)', type: 'special', issuer: '한국데이터산업진흥원', keywords: ['데이터', 'DB', 'SQL'] },
+  { id: 'pvt_003', name: 'ADP (데이터분석전문가)', type: 'special', issuer: '한국데이터산업진흥원', keywords: ['데이터', '분석'] },
+  { id: 'pvt_004', name: 'SQLP (SQL 전문가)', type: 'special', issuer: '한국데이터산업진흥원', keywords: ['데이터', 'DB', 'SQL'] },
+  { id: 'pvt_005', name: '리눅스마스터 1급', type: 'special', issuer: '정보통신기술자격검정(KAIT)', keywords: ['리눅스', 'OS'] },
+  { id: 'pvt_006', name: '리눅스마스터 2급', type: 'special', issuer: '정보통신기술자격검정(KAIT)', keywords: ['리눅스', 'OS'] },
+  { id: 'pvt_007', name: '네트워크관리사 1급', type: 'special', issuer: '한국정보통신자격협회(ICQA)', keywords: ['네트워크'] },
+  { id: 'pvt_008', name: '네트워크관리사 2급', type: 'special', issuer: '한국정보통신자격협회(ICQA)', keywords: ['네트워크'] },
+  { id: 'pvt_009', name: '전산회계 1급', type: 'special', issuer: '한국세무사회', keywords: ['회계'] },
+  { id: 'pvt_010', name: '전산회계 2급', type: 'special', issuer: '한국세무사회', keywords: ['회계'] },
+  { id: 'pvt_011', name: '전산세무 1급', type: 'special', issuer: '한국세무사회', keywords: ['세무'] },
+  { id: 'pvt_012', name: '전산세무 2급', type: 'special', issuer: '한국세무사회', keywords: ['세무'] },
+  { id: 'pvt_013', name: '재경관리사', type: 'special', issuer: '삼일회계법인', keywords: ['회계', '세무'] },
+  { id: 'pvt_014', name: 'ERP정보관리사(회계)', type: 'special', issuer: '한국생산성본부', keywords: ['ERP'] },
+  { id: 'pvt_015', name: 'GTQ (그래픽기술자격) 1급', type: 'special', issuer: '한국생산성본부', keywords: ['디자인', '포토샵'] }
 ];
 
 // 아이콘 매칭 헬퍼 함수
