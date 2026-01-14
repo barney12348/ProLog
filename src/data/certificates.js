@@ -367,10 +367,14 @@ export const ALL_CERTIFICATES = [
   // ==========================================
   // [14] 국가공인 민간자격 (IT/데이터/금융)
   // ==========================================
-  { id: 'pvt_001', name: 'ADsP (데이터분석준전문가)', type: 'special', issuer: '한국데이터산업진흥원', keywords: ['데이터', '분석'] },
-  { id: 'pvt_002', name: 'SQLD (SQL 개발자)', type: 'special', issuer: '한국데이터산업진흥원', keywords: ['데이터', 'DB', 'SQL'] },
-  { id: 'pvt_003', name: 'ADP (데이터분석전문가)', type: 'special', issuer: '한국데이터산업진흥원', keywords: ['데이터', '분석'] },
-  { id: 'pvt_004', name: 'SQLP (SQL 전문가)', type: 'special', issuer: '한국데이터산업진흥원', keywords: ['데이터', 'DB', 'SQL'] },
+  // 한국데이터산업진흥원(KDATA) 주관 모든 자격증 (빅데이터분석기사는 tech_006에 이미 포함)
+  { id: 'pvt_kdata_001', name: 'ADsP (데이터분석준전문가)', type: 'special', issuer: '한국데이터산업진흥원', keywords: ['데이터', '분석'] },
+  { id: 'pvt_kdata_002', name: 'ADP (데이터분석전문가)', type: 'special', issuer: '한국데이터산업진흥원', keywords: ['데이터', '분석'] },
+  { id: 'pvt_kdata_003', name: 'SQLD (SQL 개발자)', type: 'special', issuer: '한국데이터산업진흥원', keywords: ['데이터', 'DB', 'SQL'] },
+  { id: 'pvt_kdata_004', name: 'SQLP (SQL 전문가)', type: 'special', issuer: '한국데이터산업진흥원', keywords: ['데이터', 'DB', 'SQL'] },
+  { id: 'pvt_kdata_005', name: 'DAsP (데이터아키텍처준전문가)', type: 'special', issuer: '한국데이터산업진흥원', keywords: ['데이터', 'DB', '설계'] },
+  { id: 'pvt_kdata_006', name: 'DAP (데이터아키텍처전문가)', type: 'special', issuer: '한국데이터산업진흥원', keywords: ['데이터', 'DB', '설계'] },
+
   { id: 'pvt_005', name: '리눅스마스터 1급', type: 'special', issuer: '정보통신기술자격검정(KAIT)', keywords: ['리눅스', 'OS'] },
   { id: 'pvt_006', name: '리눅스마스터 2급', type: 'special', issuer: '정보통신기술자격검정(KAIT)', keywords: ['리눅스', 'OS'] },
   { id: 'pvt_007', name: '네트워크관리사 1급', type: 'special', issuer: '한국정보통신자격협회(ICQA)', keywords: ['네트워크'] },
