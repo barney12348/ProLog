@@ -38,6 +38,7 @@ import { toPng } from 'html-to-image';
 import download from 'downloadjs';
 import ImageResizer from './components/ImageResizer';
 import DexView from './components/DexView';
+import { ALL_CERTIFICATES, getCertIcon } from './data/certificates';
 
 // Utility for class merging
 function cn(...inputs) {
@@ -730,16 +731,26 @@ function App() {
     major: '컴퓨터공학',
     jobGoal: '서비스 기획자'
   });
-  const [certificates, setCertificates] = useState([
-    { id: 1, name: '정보처리기사', issuer: '한국산업인력공단', type: 'tech', status: 'acquired', icon: '💻' },
-    { id: 2, name: 'SQLD', issuer: '한국데이터산업진흥원', type: 'special', status: 'pending', icon: '💾' },
-    { id: 3, name: 'AWS SAA', issuer: 'AWS', type: 'global', status: 'locked', icon: '☁️' },
-    { id: 4, name: 'ADsP', issuer: '한국데이터산업진흥원', type: 'special', status: 'locked', icon: '📊' },
-    { id: 5, name: '토익 (TOEIC)', issuer: 'ETS', type: 'language', status: 'locked', icon: '🅰️' },
-    { id: 6, name: 'OPIC', issuer: 'ACTFL', type: 'language', status: 'locked', icon: '🗣️' },
-    { id: 7, name: '컴퓨터활용능력 1급', issuer: '대한상공회의소', type: 'tech', status: 'acquired', icon: '📑' },
-    { id: 8, name: '리눅스마스터 2급', issuer: 'KAIT', type: 'special', status: 'locked', icon: '🐧' },
-  ]);
+  
+  // Initialize certificates from data file
+  const [certificates, setCertificates] = useState(() => {
+    // 1. Load all certificates with default 'locked' status
+    const initialCerts = ALL_CERTIFICATES.map(cert => ({
+      ...cert,
+      status: 'locked',
+      icon: getCertIcon(cert)
+    }));
+
+    // 2. Mock: Set some as 'acquired' or 'pending' for demo purposes
+    const demoAcquiredIds = ['tech_001', 'tech_008', 'tech_501']; // 정보처리기사, 컴활1급, 한식조리
+    const demoPendingIds = ['tech_101', 'spec_009']; // 전기기사, 공인중개사
+
+    return initialCerts.map(cert => {
+      if (demoAcquiredIds.includes(cert.id)) return { ...cert, status: 'acquired' };
+      if (demoPendingIds.includes(cert.id)) return { ...cert, status: 'pending' };
+      return cert;
+    });
+  });
   const fileInputRef = useRef(null);
 
   useEffect(() => {
