@@ -712,7 +712,14 @@ const HistoryView = ({ history, onDelete, platforms }) => {
 };
 
 function App() {
-  const [activePage, setActivePage] = useState('dashboard');
+  const [activePage, setActivePage] = useState(() => {
+    return localStorage.getItem('prolog_active_page') || 'dashboard';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('prolog_active_page', activePage);
+  }, [activePage]);
+
   const [activeTab, setActiveTab] = useState('instagram');
   const [category, setCategory] = useState('award'); 
   const [tone, setTone] = useState('emotional');
