@@ -113,7 +113,7 @@ const DexView = ({ certificates, onCertClick }) => {
             <select
               value={selectedIssuer}
               onChange={(e) => setSelectedIssuer(e.target.value)}
-              className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm font-medium focus:border-primary outline-none dark:text-white"
+              className="w-full md:w-48 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm font-medium focus:border-primary outline-none dark:text-white"
             >
               <option value="all">모든 기관</option>
               {currentIssuers.filter(i => i !== 'all').map(issuer => (
