@@ -37,7 +37,7 @@ const DexView = ({ certificates, onCertClick }) => {
   // 1. Filter Logic
   const filteredCerts = certificates.filter(cert => {
     const matchesTab = activeTab === 'all' || cert.type === activeTab;
-    const matchesIssuer = activeTab === 'all' || selectedIssuer === 'all' || cert.issuer === selectedIssuer;
+    const matchesIssuer = selectedIssuer === 'all' || cert.issuer === selectedIssuer;
     const matchesSearch = cert.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           cert.issuer.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesTab && matchesIssuer && matchesSearch;
