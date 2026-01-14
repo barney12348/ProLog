@@ -1,6 +1,7 @@
 {
   "name": "prolog",
   "private": true,
+  "homepage": "https://barney12348.github.io/ProLog",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
