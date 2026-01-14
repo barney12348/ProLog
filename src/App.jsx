@@ -38,7 +38,7 @@ import { toPng } from 'html-to-image';
 import download from 'downloadjs';
 import ImageResizer from './components/ImageResizer';
 import DexView from './components/DexView';
-import { ALL_CERTIFICATES, getCertIcon } from './data/certificates';
+import { getCertIcon } from './utils/certUtils';
 
 // Utility for class merging
 function cn(...inputs) {
@@ -733,24 +733,38 @@ function App() {
   });
   
   // Initialize certificates from data file
-  const [certificates, setCertificates] = useState(() => {
-    // 1. Load all certificates with default 'locked' status
-    const initialCerts = ALL_CERTIFICATES.map(cert => ({
-      ...cert,
-      status: 'locked',
-      icon: getCertIcon(cert)
-    }));
+  const [certificates, setCertificates] = useState([]);
 
-    // 2. Mock: Set some as 'acquired' or 'pending' for demo purposes
-    const demoAcquiredIds = ['tech_001', 'tech_008', 'tech_501']; // 정보처리기사, 컴활1급, 한식조리
-    const demoPendingIds = ['tech_101', 'spec_009']; // 전기기사, 공인중개사
+  useEffect(() => {
+    const fetchCertificates = async () => {
+      try {
+        const response = await fetch('/data/certificates.json');
+        const data = await response.json();
+        
+        const initialCerts = data.map(cert => ({
+          ...cert,
+          status: 'locked',
+          icon: getCertIcon(cert)
+        }));
 
-    return initialCerts.map(cert => {
-      if (demoAcquiredIds.includes(cert.id)) return { ...cert, status: 'acquired' };
-      if (demoPendingIds.includes(cert.id)) return { ...cert, status: 'pending' };
-      return cert;
-    });
-  });
+        // Mock: Set some as 'acquired' or 'pending' for demo purposes
+        const demoAcquiredIds = ['it_003', 'it_009', 'cook_002']; // 정보처리기사, 컴활1급, 한식조리
+        const demoPendingIds = ['elec_006', 'biz_009']; // 전기기사, 공인중개사
+
+        const processedCerts = initialCerts.map(cert => {
+          if (demoAcquiredIds.includes(cert.id)) return { ...cert, status: 'acquired' };
+          if (demoPendingIds.includes(cert.id)) return { ...cert, status: 'pending' };
+          return cert;
+        });
+
+        setCertificates(processedCerts);
+      } catch (error) {
+        console.error('Failed to load certificates:', error);
+      }
+    };
+
+    fetchCertificates();
+  }, []);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
