@@ -27,10 +27,12 @@ const DexView = ({ certificates, onCertClick }) => {
   const [selectedIssuer, setSelectedIssuer] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
 
-  // 0. Extract Unique Issuers for current active tab (if not 'all')
-  const currentIssuers = activeTab === 'all' 
-    ? [] 
-    : ['all', ...new Set(certificates.filter(c => c.type === activeTab).map(c => c.issuer))];
+  // 0. Extract Unique Issuers for current active tab
+  const currentIssuers = ['all', ...new Set(
+    (activeTab === 'all' ? certificates : certificates.filter(c => c.type === activeTab))
+    .map(c => c.issuer)
+    .filter(Boolean)
+  )].sort((a, b) => a === 'all' ? -1 : b === 'all' ? 1 : a.localeCompare(b));
 
   // 1. Filter Logic
   const filteredCerts = certificates.filter(cert => {
