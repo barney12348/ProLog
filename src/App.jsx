@@ -595,11 +595,20 @@ const StatsView = ({ history, categories, platforms }) => {
   );
 };
 
-const MyPageView = ({ certificates }) => {
+const MyPageView = ({ certificates, onNavigate }) => {
   const acquiredCertificates = certificates.filter(c => c.status === 'acquired');
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="md:hidden">
+        <button 
+          onClick={() => onNavigate('settings')}
+          className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+        >
+          <span className="text-sm font-bold">설정</span>
+          <Settings size={18} />
+        </button>
+      </div>
       <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
           <Award size={20} className="text-primary dark:text-accent" />
@@ -1549,6 +1558,7 @@ function App() {
         {activePage === 'mypage' && (
           <MyPageView 
             certificates={certificates} 
+            onNavigate={setActivePage}
           />
         )}
 
