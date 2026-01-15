@@ -108,6 +108,12 @@ const Sidebar = ({ activePage, onNavigate, darkMode, toggleDarkMode }) => (
         active={activePage === 'history'}
         onClick={() => onNavigate('history')}
       />
+      <SidebarItem 
+        icon={<Settings size={20} />} 
+        label="마이페이지" 
+        active={activePage === 'mypage'}
+        onClick={() => onNavigate('mypage')}
+      />
     </nav>
     
     <div className="p-6 space-y-4">
@@ -182,6 +188,16 @@ const BottomNav = ({ activePage, onNavigate }) => (
     >
       <History size={24} />
       <span className="text-[10px] font-medium">기록</span>
+    </button>
+    <button 
+      onClick={() => onNavigate('mypage')}
+      className={cn(
+        "flex flex-col items-center gap-1 p-3 rounded-2xl min-w-[64px] transition-all duration-200 active:scale-95",
+        activePage === 'mypage' ? "text-primary dark:text-accent bg-primary/5 dark:bg-primary/10" : "text-gray-400 dark:text-gray-500"
+      )}
+    >
+      <Settings size={24} />
+      <span className="text-[10px] font-medium">마이페이지</span>
     </button>
   </nav>
 );
@@ -582,6 +598,40 @@ const StatsView = ({ history, categories, platforms }) => {
   );
 };
 
+const MyPageView = ({ persona, onUpdate, certificates }) => {
+  const acquiredCertificates = certificates.filter(c => c.status === 'acquired');
+
+  return (
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <PersonaCard persona={persona} onUpdate={onUpdate} />
+      
+      <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+          <Award size={20} className="text-primary dark:text-accent" />
+          보유 자격증
+        </h3>
+        {acquiredCertificates.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {acquiredCertificates.map(cert => (
+              <div key={cert.id} className="flex items-center gap-3 p-4 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700">
+                <div className="w-10 h-10 flex items-center justify-center rounded-lg bg-white dark:bg-gray-700 shadow-sm">
+                  {cert.icon}
+                </div>
+                <div>
+                  <p className="font-bold text-sm text-gray-900 dark:text-white">{cert.name}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{cert.issuer}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500 dark:text-gray-400 text-sm">아직 보유한 자격증이 없습니다.</p>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const HistoryView = ({ history, onDelete, platforms }) => {
   const [selectedItem, setSelectedItem] = useState(null);
 
@@ -971,6 +1021,7 @@ function App() {
               {activePage === 'timeline' && '성장 타임라인 📅'}
               {activePage === 'stats' && '활동 통계 📊'}
               {activePage === 'history' && '히스토리 🕒'}
+              {activePage === 'mypage' && '마이페이지 👤'}
               {activePage === 'settings' && '설정 ⚙️'}
             </h1>
             <p className="text-gray-500 dark:text-gray-400 text-sm md:text-lg font-medium leading-relaxed max-w-2xl">
@@ -979,6 +1030,7 @@ function App() {
               {activePage === 'timeline' && '시간의 흐름에 따른 당신의 눈부신 성취를 확인하세요.'}
               {activePage === 'stats' && '데이터로 보는 나의 커리어 강점과 활동 패턴입니다.'}
               {activePage === 'history' && '차곡차곡 쌓인 당신의 모든 기록을 한눈에.'}
+              {activePage === 'mypage' && '사용자 정보를 확인하고 수정할 수 있습니다.'}
               {activePage === 'settings' && '계정 및 알림 설정을 관리하세요.'}
             </p>
           </div>
@@ -1404,6 +1456,14 @@ function App() {
 
         {activePage === 'history' && (
           <HistoryView history={history} onDelete={handleDeleteHistory} platforms={platforms} />
+        )}
+
+        {activePage === 'mypage' && (
+          <MyPageView 
+            persona={persona} 
+            onUpdate={setPersona} 
+            certificates={certificates} 
+          />
         )}
 
         {activePage === 'settings' && (
