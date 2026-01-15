@@ -117,14 +117,6 @@ const Sidebar = ({ activePage, onNavigate, darkMode, toggleDarkMode }) => (
     </nav>
     
     <div className="p-6 space-y-4">
-      <button 
-        onClick={toggleDarkMode}
-        className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-      >
-        <span className="text-sm font-bold">테마 변경</span>
-        {darkMode ? <Sun size={18} /> : <Moon size={18} />}
-      </button>
-      
       <div 
         onClick={() => onNavigate('settings')}
         className="p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer group"
@@ -633,10 +625,23 @@ const MyPageView = ({ certificates }) => {
   );
 };
 
-const SettingsView = ({ persona, onUpdate }) => {
+const SettingsView = ({ persona, onUpdate, darkMode, toggleDarkMode }) => {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <PersonaCard persona={persona} onUpdate={onUpdate} />
+      <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+          <Sun size={20} className="text-primary dark:text-accent" />
+          화면 설정
+        </h3>
+        <button 
+          onClick={toggleDarkMode}
+          className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+        >
+          <span className="text-sm font-bold">테마 변경</span>
+          {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
+      </div>
     </div>
   );
 };
@@ -1477,6 +1482,8 @@ function App() {
           <SettingsView 
             persona={persona}
             onUpdate={setPersona}
+            darkMode={darkMode}
+            toggleDarkMode={() => setDarkMode(!darkMode)}
           />
         )}
 
