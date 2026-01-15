@@ -642,6 +642,36 @@ const SettingsView = ({ persona, onUpdate, darkMode, toggleDarkMode }) => {
           {darkMode ? <Sun size={18} /> : <Moon size={18} />}
         </button>
       </div>
+      <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+          <Settings size={20} className="text-primary dark:text-accent" />
+          계정 관리
+        </h3>
+        <div className="space-y-4">
+          <button 
+            onClick={() => {
+              if (window.confirm('로그아웃 하시겠습니까?')) {
+                window.location.reload();
+              }
+            }}
+            className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          >
+            <span className="text-sm font-bold">로그아웃</span>
+          </button>
+          <button 
+            onClick={() => alert('비밀번호 변경 기능은 현재 준비 중입니다.')}
+            className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          >
+            <span className="text-sm font-bold">비밀번호 변경</span>
+          </button>
+          <button 
+            onClick={() => alert('회원 탈퇴 기능은 현재 준비 중입니다.')}
+            className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+          >
+            <span className="text-sm font-bold">회원 탈퇴</span>
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
