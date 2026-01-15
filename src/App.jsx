@@ -204,7 +204,7 @@ const Badge = ({ icon, label }) => (
   </div>
 );
 
-const PersonaCard = ({ persona, onUpdate }) => {
+const PersonaCard = ({ persona, onUpdate, editable = true }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [tempPersona, setTempPersona] = useState(persona);
 
@@ -266,12 +266,14 @@ const PersonaCard = ({ persona, onUpdate }) => {
       <div className="space-y-2">
         <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
           나의 페르소나
-          <button 
-            onClick={() => setIsEditing(true)} 
-            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-primary dark:hover:text-accent hover:bg-blue-50 dark:hover:bg-gray-800 transition-all"
-          >
-            <Pencil size={16} />
-          </button>
+          {editable && (
+            <button 
+              onClick={() => setIsEditing(true)} 
+              className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-primary dark:hover:text-accent hover:bg-blue-50 dark:hover:bg-gray-800 transition-all"
+            >
+              <Pencil size={16} />
+            </button>
+          )}
         </h2>
         <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">AI가 이 정보를 바탕으로 맞춤형 콘텐츠를 생성합니다.</p>
       </div>
@@ -1134,7 +1136,7 @@ function App() {
 
         {activePage === 'dashboard' && (
           <div className="animate-in fade-in slide-in-from-bottom-8 duration-500">
-            <PersonaCard persona={persona} onUpdate={setPersona} />
+            <PersonaCard persona={persona} onUpdate={setPersona} editable={false} />
 
             {/* Intro / Content Section */}
             <div className="bg-gradient-to-r from-blue-50/80 to-indigo-50/80 dark:from-blue-900/20 dark:to-indigo-900/20 p-6 md:p-8 rounded-3xl mb-10 border border-blue-100/50 dark:border-blue-800/30 backdrop-blur-sm relative overflow-hidden">
