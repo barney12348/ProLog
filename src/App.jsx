@@ -125,7 +125,10 @@ const Sidebar = ({ activePage, onNavigate, darkMode, toggleDarkMode }) => (
         {darkMode ? <Sun size={18} /> : <Moon size={18} />}
       </button>
       
-      <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer group">
+      <div 
+        onClick={() => onNavigate('settings')}
+        className="p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer group"
+      >
         <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-gray-200 to-gray-300 ring-2 ring-white group-hover:ring-primary/20 transition-all"></div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-bold text-gray-900 dark:text-white truncate">사용자 이름</p>
@@ -598,13 +601,11 @@ const StatsView = ({ history, categories, platforms }) => {
   );
 };
 
-const MyPageView = ({ persona, onUpdate, certificates }) => {
+const MyPageView = ({ certificates }) => {
   const acquiredCertificates = certificates.filter(c => c.status === 'acquired');
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <PersonaCard persona={persona} onUpdate={onUpdate} />
-      
       <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
         <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
           <Award size={20} className="text-primary dark:text-accent" />
@@ -628,6 +629,14 @@ const MyPageView = ({ persona, onUpdate, certificates }) => {
           <p className="text-gray-500 dark:text-gray-400 text-sm">아직 보유한 자격증이 없습니다.</p>
         )}
       </div>
+    </div>
+  );
+};
+
+const SettingsView = ({ persona, onUpdate }) => {
+  return (
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <PersonaCard persona={persona} onUpdate={onUpdate} />
     </div>
   );
 };
@@ -1460,20 +1469,15 @@ function App() {
 
         {activePage === 'mypage' && (
           <MyPageView 
-            persona={persona} 
-            onUpdate={setPersona} 
             certificates={certificates} 
           />
         )}
 
         {activePage === 'settings' && (
-          <div className="bg-white p-12 rounded-3xl shadow-sm border border-gray-100 flex flex-col items-center justify-center h-80 text-gray-400">
-             <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
-                <Settings size={40} className="opacity-20" />
-             </div>
-             <p className="text-lg font-bold">설정 페이지 준비 중입니다.</p>
-             <p className="text-sm mt-2">곧 프로필 수정 기능을 만나보실 수 있어요.</p>
-          </div>
+          <SettingsView 
+            persona={persona}
+            onUpdate={setPersona}
+          />
         )}
 
         {/* Footer */}
