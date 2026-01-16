@@ -17,7 +17,6 @@ function cn(...inputs) {
 
 const CATEGORY_TABS = [
   { id: 'all', label: '전체' },
-  { id: 'acquired', label: '✅ 보유 중' },
   { id: 'tech', label: '국가기술' },
   { id: 'special', label: '국가전문' },
   { id: 'global', label: '국제/해외' },
