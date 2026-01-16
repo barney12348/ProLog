@@ -32,6 +32,8 @@ import {
   Sun,
   Moon,
   Star,
+  Link, // Added for CertDetailModal
+  Check, // Added for Acquire button
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -1284,7 +1286,7 @@ function App() {
 
 
 
-      const handleCertClick = (cert) => {
+            const handleCertClick = (cert) => {
 
 
 
@@ -1292,7 +1294,7 @@ function App() {
 
 
 
-        setSelectedCert(cert);
+              setSelectedCert(cert);
 
 
 
@@ -1300,7 +1302,7 @@ function App() {
 
 
 
-      };
+            };
 
 
 
@@ -1308,7 +1310,223 @@ function App() {
 
 
 
-    useEffect(() => {
+      
+
+
+
+  
+
+
+
+            // NEW: handleAcquireCert function to process acquisition
+
+
+
+  
+
+
+
+            const handleAcquireCert = (certId) => {
+
+
+
+  
+
+
+
+              const targetCert = certificates.find(c => c.id === certId);
+
+
+
+  
+
+
+
+              if (!targetCert) return;
+
+
+
+  
+
+
+
+      
+
+
+
+  
+
+
+
+              if (window.confirm(`'${targetCert.name}' 자격증을 보유 중이신가요? 인증(이미지 업로드)을 시작합니다.`)) {
+
+
+
+  
+
+
+
+                 // Step 1: Set to pending
+
+
+
+  
+
+
+
+                 const newCerts = certificates.map(c => 
+
+
+
+  
+
+
+
+                   c.id === certId ? { ...c, status: 'pending' } : c
+
+
+
+  
+
+
+
+                 );
+
+
+
+  
+
+
+
+                 setCertificates(newCerts);
+
+
+
+  
+
+
+
+                 
+
+
+
+  
+
+
+
+                 // Step 2: Simulate AI/Admin Approval for demo
+
+
+
+  
+
+
+
+                 setTimeout(() => {
+
+
+
+  
+
+
+
+                   setCertificates(currentCerts => {
+
+
+
+  
+
+
+
+                     const updatedCerts = currentCerts.map(c => 
+
+
+
+  
+
+
+
+                       c.id === certId ? { ...c, status: 'acquired' } : c
+
+
+
+  
+
+
+
+                     );
+
+
+
+  
+
+
+
+                     setSelectedCert(updatedCerts.find(c => c.id === certId)); // Update the modal with the new status
+
+
+
+  
+
+
+
+                     return updatedCerts;
+
+
+
+  
+
+
+
+                   });
+
+
+
+  
+
+
+
+                   alert(`🎉 축하합니다! '${targetCert.name}' 자격증이 도감에 등록되었습니다.`);
+
+
+
+  
+
+
+
+                 }, 3000);
+
+
+
+  
+
+
+
+              }
+
+
+
+  
+
+
+
+            };
+
+
+
+  
+
+
+
+      
+
+
+
+  
+
+
+
+          useEffect(() => {
 
 
 
@@ -1724,7 +1942,7 @@ function App() {
 
 
 
-        <CertDetailModal cert={selectedCert} onClose={() => setSelectedCert(null)} />
+        <CertDetailModal cert={selectedCert} onClose={() => setSelectedCert(null)} onAcquire={handleAcquireCert} />
 
 
 
@@ -2780,8 +2998,11 @@ function App() {
 
 
 
-const CertDetailModal = ({ cert, onClose }) => {
+const CertDetailModal = ({ cert, onClose, onAcquire }) => { // Add onAcquire prop
   if (!cert) return null;
+
+  const isAcquired = cert.status === 'acquired';
+  const isPending = cert.status === 'pending';
 
   return (
     <div 
@@ -2842,6 +3063,26 @@ const CertDetailModal = ({ cert, onClose }) => {
         
         {/* Footer */}
         <div className="p-6 mt-auto border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 flex justify-end gap-3">
+          {/* NEW: Acquire button */}
+          {!isAcquired && !isPending && ( // Only show if not already acquired or pending
+            <button
+              onClick={() => onAcquire(cert.id)}
+              className="px-5 py-2.5 text-sm font-bold bg-green-600 text-white rounded-xl hover:bg-green-700 shadow-md shadow-green-200 transition-all flex items-center gap-2"
+            >
+              <Check size={14} />
+              보유 자격증으로 등록하기
+            </button>
+          )}
+          {isPending && (
+            <button
+              disabled
+              className="px-5 py-2.5 text-sm font-bold bg-yellow-600 text-white rounded-xl cursor-not-allowed flex items-center gap-2"
+            >
+              <Loader2 size={14} className="animate-spin" />
+              인증 대기 중...
+            </button>
+          )}
+
           <button 
             onClick={onClose}
             className="px-5 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
