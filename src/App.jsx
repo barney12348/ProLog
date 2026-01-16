@@ -1236,17 +1236,19 @@ function App() {
 
   const [darkMode, setDarkMode] = useState(false);
 
-  const [showOnboarding, setShowOnboarding] = useState(true);
+    const [showOnboarding, setShowOnboarding] = useState(true);
 
-  const [persona, setPersona] = useState({
+    const [selectedCert, setSelectedCert] = useState(null);
 
-    university: '서울대학교',
+    const [persona, setPersona] = useState({
 
-    major: '컴퓨터공학',
+      university: '서울대학교',
 
-    jobGoal: '서비스 기획자'
+      major: '컴퓨터공학',
 
-  });
+      jobGoal: '서비스 기획자'
+
+    });
 
   
 
@@ -1282,95 +1284,23 @@ function App() {
 
 
 
-    const handleCertClick = (cert) => {
+      const handleCertClick = (cert) => {
 
 
 
-      if (cert.status === 'locked') {
+  
 
 
 
-        if (window.confirm(`'${cert.name}' 자격증을 보유 중이신가요? 인증(이미지 업로드)을 시작합니다.`)) {
+        setSelectedCert(cert);
 
 
 
-           // Step 1: Set to pending
+  
 
 
 
-           const newCerts = certificates.map(c => 
-
-
-
-             c.id === cert.id ? { ...c, status: 'pending' } : c
-
-
-
-           );
-
-
-
-           setCertificates(newCerts);
-
-
-
-           
-
-
-
-           // Step 2: Simulate AI/Admin Approval for demo
-
-
-
-           setTimeout(() => {
-
-
-
-             setCertificates(currentCerts => 
-
-
-
-               currentCerts.map(c => 
-
-
-
-                 c.id === cert.id ? { ...c, status: 'acquired' } : c
-
-
-
-               )
-
-
-
-             );
-
-
-
-             alert(`🎉 축하합니다! '${cert.name}' 자격증이 도감에 등록되었습니다.`);
-
-
-
-           }, 3000);
-
-
-
-        }
-
-
-
-      } else if (cert.status === 'acquired') {
-
-
-
-        alert(`이미 획득한 자격증입니다! (${cert.issuer})`);
-
-
-
-      }
-
-
-
-    };
+      };
 
 
 
@@ -1786,21 +1716,39 @@ function App() {
 
 
 
-  return (
+    return (
 
-    <div className="min-h-screen font-sans text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-950 selection:bg-primary/20 selection:text-primary transition-colors duration-300">
 
-      <Sidebar 
 
-        activePage={activePage} 
+      <div className="min-h-screen font-sans text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-950 selection:bg-primary/20 selection:text-primary transition-colors duration-300">
 
-        onNavigate={setActivePage} 
 
-        darkMode={darkMode}
 
-        toggleDarkMode={() => setDarkMode(!darkMode)}
+        <CertDetailModal cert={selectedCert} onClose={() => setSelectedCert(null)} />
 
-      />
+
+
+        <Sidebar 
+
+
+
+          activePage={activePage} 
+
+
+
+          onNavigate={setActivePage} 
+
+
+
+          darkMode={darkMode}
+
+
+
+          toggleDarkMode={() => setDarkMode(!darkMode)}
+
+
+
+        />
 
       
 
@@ -1906,11 +1854,11 @@ function App() {
 
 
 
-                      onCertClick={handleCertClick}
+                                          onCertClick={setSelectedCert}
 
 
 
-                    />
+                                        />
 
 
 
@@ -2831,6 +2779,91 @@ function App() {
 }
 
 
+
+const CertDetailModal = ({ cert, onClose }) => {
+  if (!cert) return null;
+
+  return (
+    <div 
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white dark:bg-gray-900 w-full max-w-2xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col animate-in zoom-in-95"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex items-start justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center rounded-lg bg-gray-50 dark:bg-gray-800 text-3xl">
+              {cert.icon}
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">{cert.name}</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{cert.issuer}</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full">
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="p-6 space-y-6 overflow-y-auto">
+          <div>
+            <h3 className="font-bold text-gray-700 dark:text-gray-300 mb-2">자격증 설명</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{cert.description || '상세 설명이 없습니다.'}</p>
+          </div>
+
+          {cert.details?.subjects && (
+            <div>
+              <h3 className="font-bold text-gray-700 dark:text-gray-300 mb-3">주요 시험과목</h3>
+              <div className="flex flex-wrap gap-2">
+                {cert.details.subjects.map((subject, i) => (
+                  <span key={i} className="px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 dark:bg-blue-900/50 dark:text-blue-300 rounded-full">
+                    {subject}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {cert.details?.fee && (
+             <div>
+              <h3 className="font-bold text-gray-700 dark:text-gray-300 mb-2">응시료</h3>
+              <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                {Object.entries(cert.details.fee).map(([type, cost]) => (
+                  <p key={type}><span className="font-semibold w-16 inline-block">{type}:</span> {cost}</p>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+        
+        {/* Footer */}
+        <div className="p-6 mt-auto border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 flex justify-end gap-3">
+          <button 
+            onClick={onClose}
+            className="px-5 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
+          >
+            닫기
+          </button>
+          {cert.officialLink && (
+            <a
+              href={cert.officialLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-5 py-2.5 text-sm font-bold bg-primary text-white rounded-xl hover:bg-blue-600 shadow-md shadow-primary/20 transition-all flex items-center gap-2"
+            >
+              <Link size={14} />
+              공식 사이트
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const RecommendationView = ({ certificates, wishlist, persona, onCertClick }) => {
   const recommendations = React.useMemo(() => {

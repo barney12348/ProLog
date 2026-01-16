@@ -1,13 +1,43 @@
 [
   { "id": "it_001", "name": "정보관리기술사", "type": "tech", "issuer": "한국산업인력공단", "keywords": ["IT", "기술사"] },
   { "id": "it_002", "name": "컴퓨터시스템응용기술사", "type": "tech", "issuer": "한국산업인력공단", "keywords": ["IT", "하드웨어"] },
-  { "id": "it_003", "name": "정보처리기사", "type": "tech", "issuer": "한국산업인력공단", "keywords": ["소프트웨어", "개발"] },
+  { 
+    "id": "it_003", 
+    "name": "정보처리기사", 
+    "type": "tech", 
+    "issuer": "한국산업인력공단", 
+    "keywords": ["소프트웨어", "개발", "코딩"],
+    "description": "컴퓨터를 효과적으로 활용하기 위한 소프트웨어 개발 및 운용 능력을 평가하는 국가기술자격. IT 분야의 대표적인 자격증 중 하나입니다.",
+    "details": {
+      "subjects": ["소프트웨어 설계", "소프트웨어 개발", "데이터베이스 구축", "프로그래밍 언어 활용", "정보시스템 구축 관리"],
+      "fee": {
+        "written": "19,400원",
+        "practical": "22,600원"
+      }
+    },
+    "officialLink": "https://www.q-net.or.kr/crf005.do?id=crf00503&jmCd=1320"
+  },
   { "id": "it_004", "name": "정보처리산업기사", "type": "tech", "issuer": "한국산업인력공단", "keywords": ["소프트웨어"] },
   { "id": "it_005", "name": "정보보안기사", "type": "tech", "issuer": "KISA", "keywords": ["보안", "해킹"] },
   { "id": "it_006", "name": "정보보안산업기사", "type": "tech", "issuer": "KISA", "keywords": ["보안"] },
   { "id": "it_007", "name": "빅데이터분석기사", "type": "tech", "issuer": "한국데이터산업진흥원", "keywords": ["데이터", "AI"] },
   { "id": "it_008", "name": "사무자동화산업기사", "type": "tech", "issuer": "한국산업인력공단", "keywords": ["OA", "엑셀"] },
-  { "id": "it_009", "name": "컴퓨터활용능력 1급", "type": "tech", "issuer": "대한상공회의소", "keywords": ["엑셀", "데이터베이스"] },
+  { 
+    "id": "it_009", 
+    "name": "컴퓨터활용능력 1급", 
+    "type": "tech", 
+    "issuer": "대한상공회의소", 
+    "keywords": ["엑셀", "데이터베이스", "사무"],
+    "description": "사무자동화의 필수 프로그램인 스프레드시트(엑셀)와 데이터베이스(액세스) 활용 능력을 평가하는 자격증입니다. 사무직 취업에 큰 도움이 됩니다.",
+    "details": {
+      "subjects": ["스프레드시트 실무", "데이터베이스 실무"],
+      "fee": {
+        "written": "21,000원",
+        "practical": "25,000원"
+      }
+    },
+    "officialLink": "http://license.korcham.net/co/examguide.do?mm=21&cd=0103"
+  },
   { "id": "it_010", "name": "컴퓨터활용능력 2급", "type": "tech", "issuer": "대한상공회의소", "keywords": ["엑셀"] },
   { "id": "it_011", "name": "워드프로세서", "type": "tech", "issuer": "대한상공회의소", "keywords": ["문서"] },
   { "id": "it_012", "name": "정보통신기사", "type": "tech", "issuer": "한국방송통신전파진흥원", "keywords": ["네트워크", "통신"] },
@@ -253,7 +283,22 @@
   { "id": "biz_006", "name": "법무사", "type": "special", "issuer": "법원행정처", "keywords": ["법"] },
   { "id": "biz_007", "name": "감정평가사", "type": "special", "issuer": "국토교통부", "keywords": ["부동산"] },
   { "id": "biz_008", "name": "공인노무사", "type": "special", "issuer": "고용노동부", "keywords": ["노동"] },
-  { "id": "biz_009", "name": "공인중개사", "type": "special", "issuer": "국토교통부", "keywords": ["부동산"] },
+  { 
+    "id": "biz_009", 
+    "name": "공인중개사", 
+    "type": "special", 
+    "issuer": "한국산업인력공단", 
+    "keywords": ["부동산", "중개"],
+    "description": "일정한 수수료를 받고 토지, 주택 등 중개 대상물에 대하여 거래당사자 간의 매매, 교환, 임대차 그 밖의 권리의 득실변경에 관한 행위를 알선, 중개하는 전문가입니다.",
+    "details": {
+      "subjects": ["부동산학개론", "민법 및 민사특별법", "공인중개사법", "부동산공법", "부동산공시법", "부동산세법"],
+      "fee": {
+        "1차": "13,700원",
+        "2차": "14,300원"
+      }
+    },
+    "officialLink": "https://www.q-net.or.kr/crf005.do?id=crf00503&jmCd=0930"
+  },
   { "id": "biz_010", "name": "주택관리사보", "type": "special", "issuer": "국토교통부", "keywords": ["주택"] },
   { "id": "biz_011", "name": "경영지도사(마케팅)", "type": "special", "issuer": "중소벤처기업부", "keywords": ["경영"] },
   { "id": "biz_012", "name": "경영지도사(인적자원)", "type": "special", "issuer": "중소벤처기업부", "keywords": ["경영"] },
