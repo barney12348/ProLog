@@ -49,7 +49,8 @@ const DexView = ({ certificates, wishlist = [], onToggleWishlist, onCertClick })
       (activeTab === 'all' || cert.type === activeTab);
     const matchesIssuer = selectedIssuer === 'all' || cert.issuer === selectedIssuer;
     const matchesSearch = cert.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          cert.issuer.toLowerCase().includes(searchTerm.toLowerCase());
+                          cert.issuer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          (cert.keywords && cert.keywords.some(keyword => keyword.toLowerCase().includes(searchTerm.toLowerCase())));
     return matchesTab && matchesIssuer && matchesSearch;
   });
 
