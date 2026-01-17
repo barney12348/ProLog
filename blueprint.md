@@ -17,7 +17,7 @@ This project is a web application that helps users track their career-related ac
 
 ## Current Task: Modify Certificate Acquisition Process
 
--   [x] Modify the `CertDetailModal` to include a submission form with a textarea and file input.
--   [x] Update the `handleAcquireCert` function to simulate a submission for admin approval.
--   [x] Change the click behavior on certificates in the Dex to open the detail modal.
+-   [x] Modified the `DexView` component to show a detail view with a submission form when a certificate is clicked.
+-   [x] The submission is handled in `App.jsx` and the certificate status is set to 'pending'.
+-   [x] Removed the `CertDetailModal` from `App.jsx`.
 -   [ ] The user can see the changes.
