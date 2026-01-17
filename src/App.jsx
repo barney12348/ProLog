@@ -1331,90 +1331,22 @@ function App() {
 
 
 
-  const handleAcquireCert = (certId) => {
-
-
-
+  const handleAcquireCert = (certId, submission) => {
     const targetCert = certificates.find(c => c.id === certId);
-
-
-
     if (!targetCert) return;
 
+    console.log('New Certificate Submission:', {
+      certificate: targetCert.name,
+      content: submission.content,
+      file: submission.file ? submission.file.name : 'No file uploaded',
+    });
 
-
-
-
-
-
-    if (window.confirm(`'${targetCert.name}' 자격증을 보유 중이신가요? 인증(이미지 업로드)을 시작합니다.`)) {
-
-
-
-      const newCerts = certificates.map(c =>
-
-
-
-        c.id === certId ? { ...c, status: 'pending' } : c
-
-
-
-      );
-
-
-
-      setCertificates(newCerts);
-
-
-
-
-
-
-
-      setTimeout(() => {
-
-
-
-        setCertificates(currentCerts => {
-
-
-
-          const updatedCerts = currentCerts.map(c =>
-
-
-
-            c.id === certId ? { ...c, status: 'acquired' } : c
-
-
-
-          );
-
-
-
-          setSelectedCert(updatedCerts.find(c => c.id === certId));
-
-
-
-          return updatedCerts;
-
-
-
-        });
-
-
-
-        alert(`🎉 축하합니다! '${targetCert.name}' 자격증이 도감에 등록되었습니다.`);
-
-
-
-      }, 3000);
-
-
-
-    }
-
-
-
+    const newCerts = certificates.map(c =>
+      c.id === certId ? { ...c, status: 'pending' } : c
+    );
+    setCertificates(newCerts);
+    
+    alert(`'${targetCert.name}'에 대한 인증 신청이 제출되었습니다. 관리자 승인을 기다려주세요.`);
   };
 
 
@@ -2375,7 +2307,7 @@ function App() {
 
 
 
-          <Route path="/dex" element={<Dex certificates={certificates} wishlist={wishlist} setWishlist={setWishlist} handleAcquireCert={handleAcquireCert} />} />
+          <Route path="/dex" element={<Dex certificates={certificates} wishlist={wishlist} setWishlist={setWishlist} onCertClick={setSelectedCert} />} />
 
 
 
@@ -2504,385 +2436,118 @@ function App() {
 
 
 const CertDetailModal = ({ cert, onClose, onAcquire }) => {
-
-
+  const [submission, setSubmission] = useState({ content: '', file: null });
 
   if (!cert) return null;
 
-
-
   const isAcquired = cert.status === 'acquired';
-
-
-
   const isPending = cert.status === 'pending';
 
+  const handleFileChange = (e) => {
+    setSubmission({ ...submission, file: e.target.files[0] });
+  };
 
+  const handleSubmit = () => {
+    onAcquire(cert.id, submission);
+    onClose();
+  };
 
   return (
-
-
-
     <div
-
-
-
       className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in"
-
-
-
       onClick={onClose}
-
-
-
     >
-
-
-
       <div
-
-
-
         className="bg-white dark:bg-gray-900 w-full max-w-2xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col animate-in zoom-in-95"
-
-
-
         onClick={(e) => e.stopPropagation()}
-
-
-
       >
-
-
-
         <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex items-start justify-between">
-
-
-
           <div className="flex items-center gap-4">
-
-
-
             <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center rounded-lg bg-gray-50 dark:bg-gray-800 text-3xl">
-
-
-
               {cert.icon}
-
-
-
             </div>
-
-
-
             <div>
-
-
-
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">{cert.name}</h2>
-
-
-
               <p className="text-sm text-gray-500 dark:text-gray-400">{cert.issuer}</p>
-
-
-
             </div>
-
-
-
           </div>
-
-
-
           <button onClick={onClose} className="p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full">
-
-
-
             <X size={20} />
-
-
-
           </button>
-
-
-
         </div>
-
-
 
         <div className="p-6 space-y-6 overflow-y-auto">
-
-
-
           <div>
-
-
-
             <h3 className="font-bold text-gray-700 dark:text-gray-300 mb-2">자격증 설명</h3>
-
-
-
             <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{cert.description || '상세 설명이 없습니다.'}</p>
-
-
-
           </div>
 
-
-
-          {cert.details?.subjects && (
-
-
-
-            <div>
-
-
-
-              <h3 className="font-bold text-gray-700 dark:text-gray-300 mb-3">주요 시험과목</h3>
-
-
-
-              <div className="flex flex-wrap gap-2">
-
-
-
-                {cert.details.subjects.map((subject, i) => (
-
-
-
-                  <span key={i} className="px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 dark:bg-blue-900/50 dark:text-blue-300 rounded-full">
-
-
-
-                    {subject}
-
-
-
-                  </span>
-
-
-
-                ))}
-
-
-
+          {!isAcquired && !isPending && (
+            <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+              <h3 className="font-bold text-gray-700 dark:text-gray-300">자격증 인증 신청</h3>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">신청 내용</label>
+                <textarea
+                  value={submission.content}
+                  onChange={(e) => setSubmission({ ...submission, content: e.target.value })}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm font-medium focus:bg-white dark:focus:bg-gray-700 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all dark:text-white"
+                  rows="3"
+                  placeholder="자격증 취득과 관련된 내용을 입력해주세요."
+                ></textarea>
               </div>
-
-
-
-            </div>
-
-
-
-          )}
-
-
-
-          {cert.details?.fee && (
-
-
-
-             <div>
-
-
-
-              <h3 className="font-bold text-gray-700 dark:text-gray-300 mb-2">응시료</h3>
-
-
-
-              <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-
-
-
-                {Object.entries(cert.details.fee).map(([type, cost]) => (
-
-
-
-                  <p key={type}><span className="font-semibold w-16 inline-block">{type}:</span> {cost}</p>
-
-
-
-                ))}
-
-
-
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">첨부 파일</label>
+                <input
+                  type="file"
+                  onChange={handleFileChange}
+                  className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
               </div>
-
-
-
             </div>
-
-
-
           )}
-
-
 
         </div>
-
-
 
         <div className="p-6 mt-auto border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 flex justify-end gap-3">
-
-
-
           {!isAcquired && !isPending && (
-
-
-
             <button
-
-
-
-              onClick={() => onAcquire(cert.id)}
-
-
-
+              onClick={handleSubmit}
               className="px-5 py-2.5 text-sm font-bold bg-green-600 text-white rounded-xl hover:bg-green-700 shadow-md shadow-green-200 transition-all flex items-center gap-2"
-
-
-
             >
-
-
-
               <Check size={14} />
-
-
-
-              보유 자격증으로 등록하기
-
-
-
+              신청하기
             </button>
-
-
-
           )}
-
-
-
           {isPending && (
-
-
-
             <button
-
-
-
               disabled
-
-
-
               className="px-5 py-2.5 text-sm font-bold bg-yellow-600 text-white rounded-xl cursor-not-allowed flex items-center gap-2"
-
-
-
             >
-
-
-
               <Loader2 size={14} className="animate-spin" />
-
-
-
               인증 대기 중...
-
-
-
             </button>
-
-
-
           )}
-
-
-
           <button
-
-
-
             onClick={onClose}
-
-
-
             className="px-5 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
-
-
-
           >
-
-
-
             닫기
-
-
-
           </button>
-
-
-
           {cert.officialLink && (
-
-
-
             <a
-
-
-
               href={cert.officialLink}
-
-
-
               target="_blank"
-
-
-
               rel="noopener noreferrer"
-
-
-
               className="px-5 py-2.5 text-sm font-bold bg-primary text-white rounded-xl hover:bg-blue-600 shadow-md shadow-primary/20 transition-all flex items-center gap-2"
-
-
-
             >
-
-
-
               <LinkIcon size={14} />
-
-
-
               공식 사이트
-
-
-
             </a>
-
-
-
           )}
-
-
-
         </div>
-
-
-
       </div>
-
-
-
     </div>
-
-
-
   );
-
-
-
 };
 
 

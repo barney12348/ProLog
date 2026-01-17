@@ -17,15 +17,7 @@ export default function Dex({ certificates, wishlist, setWishlist, handleAcquire
                         prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
                     );
                 }}
-                onCertClick={(cert) => {
-                    if (cert.status === 'locked') {
-                        if (window.confirm(`'${cert.name}' 자격증을 보유 중이신가요? 인증(이미지 업로드)을 시작합니다.`)) {
-                            handleAcquireCert(cert.id);
-                        }
-                    } else if (cert.status === 'acquired') {
-                        alert(`이미 획득한 자격증입니다! (${cert.issuer})`);
-                    }
-                }}
+                onCertClick={onCertClick}
             />
         </>
     );

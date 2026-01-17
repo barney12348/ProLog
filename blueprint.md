@@ -13,9 +13,11 @@ This project is a web application that helps users track their career-related ac
 -   **History:** A log of all generated content.
 -   **My Page:** User's profile and settings.
 -   **Social Sharing:** Users can share their achievements on social media.
+-   **Certificate Submission:** Users can submit their certificates for admin approval.
 
-## Current Task: Add Social Media Sharing
+## Current Task: Modify Certificate Acquisition Process
 
--   [x] Install `react-share` library.
--   [x] Add share buttons (Facebook, Twitter, LinkedIn) and a copy link button to the `CardPreview` component.
--   [x] The user can see the changes.
+-   [x] Modify the `CertDetailModal` to include a submission form with a textarea and file input.
+-   [x] Update the `handleAcquireCert` function to simulate a submission for admin approval.
+-   [x] Change the click behavior on certificates in the Dex to open the detail modal.
+-   [ ] The user can see the changes.
