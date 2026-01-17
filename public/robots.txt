@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
-Sitemap: https://your-domain.com/sitemap.xml
+Disallow: /public/
+Sitemap: https://prolog.com/sitemap.xml

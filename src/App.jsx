@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
   History,
@@ -32,15 +33,22 @@ import {
   Sun,
   Moon,
   Star,
-  Link, // Added for CertDetailModal
-  Check, // Added for Acquire button
+  Link as LinkIcon,
+  Check,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { toPng } from 'html-to-image';
 import download from 'downloadjs';
+
+import Dashboard from './pages/Dashboard';
+import Dex from './pages/Dex';
+import Timeline from './pages/Timeline';
+import Stats from './pages/Stats';
+import HistoryPage from './pages/History';
+import MyPage from './pages/MyPage';
+import SettingsPage from './pages/Settings';
 import ImageResizer from './components/ImageResizer.jsx';
-import DexView from './components/DexView.jsx';
 import { getCertIcon } from './utils/certUtils.js';
 
 // Utility for class merging
@@ -50,25 +58,29 @@ function cn(...inputs) {
 
 // --- Components ---
 
-const SidebarItem = ({ icon, label, active, onClick }) => (
-  <button 
-    onClick={onClick}
-    className={cn(
-      "w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-[15px] font-medium transition-all duration-200 group relative overflow-hidden",
-      active 
-        ? "bg-primary/5 dark:bg-primary/10 text-primary dark:text-accent shadow-sm" 
-        : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
-    )}
-  >
-    {active && <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-full" />}
-    <span className={cn("transition-transform duration-200", active ? "scale-110" : "group-hover:scale-110")}>
-      {icon}
-    </span>
-    {label}
-  </button>
-);
+const SidebarItem = ({ icon, label, to }) => {
+  const location = useLocation();
+  const active = location.pathname === to;
+  return (
+    <Link
+      to={to}
+      className={cn(
+        "w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-[15px] font-medium transition-all duration-200 group relative overflow-hidden",
+        active
+          ? "bg-primary/5 dark:bg-primary/10 text-primary dark:text-accent shadow-sm"
+          : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
+      )}
+    >
+      {active && <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-full" />}
+      <span className={cn("transition-transform duration-200", active ? "scale-110" : "group-hover:scale-110")}>
+        {icon}
+      </span>
+      {label}
+    </Link>
+  );
+}
 
-const Sidebar = ({ activePage, onNavigate, darkMode, toggleDarkMode }) => (
+const Sidebar = () => (
   <aside className="w-72 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-r border-gray-100 dark:border-gray-800 h-screen flex flex-col fixed left-0 top-0 z-20 hidden md:flex shadow-[4px_0_24px_-12px_rgba(0,0,0,0.1)]">
     <div className="p-8 pb-4 flex items-center justify-between">
       <div className="flex items-center gap-3">
@@ -81,47 +93,41 @@ const Sidebar = ({ activePage, onNavigate, darkMode, toggleDarkMode }) => (
     
     <nav className="flex-1 px-6 space-y-2 mt-8 overflow-y-auto custom-scrollbar">
       <p className="px-4 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Menu</p>
-      <SidebarItem 
-        icon={<LayoutDashboard size={20} />} 
-        label="대시보드" 
-        active={activePage === 'dashboard'} 
-        onClick={() => onNavigate('dashboard')}
+      <SidebarItem
+        icon={<LayoutDashboard size={20} />}
+        label="대시보드"
+        to="/"
       />
-      <SidebarItem 
-        icon={<Award size={20} />} 
-        label="자격증 도감" 
-        active={activePage === 'dex'}
-        onClick={() => onNavigate('dex')}
+      <SidebarItem
+        icon={<Award size={20} />}
+        label="자격증 도감"
+        to="/dex"
       />
-      <SidebarItem 
-        icon={<TrendingUp size={20} />} 
-        label="타임라인" 
-        active={activePage === 'timeline'}
-        onClick={() => onNavigate('timeline')}
+      <SidebarItem
+        icon={<TrendingUp size={20} />}
+        label="타임라인"
+        to="/timeline"
       />
-      <SidebarItem 
-        icon={<PieChart size={20} />} 
-        label="통계" 
-        active={activePage === 'stats'}
-        onClick={() => onNavigate('stats')}
+      <SidebarItem
+        icon={<PieChart size={20} />}
+        label="통계"
+        to="/stats"
       />
-      <SidebarItem 
-        icon={<History size={20} />} 
-        label="히스토리" 
-        active={activePage === 'history'}
-        onClick={() => onNavigate('history')}
+      <SidebarItem
+        icon={<History size={20} />}
+        label="히스토리"
+        to="/history"
       />
-      <SidebarItem 
-        icon={<Settings size={20} />} 
-        label="마이페이지" 
-        active={activePage === 'mypage'}
-        onClick={() => onNavigate('mypage')}
+      <SidebarItem
+        icon={<Settings size={20} />}
+        label="마이페이지"
+        to="/mypage"
       />
     </nav>
     
     <div className="p-6 space-y-4">
-      <div 
-        onClick={() => onNavigate('settings')}
+      <Link
+        to="/settings"
         className="p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer group"
       >
         <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-gray-200 to-gray-300 ring-2 ring-white group-hover:ring-primary/20 transition-all"></div>
@@ -130,73 +136,36 @@ const Sidebar = ({ activePage, onNavigate, darkMode, toggleDarkMode }) => (
           <p className="text-xs text-gray-500 truncate">대학생</p>
         </div>
         <Settings size={18} className="text-gray-400 group-hover:text-gray-600 transition-colors" />
-      </div>
+      </Link>
     </div>
   </aside>
 );
 
-const BottomNav = ({ activePage, onNavigate }) => (
+const BottomNavItem = ({ to, icon, label }) => {
+    const location = useLocation();
+    const active = location.pathname === to;
+    return (
+        <Link
+            to={to}
+            className={cn(
+                "flex flex-col items-center gap-1 p-3 rounded-2xl min-w-[64px] transition-all duration-200 active:scale-95",
+                active ? "text-primary dark:text-accent bg-primary/5 dark:bg-primary/10" : "text-gray-400 dark:text-gray-500"
+            )}
+        >
+            {icon}
+            <span className="text-[10px] font-bold">{label}</span>
+        </Link>
+    )
+}
+
+const BottomNav = () => (
   <nav className="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200/50 dark:border-gray-800 flex justify-around p-2 pb-safe z-50 md:hidden shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)]">
-    <button 
-      onClick={() => onNavigate('dashboard')}
-      className={cn(
-        "flex flex-col items-center gap-1 p-3 rounded-2xl min-w-[64px] transition-all duration-200 active:scale-95",
-        activePage === 'dashboard' ? "text-primary dark:text-accent bg-primary/5 dark:bg-primary/10" : "text-gray-400 dark:text-gray-500"
-      )}
-    >
-      <LayoutDashboard size={24} className={activePage === 'dashboard' ? "fill-primary/20" : ""} />
-      <span className="text-[10px] font-bold">홈</span>
-    </button>
-    <button 
-      onClick={() => onNavigate('dex')}
-      className={cn(
-        "flex flex-col items-center gap-1 p-3 rounded-2xl min-w-[64px] transition-all duration-200 active:scale-95",
-        activePage === 'dex' ? "text-primary dark:text-accent bg-primary/5 dark:bg-primary/10" : "text-gray-400 dark:text-gray-500"
-      )}
-    >
-      <Award size={24} />
-      <span className="text-[10px] font-medium">도감</span>
-    </button>
-    <button 
-      onClick={() => onNavigate('timeline')}
-      className={cn(
-        "flex flex-col items-center gap-1 p-3 rounded-2xl min-w-[64px] transition-all duration-200 active:scale-95",
-        activePage === 'timeline' ? "text-primary dark:text-accent bg-primary/5 dark:bg-primary/10" : "text-gray-400 dark:text-gray-500"
-      )}
-    >
-      <TrendingUp size={24} />
-      <span className="text-[10px] font-medium">타임라인</span>
-    </button>
-    <button 
-      onClick={() => onNavigate('stats')}
-      className={cn(
-        "flex flex-col items-center gap-1 p-3 rounded-2xl min-w-[64px] transition-all duration-200 active:scale-95",
-        activePage === 'stats' ? "text-primary dark:text-accent bg-primary/5 dark:bg-primary/10" : "text-gray-400 dark:text-gray-500"
-      )}
-    >
-      <PieChart size={24} />
-      <span className="text-[10px] font-medium">통계</span>
-    </button>
-    <button 
-      onClick={() => onNavigate('history')}
-      className={cn(
-        "flex flex-col items-center gap-1 p-3 rounded-2xl min-w-[64px] transition-all duration-200 active:scale-95",
-        activePage === 'history' ? "text-primary dark:text-accent bg-primary/5 dark:bg-primary/10" : "text-gray-400 dark:text-gray-500"
-      )}
-    >
-      <History size={24} />
-      <span className="text-[10px] font-medium">기록</span>
-    </button>
-    <button 
-      onClick={() => onNavigate('mypage')}
-      className={cn(
-        "flex flex-col items-center gap-1 p-3 rounded-2xl min-w-[64px] transition-all duration-200 active:scale-95",
-        activePage === 'mypage' ? "text-primary dark:text-accent bg-primary/5 dark:bg-primary/10" : "text-gray-400 dark:text-gray-500"
-      )}
-    >
-      <Settings size={24} />
-      <span className="text-[10px] font-medium">마이페이지</span>
-    </button>
+    <BottomNavItem to="/" icon={<LayoutDashboard size={24} />} label="홈" />
+    <BottomNavItem to="/dex" icon={<Award size={24} />} label="도감" />
+    <BottomNavItem to="/timeline" icon={<TrendingUp size={24} />} label="타임라인" />
+    <BottomNavItem to="/stats" icon={<PieChart size={24} />} label="통계" />
+    <BottomNavItem to="/history" icon={<History size={24} />} label="기록" />
+    <BottomNavItem to="/mypage" icon={<Settings size={24} />} label="마이페이지" />
   </nav>
 );
 
@@ -1198,389 +1167,299 @@ const HistoryView = ({ history, onDelete, platforms }) => {
 
 function App() {
 
-  const [activePage, setActivePage] = useState(() => {
-
-    return localStorage.getItem('prolog_active_page') || 'dashboard';
-
-  });
-
-
-
-  useEffect(() => {
-
-    localStorage.setItem('prolog_active_page', activePage);
-
-  }, [activePage]);
-
 
 
   const [activeTab, setActiveTab] = useState('instagram');
 
-  const [category, setCategory] = useState('award'); 
+
+
+  const [category, setCategory] = useState('award');
+
+
 
   const [tone, setTone] = useState('emotional');
 
+
+
   const [keywords, setKeywords] = useState('');
+
+
 
   const [uploadStatus, setUploadStatus] = useState('idle'); // idle, uploading, success
 
+
+
   const [genStatus, setGenStatus] = useState('idle'); // idle, generating, success
+
+
 
   const [resultMode, setResultMode] = useState('text'); // text, card
 
+
+
   const [resultText, setResultText] = useState('');
+
+
 
   const [selectedImage, setSelectedImage] = useState(null);
 
+
+
   const [showResizer, setShowResizer] = useState(false);
+
+
 
   const [history, setHistory] = useState([]);
 
+
+
   const [darkMode, setDarkMode] = useState(false);
 
-    const [showOnboarding, setShowOnboarding] = useState(true);
 
-    const [selectedCert, setSelectedCert] = useState(null);
 
-    const [persona, setPersona] = useState({
+  const [showOnboarding, setShowOnboarding] = useState(true);
 
-      university: '서울대학교',
 
-      major: '컴퓨터공학',
 
-      jobGoal: '서비스 기획자'
+  const [selectedCert, setSelectedCert] = useState(null);
 
-    });
 
-  
 
-  // Wishlist state for certificates
+  const [persona, setPersona] = useState({
 
-  const [wishlist, setWishlist] = useState(() => {
 
-    const saved = localStorage.getItem('prolog_wishlist');
 
-    return saved ? JSON.parse(saved) : [];
+    university: '서울대학교',
+
+
+
+    major: '컴퓨터공학',
+
+
+
+    jobGoal: '서비스 기획자'
+
+
 
   });
 
 
 
+
+
+
+
+  const [wishlist, setWishlist] = useState(() => {
+
+
+
+    const saved = localStorage.getItem('prolog_wishlist');
+
+
+
+    return saved ? JSON.parse(saved) : [];
+
+
+
+  });
+
+
+
+
+
+
+
   useEffect(() => {
 
+
+
     localStorage.setItem('prolog_wishlist', JSON.stringify(wishlist));
+
+
 
   }, [wishlist]);
 
 
 
-    // Initialize certificates from data file
 
 
 
-    const [certificates, setCertificates] = useState([]);
 
+  const [certificates, setCertificates] = useState([]);
 
 
-  
 
 
 
-            const handleCertClick = (cert) => {
 
 
+  const handleAcquireCert = (certId) => {
 
-  
 
 
+    const targetCert = certificates.find(c => c.id === certId);
 
-              setSelectedCert(cert);
 
 
+    if (!targetCert) return;
 
-  
 
 
 
-            };
 
 
 
-  
+    if (window.confirm(`'${targetCert.name}' 자격증을 보유 중이신가요? 인증(이미지 업로드)을 시작합니다.`)) {
 
 
 
-      
+      const newCerts = certificates.map(c =>
 
 
 
-  
+        c.id === certId ? { ...c, status: 'pending' } : c
 
 
 
-            // NEW: handleAcquireCert function to process acquisition
+      );
 
 
 
-  
+      setCertificates(newCerts);
 
 
 
-            const handleAcquireCert = (certId) => {
 
 
 
-  
 
+      setTimeout(() => {
 
 
-              const targetCert = certificates.find(c => c.id === certId);
 
+        setCertificates(currentCerts => {
 
 
-  
 
+          const updatedCerts = currentCerts.map(c =>
 
 
-              if (!targetCert) return;
 
+            c.id === certId ? { ...c, status: 'acquired' } : c
 
 
-  
 
+          );
 
 
-      
 
+          setSelectedCert(updatedCerts.find(c => c.id === certId));
 
 
-  
 
+          return updatedCerts;
 
 
-              if (window.confirm(`'${targetCert.name}' 자격증을 보유 중이신가요? 인증(이미지 업로드)을 시작합니다.`)) {
 
+        });
 
 
-  
 
+        alert(`🎉 축하합니다! '${targetCert.name}' 자격증이 도감에 등록되었습니다.`);
 
 
-                 // Step 1: Set to pending
 
+      }, 3000);
 
 
-  
 
+    }
 
 
-                 const newCerts = certificates.map(c => 
 
+  };
 
 
-  
 
 
 
-                   c.id === certId ? { ...c, status: 'pending' } : c
 
 
+  useEffect(() => {
 
-  
 
 
+    const fetchCertificates = async () => {
 
-                 );
 
 
+      try {
 
-  
 
 
+        const fetchUrl = `${import.meta.env.BASE_URL}data/certificates.json`;
 
-                 setCertificates(newCerts);
 
 
+        console.log('Fetching certificates from:', fetchUrl);
 
-  
 
-
-
-                 
-
-
-
-  
-
-
-
-                 // Step 2: Simulate AI/Admin Approval for demo
-
-
-
-  
-
-
-
-                 setTimeout(() => {
-
-
-
-  
-
-
-
-                   setCertificates(currentCerts => {
-
-
-
-  
-
-
-
-                     const updatedCerts = currentCerts.map(c => 
-
-
-
-  
-
-
-
-                       c.id === certId ? { ...c, status: 'acquired' } : c
-
-
-
-  
-
-
-
-                     );
-
-
-
-  
-
-
-
-                     setSelectedCert(updatedCerts.find(c => c.id === certId)); // Update the modal with the new status
-
-
-
-  
-
-
-
-                     return updatedCerts;
-
-
-
-  
-
-
-
-                   });
-
-
-
-  
-
-
-
-                   alert(`🎉 축하합니다! '${targetCert.name}' 자격증이 도감에 등록되었습니다.`);
-
-
-
-  
-
-
-
-                 }, 3000);
-
-
-
-  
-
-
-
-              }
-
-
-
-  
-
-
-
-            };
-
-
-
-  
-
-
-
-      
-
-
-
-  
-
-
-
-          useEffect(() => {
-
-
-
-      const fetchCertificates = async () => {
-
-
-
-        try {
-
-
-
-          const fetchUrl = `${import.meta.env.BASE_URL}data/certificates.json`;
-
-
-
-          console.log('Fetching certificates from:', fetchUrl);
-
-        
 
         const response = await fetch(fetchUrl);
 
+
+
         if (!response.ok) {
 
-           throw new Error(`HTTP error! status: ${response.status}`);
+
+
+          throw new Error(`HTTP error! status: ${response.status}`);
+
+
 
         }
 
+
+
         const data = await response.json();
 
-        
 
-        // Load saved statuses from localStorage
 
         const savedStatuses = JSON.parse(localStorage.getItem('prolog_cert_statuses') || '{}');
 
-        
+
 
         const initialCerts = data.map(cert => ({
 
+
+
           ...cert,
+
+
 
           status: savedStatuses[cert.id] || 'locked',
 
+
+
           icon: getCertIcon(cert)
+
+
 
         }));
 
 
 
-        // Mock: Set some demo data ONLY IF no saved data exists
+
+
+
 
         if (Object.keys(savedStatuses).length === 0) {
 
+
+
           const demoAcquiredIds = ['it_003', 'it_009', 'cook_002'];
+
+
 
           const demoPendingIds = ['elec_006', 'biz_009'];
 
@@ -1588,11 +1467,19 @@ function App() {
 
           initialCerts.forEach(cert => {
 
+
+
             if (demoAcquiredIds.includes(cert.id)) cert.status = 'acquired';
+
+
 
             else if (demoPendingIds.includes(cert.id)) cert.status = 'pending';
 
+
+
           });
+
+
 
         }
 
@@ -1600,15 +1487,19 @@ function App() {
 
         setCertificates(initialCerts);
 
+
+
       } catch (error) {
+
+
 
         console.error('Failed to load certificates:', error);
 
-        // Fallback: If fetch fails, we could load a minimal set or just show empty state.
 
-        // For now, allow it to be empty but log clearly.
 
       }
+
+
 
     };
 
@@ -1616,157 +1507,295 @@ function App() {
 
     fetchCertificates();
 
+
+
   }, []);
 
 
 
-  // Save certificate statuses to localStorage whenever they change
+
+
+
 
   useEffect(() => {
+
+
 
     if (certificates.length > 0) {
 
+
+
       const statuses = certificates.reduce((acc, cert) => {
+
+
 
         acc[cert.id] = cert.status;
 
+
+
         return acc;
+
+
 
       }, {});
 
+
+
       localStorage.setItem('prolog_cert_statuses', JSON.stringify(statuses));
+
+
 
     }
 
+
+
   }, [certificates]);
 
-  const fileInputRef = useRef(null);
+
+
+
 
 
 
   useEffect(() => {
 
+
+
     const savedDarkMode = localStorage.getItem('prolog_dark_mode');
+
+
 
     if (savedDarkMode === 'true') {
 
+
+
       setDarkMode(true);
 
+
+
     }
+
+
 
   }, []);
 
 
 
+
+
+
+
   useEffect(() => {
+
+
 
     if (darkMode) {
 
+
+
       document.documentElement.classList.add('dark');
+
+
 
     } else {
 
+
+
       document.documentElement.classList.remove('dark');
+
+
 
     }
 
+
+
     localStorage.setItem('prolog_dark_mode', darkMode);
+
+
 
   }, [darkMode]);
 
 
 
+
+
+
+
   const handleSaveToHistory = () => {
+
+
 
     if (!resultText) return;
 
-    
+
 
     const newItem = {
 
+
+
       id: Date.now(),
+
+
 
       text: resultText,
 
+
+
       category: category,
+
+
 
       categoryLabel: categories.find(c => c.id === category)?.label,
 
+
+
       date: new Date().toLocaleDateString(),
+
+
 
       platform: activeTab
 
+
+
     };
 
-    
+
 
     setHistory([newItem, ...history]);
 
+
+
     alert('히스토리에 저장되었습니다!');
 
+
+
   };
+
+
+
+
 
 
 
   const handleDeleteHistory = (id) => {
 
+
+
     if (window.confirm('정말 삭제하시겠습니까?')) {
 
-      history.filter(item => item.id !== id);
+
+
+      setHistory(history.filter(item => item.id !== id));
+
+
 
     }
+
+
 
   };
 
 
 
+
+
+
+
   const platforms = [
+
+
 
     { id: 'instagram', label: '인스타그램', icon: <Instagram size={18} /> },
 
+
+
     { id: 'blog', label: '블로그', icon: <FileText size={18} /> },
+
+
 
     { id: 'linkedin', label: '링크드인', icon: <Linkedin size={18} /> },
 
+
+
   ];
+
+
+
+
 
 
 
   const categories = [
 
+
+
     { id: 'award', label: '수상/상장', icon: <Award size={18} /> },
+
+
 
     { id: 'certificate', label: '자격증', icon: <ScrollText size={18} /> },
 
+
+
     { id: 'activity', label: '대외활동', icon: <Camera size={18} /> },
+
+
 
     { id: 'project', label: '인턴/실무', icon: <Briefcase size={18} /> },
 
+
+
   ];
+
+
+
+
 
 
 
   const tones = [
 
+
+
     { id: 'emotional', label: '감성적인 🌿' },
+
+
 
     { id: 'professional', label: '전문적인 💼' },
 
+
+
     { id: 'witty', label: '유쾌한 ⚡' },
+
+
 
   ];
 
 
 
+
+
+
+
   const handleFile = (file) => {
+
+
 
     if (!file) return;
 
+
+
     if (!file.type.startsWith('image/')) {
+
+
 
       alert('이미지 파일만 업로드 가능합니다.');
 
+
+
       return;
+
+
 
     }
 
@@ -1774,141 +1803,139 @@ function App() {
 
     setUploadStatus('uploading');
 
-    
+
 
     setTimeout(() => {
 
+
+
       const reader = new FileReader();
+
+
 
       reader.onloadend = () => {
 
+
+
         setSelectedImage(reader.result);
+
+
 
         setUploadStatus('success');
 
+
+
       };
+
+
 
       reader.readAsDataURL(file);
 
+
+
     }, 800);
 
-  };
 
-
-
-  const onDrop = (e) => {
-
-    e.preventDefault();
-
-    const file = e.dataTransfer.files[0];
-
-    handleFile(file);
 
   };
 
 
 
-  const onDragOver = (e) => {
 
-    e.preventDefault();
-
-  };
-
-
-
-  const resetUpload = (e) => {
-
-    e.stopPropagation();
-
-    setSelectedImage(null);
-
-    setUploadStatus('idle');
-
-    setGenStatus('idle');
-
-    setResultText('');
-
-    if (fileInputRef.current) fileInputRef.current.value = '';
-
-  };
-
-
-
-  const handleUploadClick = () => {
-
-    if (uploadStatus === 'success') return;
-
-    fileInputRef.current?.click();
-
-  };
 
 
 
   const handleGenerate = () => {
 
+
+
     if (uploadStatus !== 'success') return;
 
-    
+
 
     setGenStatus('generating');
 
+
+
     setResultText('');
 
-    
+
 
     setTimeout(() => {
 
+
+
       setGenStatus('success');
 
-      
+
 
       let text = "";
 
-      
 
-      // Mock logic based on Category & Tone
 
       if (category === 'certificate') {
 
-        // 자격증 모드: 구체적인 정보 포함
+
 
         if (tone === 'professional') {
 
-           text = `[자격증 취득 안내]\n\n• 자격명: 정보처리기사\n• 발급기관: 한국산업인력공단\n• 취득일자: 2024.06.15\n\n지난 3개월간 퇴근 후 매일 2시간씩 투자했던 노력이 결실을 맺었습니다. ${persona.university} ${persona.major} 전공생으로서 소프트웨어 공학의 기초를 다시 한번 탄탄히 다질 수 있었습니다. 앞으로 ${persona.jobGoal}로서 더욱 전문성 있게 성장하겠습니다. #자기계발 #정보처리기사 #자격증 #합격`;
+
+
+          text = `[자격증 취득 안내]\n\n• 자격명: 정보처리기사\n• 발급기관: 한국산업인력공단\n• 취득일자: 2024.06.15\n\n지난 3개월간 퇴근 후 매일 2시간씩 투자했던 노력이 결실을 맺었습니다. ${persona.university} ${persona.major} 전공생으로서 소프트웨어 공학의 기초를 다시 한번 탄탄히 다질 수 있었습니다. 앞으로 ${persona.jobGoal}로서 더욱 전문성 있게 성장하겠습니다. #자기계발 #정보처리기사 #자격증 #합격`;
+
+
 
         } else {
 
-           text = `드디어 합격했다! 😭\n정보처리기사, 진짜 애증의 자격증...\n\n맨날 떨어질까봐 조마조마했는데 합격 목걸이 걸었습니다. 응원해준 친구들 다 고마워! 오늘 치킨 먹는다.\n\n📅 취득일: 2024.06.15\n📜 발급처: 큐넷\n\n#정처기 #기사자격증 #공부끝 #합격인증 #${persona.major} #${persona.jobGoal}꿈나무`;
+
+
+          text = `드디어 합격했다! 😭\n정보처리기사, 진짜 애증의 자격증...\n\n맨날 떨어질까봐 조마조마했는데 합격 목걸이 걸었습니다. 응원해준 친구들 다 고마워! 오늘 치킨 먹는다.\n\n📅 취득일: 2024.06.15\n📜 발급처: 큐넷\n\n#정처기 #기사자격증 #공부끝 #합격인증 #${persona.major} #${persona.jobGoal}꿈나무`;
+
+
 
         }
 
+
+
       } else if (category === 'award') {
 
-        // 수상 모드: 스토리텔링
+
 
         if (tone === 'emotional') text = `밤늦게까지 이어진 해커톤, 몸은 힘들었지만 마음은 그 어느 때보다 뜨거웠다. 🔥\n함께해 준 팀원들이 있었기에 가능했던 대상 수상. \n이 트로피보다 빛나는 건 우리가 함께한 시간들이다.\n\n#새벽감성 #성장기록 #해커톤 #팀워크 #${persona.university}`;
 
+
+
         else text = `[2024 데이터 사이언스 해커톤 대상 수상]\n\n치열했던 48시간의 해커톤 여정이 '대상'이라는 값진 결과로 마무리되었습니다. 데이터 전처리의 난관을 팀원들과의 협업으로 극복하며, 문제 해결의 본질을 배울 수 있었습니다. ${persona.jobGoal}로 나아가는 큰 발판이 되리라 확신합니다.`;
+
+
 
       } else if (category === 'activity') {
 
-        // 활동 모드: 현장감
+
 
         text = `GDG DevFest 2024 현장 스케치 📸\n\n수많은 개발자들의 열기로 가득했던 코엑스! \n특히 'AI 에이전트의 미래' 세션에서 많은 영감을 받았습니다. \n\n✔️ Key Takeaways:\n1. LLM은 도구일 뿐, 핵심은 기획이다.\n2. 프롬프트 엔지니어링의 중요성\n3. 커뮤니티의 힘\n\n좋은 에너지 잔뜩 받아갑니다! #DevFest #개발자컨퍼런스 #네트워킹 #성장 #${persona.major}`;
 
+
+
       } else {
 
-        // 실무 모드
+
 
         text = `[인턴십 중간 회고]\n\n어느덧 서비스 기획팀 인턴 2개월 차입니다. \n${persona.university}에서는 배울 수 없었던 '실제 유저 데이터'를 다루며 매일 깨지고 배우는 중입니다. \n사수님의 꼼꼼한 피드백 덕분에 기획서 퀄리티가 조금씩 나아지는 게 느껴져 뿌듯하네요. 남은 1개월도 후회 없이 달리겠습니다! 🏃‍♂️`;
 
+
+
       }
 
-      
+
 
       if (keywords) {
 
+
+
         text += `\n\n(✨ Key Point: ${keywords})`;
+
+
 
       }
 
@@ -1916,9 +1943,17 @@ function App() {
 
       setResultText(text);
 
+
+
     }, 2000);
 
+
+
   };
+
+
+
+
 
 
 
@@ -1928,1039 +1963,443 @@ function App() {
 
     navigator.clipboard.writeText(resultText);
 
+
+
     alert('클립보드에 복사되었습니다!');
+
+
 
   };
 
 
 
-    return (
 
 
 
-      <div className="min-h-screen font-sans text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-950 selection:bg-primary/20 selection:text-primary transition-colors duration-300">
+
+  const location = useLocation();
 
 
 
-        <CertDetailModal cert={selectedCert} onClose={() => setSelectedCert(null)} onAcquire={handleAcquireCert} />
+  const getPageTitle = () => {
 
 
 
-        <Sidebar 
+    switch (location.pathname) {
 
 
 
-          activePage={activePage} 
+      case '/': return '안녕하세요, 사용자님! 👋';
 
 
 
-          onNavigate={setActivePage} 
+      case '/dex': return '나의 자격증 도감 🏆';
 
 
 
-          darkMode={darkMode}
+      case '/timeline': return '성장 타임라인 📅';
 
 
 
-          toggleDarkMode={() => setDarkMode(!darkMode)}
+      case '/stats': return '활동 통계 📊';
 
 
 
-        />
+      case '/history': return '히스토리 🕒';
 
-      
+
+
+      case '/mypage': return '마이페이지 👤';
+
+
+
+      case '/settings': return '설정 ⚙️';
+
+
+
+      default: return 'ProLog';
+
+
+
+    }
+
+
+
+  }
+
+
+
+  const getPageDescription = () => {
+
+
+
+    switch (location.pathname) {
+
+
+
+        case '/': return '오늘의 성취를 기록하고, 나만의 커리어 스토리를 완성하세요.';
+
+
+
+        case '/dex': return '보유한 자격증을 인증하고 도감을 완성해보세요.';
+
+
+
+        case '/timeline': return '시간의 흐름에 따른 당신의 눈부신 성취를 확인하세요.';
+
+
+
+        case '/stats': return '데이터로 보는 나의 커리어 강점과 활동 패턴입니다.';
+
+
+
+        case '/history': return '차곡차곡 쌓인 당신의 모든 기록을 한눈에.';
+
+
+
+        case '/mypage': return '사용자 정보를 확인하고 수정할 수 있습니다.';
+
+
+
+        case '/settings': return '계정 및 알림 설정을 관리하세요.';
+
+
+
+        default: return 'ProLog는 대학생과 취업 준비생을 위한 AI 커리어 기록 서비스입니다.';
+
+
+
+    }
+
+
+
+  }
+
+
+
+
+
+
+
+  return (
+
+
+
+    <div className="min-h-screen font-sans text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-950 selection:bg-primary/20 selection:text-primary transition-colors duration-300">
+
+
+
+      <CertDetailModal cert={selectedCert} onClose={() => setSelectedCert(null)} onAcquire={handleAcquireCert} />
+
+
+
+      <Sidebar />
+
+
 
       <main className="md:ml-72 p-6 md:p-12 pb-28 md:pb-12 max-w-7xl mx-auto flex-1">
 
-        {/* Header */}
+
 
         <header className="mb-10 flex justify-between items-end animate-in fade-in slide-in-from-top-4 duration-500">
 
+
+
           <div>
+
+
 
             <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">
 
-              {activePage === 'dashboard' && '안녕하세요, 사용자님! 👋'}
 
-              {activePage === 'dex' && '나의 자격증 도감 🏆'}
 
-              {activePage === 'timeline' && '성장 타임라인 📅'}
+              {getPageTitle()}
 
-              {activePage === 'stats' && '활동 통계 📊'}
 
-              {activePage === 'history' && '히스토리 🕒'}
-
-              {activePage === 'mypage' && '마이페이지 👤'}
-
-              {activePage === 'settings' && '설정 ⚙️'}
 
             </h1>
 
+
+
             <p className="text-gray-500 dark:text-gray-400 text-sm md:text-lg font-medium leading-relaxed max-w-2xl">
 
-              {activePage === 'dashboard' && '오늘의 성취를 기록하고, 나만의 커리어 스토리를 완성하세요.'}
 
-              {activePage === 'dex' && '보유한 자격증을 인증하고 도감을 완성해보세요.'}
 
-              {activePage === 'timeline' && '시간의 흐름에 따른 당신의 눈부신 성취를 확인하세요.'}
+              {getPageDescription()}
 
-              {activePage === 'stats' && '데이터로 보는 나의 커리어 강점과 활동 패턴입니다.'}
 
-              {activePage === 'history' && '차곡차곡 쌓인 당신의 모든 기록을 한눈에.'}
-
-              {activePage === 'mypage' && '사용자 정보를 확인하고 수정할 수 있습니다.'}
-
-              {activePage === 'settings' && '계정 및 알림 설정을 관리하세요.'}
 
             </p>
 
+
+
           </div>
 
-          {/* Mobile Logo & Theme Toggle */}
+
 
           <div className="md:hidden flex items-center gap-3">
 
-             <button 
 
-               onClick={() => setDarkMode(!darkMode)}
 
-               className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg text-gray-600 dark:text-gray-400"
+            <button
 
-             >
 
-               {darkMode ? <Sun size={20} /> : <Moon size={20} />}
 
-             </button>
+              onClick={() => setDarkMode(!darkMode)}
 
-             <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-200">P</div>
+
+
+              className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg text-gray-600 dark:text-gray-400"
+
+
+
+            >
+
+
+
+              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+
+
+
+            </button>
+
+
+
+            <div className="w-10 h-10 bg-gradient-to-br from-primary to-blue-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-blue-200">P</div>
+
+
 
           </div>
+
+
 
         </header>
 
 
 
-                {activePage === 'dashboard' && (
 
 
 
-                  <div className="animate-in fade-in slide-in-from-bottom-8 duration-500">
 
+        <Routes>
 
 
-                    <PersonaCard persona={persona} onUpdate={setPersona} editable={false} />
 
+          <Route path="/" element={
 
 
-                    
 
+            <Dashboard
 
 
-                    <RecommendationView
 
+                persona={persona}
 
 
-                      certificates={certificates}
 
+                setPersona={setPersona}
 
 
-                      wishlist={wishlist}
 
+                certificates={certificates}
 
 
-                      persona={persona}
 
+                wishlist={wishlist}
 
 
-                                          onCertClick={setSelectedCert}
 
+                setSelectedCert={setSelectedCert}
 
 
-                                        />
 
+                activeTab={activeTab}
 
 
-        
 
+                setActiveTab={setActiveTab}
 
 
-                    {/* Intro / Content Section */}
 
+                category={category}
 
 
-                    <div className="bg-gradient-to-r from-blue-50/80 to-indigo-50/80 dark:from-blue-900/20 dark:to-indigo-900/20 p-6 md:p-8 rounded-3xl mb-10 border border-blue-100/50 dark:border-blue-800/30 backdrop-blur-sm relative overflow-hidden">
 
+                setCategory={setCategory}
 
 
-                       <div className="relative z-10">
 
+                tone={tone}
 
 
-                         <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2 flex items-center gap-2">
 
-                    <Sparkles size={18} className="text-primary dark:text-accent" />
+                setTone={setTone}
 
-                    ProLog 사용 꿀팁
 
-                 </h2>
 
-                 <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 leading-relaxed max-w-3xl">
+                keywords={keywords}
 
-                   사진 한 장만 올려보세요. <strong>ProLog AI</strong>가 상황에 딱 맞는 글을 3초 만에 써드립니다. 
 
-                   <br className="hidden md:block" />자격증, 수상, 인턴십... 어떤 경험이든 멋진 포트폴리오로 만들어드릴게요.
 
-                 </p>
+                setKeywords={setKeywords}
 
-               </div>
 
-               <div className="absolute -right-10 -top-10 w-40 h-40 bg-blue-200/20 rounded-full blur-3xl"></div>
 
-            </div>
+                uploadStatus={uploadStatus}
 
 
 
-            {/* Main Content Grid */}
+                setUploadStatus={setUploadStatus}
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-              
 
-              {/* Left Column: Input (5 cols) */}
+                genStatus={genStatus}
 
-              <div className="lg:col-span-5 space-y-6">
 
-                
 
-                {/* Input Settings Panel */}
+                setGenStatus={setGenStatus}
 
-                <div className="bg-white dark:bg-gray-900 p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-8">
 
-                  
 
-                  {/* 1. Category Selector */}
+                resultMode={resultMode}
 
-                  <div>
 
-                    <label className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-3 block flex items-center gap-2">
 
-                       <Target size={16} className="text-gray-400" />
+                setResultMode={setResultMode}
 
-                       기록 유형
 
-                    </label>
 
-                    <div className="grid grid-cols-2 gap-3">
+                resultText={resultText}
 
-                      {categories.map((c) => (
 
-                        <button
 
-                          key={c.id}
+                setResultText={setResultText}
 
-                          onClick={() => setCategory(c.id)}
 
-                          className={cn(
 
-                            "flex items-center justify-center gap-2 py-3.5 px-3 text-sm font-bold rounded-xl border transition-all duration-200 active:scale-95",
+                selectedImage={selectedImage}
 
-                            category === c.id 
 
-                              ? "bg-primary text-white border-primary shadow-md shadow-primary/20" 
 
-                              : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300"
+                setSelectedImage={setSelectedImage}
 
-                          )}
 
-                        >
 
-                          {c.icon}
+                showResizer={showResizer}
 
-                          {c.label}
 
-                        </button>
 
-                      ))}
+                setShowResizer={setShowResizer}
 
-                    </div>
 
-                  </div>
 
+                showOnboarding={showOnboarding}
 
 
-                  {/* 2. Platform Selector */}
 
-                  <div>
+                setShowOnboarding={setShowOnboarding}
 
-                    <label className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-3 block flex items-center gap-2">
 
-                       <Instagram size={16} className="text-gray-400" />
 
-                       업로드 플랫폼
+                platforms={platforms}
 
-                    </label>
 
-                    <div className="flex bg-gray-50 dark:bg-gray-800 p-1.5 rounded-2xl border border-gray-100 dark:border-gray-700">
 
-                      {platforms.map((p) => (
+                categories={categories}
 
-                        <button
 
-                          key={p.id}
 
-                          onClick={() => setActiveTab(p.id)}
+                tones={tones}
 
-                          className={cn(
 
-                            "flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold rounded-xl transition-all duration-200",
 
-                            activeTab === p.id 
+                handleFile={handleFile}
 
-                              ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm ring-1 ring-black/5" 
 
-                              : "text-gray-400 hover:text-gray-600"
 
-                          )}
+                handleGenerate={handleGenerate}
 
-                        >
 
-                          <span className={activeTab === p.id ? "text-primary dark:text-accent" : ""}>{p.icon}</span>
 
-                          <span className="hidden sm:inline">{p.label}</span>
+                handleSaveToHistory={handleSaveToHistory}
 
-                        </button>
 
-                      ))}
 
-                    </div>
+                copyToClipboard={copyToClipboard}
 
-                  </div>
 
 
+            />} 
 
-                  {/* 3. Tone Selector */}
 
-                  <div>
-
-                    <label className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
-
-                      <PenTool size={16} className="text-gray-400" /> 
-
-                      글 분위기 (Tone)
-
-                    </label>
-
-                    <div className="flex flex-wrap gap-2">
-
-                      {tones.map((t) => (
-
-                        <button
-
-                          key={t.id}
-
-                          onClick={() => setTone(t.id)}
-
-                          className={cn(
-
-                            "px-4 py-2.5 rounded-full text-sm font-bold border transition-all duration-200 active:scale-95",
-
-                            tone === t.id
-
-                              ? "bg-gray-900 dark:bg-white dark:text-gray-900 text-white border-gray-900 shadow-md"
-
-                              : "bg-white dark:bg-gray-800 text-gray-500 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
-
-                          )}
-
-                        >
-
-                          {t.label}
-
-                        </button>
-
-                      ))}
-
-                    </div>
-
-                  </div>
-
-
-
-                  {/* 4. Keywords */}
-
-                  <div>
-
-                    <label className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
-
-                      <Hash size={16} className="text-gray-400" /> 
-
-                      핵심 키워드
-
-                    </label>
-
-                    <input 
-
-                      type="text" 
-
-                      value={keywords}
-
-                      onChange={(e) => setKeywords(e.target.value)}
-
-                      placeholder="예: 팀워크, 밤샘, 성장, 뿌듯함"
-
-                      className="w-full px-5 py-3.5 rounded-xl border border-gray-200 dark:border-gray-700 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm bg-gray-50 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-700 dark:text-white font-medium placeholder:text-gray-400"
-
-                    />
-
-                  </div>
-
-                </div>
-
-
-
-                {/* Upload Zone */}
-
-                <div className="relative">
-
-                  {showOnboarding && uploadStatus === 'idle' && (
-
-                    <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-full max-w-[200px] z-30 animate-bounce">
-
-                      <div className="bg-primary text-white p-3 rounded-2xl shadow-xl text-xs font-bold text-center relative">
-
-                        사진을 먼저 올려보세요! ✨
-
-                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-primary rotate-45"></div>
-
-                      </div>
-
-                    </div>
-
-                  )}
-
-                  <div 
-
-                    onClick={() => {
-
-                      handleUploadClick();
-
-                      setShowOnboarding(false);
-
-                    }}
-
-                    onDrop={onDrop}
-
-                    onDragOver={onDragOver}
-
-                    className={cn(
-
-                      "group relative border-2 border-dashed rounded-3xl h-64 flex flex-col items-center justify-center text-center p-6 transition-all cursor-pointer overflow-hidden duration-300",
-
-                      uploadStatus === 'idle' ? "border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-primary hover:bg-primary/5 dark:hover:bg-primary/5" : 
-
-                      uploadStatus === 'uploading' ? "border-primary bg-primary/5 dark:bg-primary/10" : 
-
-                      "border-green-500 bg-white dark:bg-gray-900"
-
-                    )}
-
-                  >
-
-                    <input 
-
-                      type="file" 
-
-                      ref={fileInputRef} 
-
-                      onChange={(e) => handleFile(e.target.files[0])} 
-
-                      className="hidden" 
-
-                      accept="image/*"
-
-                    />
-
-
-
-                    {uploadStatus === 'idle' && (
-
-                      <div className="transition-transform duration-300 group-hover:-translate-y-2">
-
-                        <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/30 text-primary dark:text-accent rounded-2xl flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform shadow-sm">
-
-                          <UploadCloud size={32} />
-
-                        </div>
-
-                        <h3 className="text-base font-bold text-gray-900 dark:text-white mb-1">증빙 자료 업로드</h3>
-
-                        <p className="text-gray-400 text-sm">또는 파일을 여기로 드래그하세요</p>
-
-                      </div>
-
-                    )}
-
-
-
-                    {uploadStatus === 'uploading' && (
-
-                      <div className="flex flex-col items-center animate-pulse">
-
-                        <Loader2 size={40} className="text-primary animate-spin mb-4" />
-
-                        <p className="text-gray-900 dark:text-white font-bold text-lg">이미지 분석 중...</p>
-
-                        <p className="text-gray-500 text-sm">잠시만 기다려주세요</p>
-
-                      </div>
-
-                    )}
-
-
-
-                    {uploadStatus === 'success' && selectedImage && (
-
-                      <>
-
-                        <div className="absolute inset-0 w-full h-full">
-
-                          <img src={selectedImage} alt="Preview" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-
-                          <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
-
-                            <div className="bg-white/20 p-4 rounded-full backdrop-blur-md mb-2">
-
-                                <CheckCircle size={32} className="text-white" />
-
-                            </div>
-
-                            <p className="text-white text-sm font-bold">이미지 변경하기</p>
-
-                          </div>
-
-                        </div>
-
-                        
-
-                        {/* Action Buttons */}
-
-                        <div className="absolute top-4 right-4 flex gap-2 z-20">
-
-                          <button 
-
-                            onClick={(e) => {
-
-                              e.stopPropagation();
-
-                              setShowResizer(true);
-
-                            }}
-
-                            className="w-9 h-9 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-700 text-primary dark:text-accent rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
-
-                            title="이미지 편집 (리사이징)"
-
-                          >
-
-                            <Pencil size={16} />
-
-                          </button>
-
-                          <button 
-
-                            onClick={resetUpload}
-
-                            className="w-9 h-9 bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-95"
-
-                          >
-
-                            <X size={18} />
-
-                          </button>
-
-                        </div>
-
-                      </>
-
-                    )}
-
-                  </div>
-
-                </div>
-
-
-
-                {/* Generate Button */}
-
-                <button
-
-                  onClick={handleGenerate}
-
-                  disabled={uploadStatus !== 'success' || genStatus === 'generating'}
-
-                  className={cn(
-
-                    "w-full py-4.5 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-xl shadow-primary/20 hover:shadow-primary/30 active:scale-95 relative overflow-hidden",
-
-                    uploadStatus === 'success' && genStatus !== 'generating'
-
-                      ? "bg-gradient-to-r from-primary to-blue-600 text-white"
-
-                      : "bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed shadow-none"
-
-                  )}
-
-                >
-
-                  {genStatus === 'generating' ? (
-
-                    <>
-
-                      <Loader2 className="animate-spin" />
-
-                      ProLog AI가 글을 쓰는 중...
-
-                    </>
-
-                  ) : (
-
-                    <>
-
-                      <Sparkles size={20} className={uploadStatus === 'success' ? "animate-pulse" : ""} />
-
-                      AI 글 생성하기
-
-                    </>
-
-                  )}
-
-                </button>
-
-              </div>
-
-
-
-              {/* Right Column: Result (7 cols) */}
-
-              <div className="lg:col-span-7 h-full">
-
-                <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-xl shadow-gray-200/50 dark:shadow-black/20 border border-gray-100 dark:border-gray-800 h-full p-8 md:p-10 relative flex flex-col min-h-[600px] transition-all">
-
-                  
-
-                  {/* Result Header */}
-
-                  <div className="flex items-center justify-between mb-8 pb-6 border-b border-gray-100 dark:border-gray-800">
-
-                    <div>
-
-                      <h3 className="font-bold text-gray-900 dark:text-white text-xl flex items-center gap-2.5">
-
-                        {category === 'certificate' && <ScrollText size={24} className="text-primary dark:text-accent" />}
-
-                        {category === 'award' && <Award size={24} className="text-primary dark:text-accent" />}
-
-                        {category === 'activity' && <Camera size={24} className="text-primary dark:text-accent" />}
-
-                        {category === 'project' && <Briefcase size={24} className="text-primary dark:text-accent" />}
-
-                        생성된 결과
-
-                      </h3>
-
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1.5 font-medium">
-
-                        <strong>{categories.find(c => c.id === category)?.label}</strong> 유형에 최적화된 콘텐츠입니다.
-
-                      </p>
-
-                    </div>
-
-                    
-
-                    {genStatus === 'success' && (
-
-                      <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl">
-
-                        <button 
-
-                          onClick={() => setResultMode('text')}
-
-                          className={cn(
-
-                            "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
-
-                            resultMode === 'text' ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm" : "text-gray-400 hover:text-gray-600"
-
-                          )}
-
-                        >
-
-                          <FileText size={14} />
-
-                          글
-
-                        </button>
-
-                        <button 
-
-                          onClick={() => setResultMode('card')}
-
-                          className={cn(
-
-                            "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
-
-                            resultMode === 'card' ? "bg-white dark:bg-gray-700 text-primary dark:text-accent shadow-sm" : "text-gray-400 hover:text-gray-600"
-
-                          )}
-
-                        >
-
-                          <ImageIcon size={14} />
-
-                          카드
-
-                        </button>
-
-                      </div>
-
-                    )}
-
-                  </div>
-
-
-
-                  {/* Result Content */}
-
-                  <div className="flex-1 relative">
-
-                    {genStatus === 'idle' && (
-
-                      <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-300 dark:text-gray-700">
-
-                        <div className="w-24 h-24 bg-gray-50 dark:bg-gray-800 rounded-3xl flex items-center justify-center mb-6 rotate-3">
-
-                          <PenTool size={40} className="text-gray-300 dark:text-gray-700" />
-
-                        </div>
-
-                        <p className="text-lg font-bold text-gray-400 dark:text-gray-600 text-center">왼쪽에서 자료를 업로드하면<br/>여기에 글이 작성됩니다.</p>
-
-                      </div>
-
-                    )}
-
-
-
-                    {genStatus === 'generating' && (
-
-                      <div className="absolute inset-0 flex flex-col items-center justify-center space-y-8 px-8">
-
-                        <div className="w-full space-y-5">
-
-                           <div className="flex items-center gap-4">
-
-                              <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 animate-pulse"></div>
-
-                              <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded-full animate-pulse w-1/3"></div>
-
-                           </div>
-
-                          <div className="space-y-3">
-
-                             <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded-full animate-pulse w-full"></div>
-
-                             <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded-full animate-pulse w-full"></div>
-
-                             <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded-full animate-pulse w-5/6"></div>
-
-                          </div>
-
-                          <div className="space-y-3 pt-4">
-
-                             <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded-full animate-pulse w-full"></div>
-
-                             <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded-full animate-pulse w-4/5"></div>
-
-                          </div>
-
-                        </div>
-
-                        <p className="text-primary dark:text-accent animate-pulse font-bold text-lg bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm px-6 py-2 rounded-full shadow-sm">
-
-                           ✨ 마법을 부리는 중...
-
-                        </p>
-
-                      </div>
-
-                    )}
-
-
-
-                    {genStatus === 'success' && (
-
-                      <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 h-full flex flex-col">
-
-                        {resultMode === 'text' ? (
-
-                          <textarea 
-
-                            readOnly
-
-                            className="w-full flex-1 resize-none focus:outline-none text-gray-800 dark:text-gray-200 leading-[1.8] text-lg bg-transparent p-2 whitespace-pre-wrap font-medium custom-scrollbar"
-
-                            value={resultText}
-
-                          />
-
-                        ) : (
-
-                          <div className="flex-1 flex items-center justify-center py-4">
-
-                            <CardPreview 
-
-                              image={selectedImage}
-
-                              categoryLabel={categories.find(c => c.id === category)?.label}
-
-                              date={new Date().toLocaleDateString()}
-
-                              text={resultText}
-
-                              persona={persona}
-
-                              onDownload={() => {}}
-
-                            />
-
-                          </div>
-
-                        )}
-
-                      </div>
-
-                    )}
-
-                  </div>
-
-                  
-
-                  {/* Result Footer */}
-
-                  {genStatus === 'success' && resultMode === 'text' && (
-
-                    <div className="pt-8 border-t border-gray-100 dark:border-gray-800 flex flex-col sm:flex-row justify-between items-center mt-auto gap-4 animate-in fade-in">
-
-                      <p className="text-xs text-gray-400 font-medium">AI 생성 결과는 사실 여부를 꼭 확인해주세요.</p>
-
-                      <div className="flex gap-3 w-full sm:w-auto">
-
-                        <button 
-
-                          onClick={copyToClipboard}
-
-                          className="flex-1 sm:flex-none px-6 py-3 text-sm font-bold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl transition-colors"
-
-                        >
-
-                          복사
-
-                        </button>
-
-                        <button 
-
-                          onClick={handleGenerate}
-
-                          className="flex-1 sm:flex-none px-6 py-3 text-sm font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors border border-gray-200 dark:border-gray-700"
-
-                        >
-
-                          다시 생성
-
-                        </button>
-
-                        <button 
-
-                          onClick={handleSaveToHistory}
-
-                          className="flex-1 sm:flex-none px-6 py-3 text-sm font-bold bg-gray-900 dark:bg-white dark:text-gray-900 text-white rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors shadow-lg shadow-gray-200 dark:shadow-black/20 active:scale-95"
-
-                        >
-
-                          저장하기
-
-                        </button>
-
-                      </div>
-
-                    </div>
-
-                  )}
-
-                </div>
-
-              </div>
-
-              
-
-            </div>
-
-          </div>
-
-        )}
-
-
-
-        {activePage === 'dex' && (
-
-          <DexView 
-
-            certificates={certificates} 
-
-            wishlist={wishlist}
-
-            onToggleWishlist={(id) => {
-
-              setWishlist(prev => 
-
-                prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
-
-              );
-
-            }}
-
-            onCertClick={(cert) => {
-
-              if (cert.status === 'locked') {
-
-                if (window.confirm(`'${cert.name}' 자격증을 보유 중이신가요? 인증(이미지 업로드)을 시작합니다.`)) {
-
-                   // Step 1: Set to pending
-
-                   const newCerts = certificates.map(c => 
-
-                     c.id === cert.id ? { ...c, status: 'pending' } : c
-
-                   );
-
-                   setCertificates(newCerts);
-
-                   
-
-                   // Step 2: Simulate AI/Admin Approval for demo
-
-                   setTimeout(() => {
-
-                     setCertificates(currentCerts => 
-
-                       currentCerts.map(c => 
-
-                         c.id === cert.id ? { ...c, status: 'acquired' } : c
-
-                       )
-
-                     );
-
-                     alert(`🎉 축하합니다! '${cert.name}' 자격증이 도감에 등록되었습니다.`);
-
-                   }, 3000);
-
-                }
-
-              } else if (cert.status === 'acquired') {
-
-                alert(`이미 획득한 자격증입니다! (${cert.issuer})`);
-
-              }
-
-            }} 
 
           />
 
-        )}
+
+
+          <Route path="/dex" element={<Dex certificates={certificates} wishlist={wishlist} setWishlist={setWishlist} handleAcquireCert={handleAcquireCert} />} />
 
 
 
-        {activePage === 'timeline' && (
-
-          <TimelineView history={history} categories={categories} />
-
-        )}
+          <Route path="/timeline" element={<Timeline history={history} categories={categories} />} />
 
 
 
-        {activePage === 'stats' && (
-
-          <StatsView history={history} categories={categories} platforms={platforms} />
-
-        )}
+          <Route path="/stats" element={<Stats history={history} categories={categories} platforms={platforms} />} />
 
 
 
-        {activePage === 'history' && (
-
-          <HistoryView history={history} onDelete={handleDeleteHistory} platforms={platforms} />
-
-        )}
+          <Route path="/history" element={<HistoryPage history={history} onDelete={handleDeleteHistory} platforms={platforms} />} />
 
 
 
-        {activePage === 'mypage' && (
-
-          <MyPageView 
-
-            certificates={certificates}
-
-            wishlist={wishlist}
-
-            onNavigate={setActivePage}
-
-          />
-
-        )}
+          <Route path="/mypage" element={<MyPage certificates={certificates} wishlist={wishlist} />} />
 
 
 
-        {activePage === 'settings' && (
-
-          <SettingsView 
-
-            persona={persona}
-
-            onUpdate={setPersona}
-
-            darkMode={darkMode}
-
-            toggleDarkMode={() => setDarkMode(!darkMode)}
-
-            history={history}
-
-            setHistory={setHistory}
-
-          />
-
-        )}
+          <Route path="/settings" element={<SettingsPage persona={persona} onUpdate={setPersona} darkMode={darkMode} toggleDarkMode={() => setDarkMode(!darkMode)} history={history} setHistory={setHistory} />} />
 
 
 
-        {/* Footer */}
+        </Routes>
+
+
+
+
+
+
 
         <footer className="mt-20 pt-10 border-t border-gray-200 text-center text-gray-400 text-sm pb-10">
 
+
+
           <p className="mb-3 font-medium">&copy; 2026 ProLog. All rights reserved.</p>
+
+
 
           <div className="flex justify-center gap-6">
 
+
+
             <a href="/privacy.html" target="_blank" className="hover:text-gray-900 transition-colors font-medium">개인정보처리방침</a>
+
+
 
             <span className="text-gray-300">|</span>
 
+
+
             <a href="/terms.html" target="_blank" className="hover:text-gray-900 transition-colors font-medium">이용약관</a>
+
+
 
           </div>
 
+
+
         </footer>
+
+
 
       </main>
 
@@ -2968,33 +2407,449 @@ function App() {
 
       {showResizer && (
 
-        <ImageResizer 
+
+
+        <ImageResizer
+
+
 
           imageSrc={selectedImage}
 
+
+
           onSave={(newImage) => {
+
+
 
             setSelectedImage(newImage);
 
+
+
             setShowResizer(false);
+
+
 
           }}
 
+
+
           onCancel={() => setShowResizer(false)}
 
+
+
         />
+
+
 
       )}
 
 
 
-      <BottomNav activePage={activePage} onNavigate={setActivePage} />
+      <BottomNav />
+
+
 
     </div>
 
+
+
   );
 
+
+
 }
+
+
+
+
+
+
+
+const CertDetailModal = ({ cert, onClose, onAcquire }) => {
+
+
+
+  if (!cert) return null;
+
+
+
+  const isAcquired = cert.status === 'acquired';
+
+
+
+  const isPending = cert.status === 'pending';
+
+
+
+  return (
+
+
+
+    <div
+
+
+
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in"
+
+
+
+      onClick={onClose}
+
+
+
+    >
+
+
+
+      <div
+
+
+
+        className="bg-white dark:bg-gray-900 w-full max-w-2xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col animate-in zoom-in-95"
+
+
+
+        onClick={(e) => e.stopPropagation()}
+
+
+
+      >
+
+
+
+        <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex items-start justify-between">
+
+
+
+          <div className="flex items-center gap-4">
+
+
+
+            <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center rounded-lg bg-gray-50 dark:bg-gray-800 text-3xl">
+
+
+
+              {cert.icon}
+
+
+
+            </div>
+
+
+
+            <div>
+
+
+
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">{cert.name}</h2>
+
+
+
+              <p className="text-sm text-gray-500 dark:text-gray-400">{cert.issuer}</p>
+
+
+
+            </div>
+
+
+
+          </div>
+
+
+
+          <button onClick={onClose} className="p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full">
+
+
+
+            <X size={20} />
+
+
+
+          </button>
+
+
+
+        </div>
+
+
+
+        <div className="p-6 space-y-6 overflow-y-auto">
+
+
+
+          <div>
+
+
+
+            <h3 className="font-bold text-gray-700 dark:text-gray-300 mb-2">자격증 설명</h3>
+
+
+
+            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{cert.description || '상세 설명이 없습니다.'}</p>
+
+
+
+          </div>
+
+
+
+          {cert.details?.subjects && (
+
+
+
+            <div>
+
+
+
+              <h3 className="font-bold text-gray-700 dark:text-gray-300 mb-3">주요 시험과목</h3>
+
+
+
+              <div className="flex flex-wrap gap-2">
+
+
+
+                {cert.details.subjects.map((subject, i) => (
+
+
+
+                  <span key={i} className="px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 dark:bg-blue-900/50 dark:text-blue-300 rounded-full">
+
+
+
+                    {subject}
+
+
+
+                  </span>
+
+
+
+                ))}
+
+
+
+              </div>
+
+
+
+            </div>
+
+
+
+          )}
+
+
+
+          {cert.details?.fee && (
+
+
+
+             <div>
+
+
+
+              <h3 className="font-bold text-gray-700 dark:text-gray-300 mb-2">응시료</h3>
+
+
+
+              <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+
+
+
+                {Object.entries(cert.details.fee).map(([type, cost]) => (
+
+
+
+                  <p key={type}><span className="font-semibold w-16 inline-block">{type}:</span> {cost}</p>
+
+
+
+                ))}
+
+
+
+              </div>
+
+
+
+            </div>
+
+
+
+          )}
+
+
+
+        </div>
+
+
+
+        <div className="p-6 mt-auto border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 flex justify-end gap-3">
+
+
+
+          {!isAcquired && !isPending && (
+
+
+
+            <button
+
+
+
+              onClick={() => onAcquire(cert.id)}
+
+
+
+              className="px-5 py-2.5 text-sm font-bold bg-green-600 text-white rounded-xl hover:bg-green-700 shadow-md shadow-green-200 transition-all flex items-center gap-2"
+
+
+
+            >
+
+
+
+              <Check size={14} />
+
+
+
+              보유 자격증으로 등록하기
+
+
+
+            </button>
+
+
+
+          )}
+
+
+
+          {isPending && (
+
+
+
+            <button
+
+
+
+              disabled
+
+
+
+              className="px-5 py-2.5 text-sm font-bold bg-yellow-600 text-white rounded-xl cursor-not-allowed flex items-center gap-2"
+
+
+
+            >
+
+
+
+              <Loader2 size={14} className="animate-spin" />
+
+
+
+              인증 대기 중...
+
+
+
+            </button>
+
+
+
+          )}
+
+
+
+          <button
+
+
+
+            onClick={onClose}
+
+
+
+            className="px-5 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
+
+
+
+          >
+
+
+
+            닫기
+
+
+
+          </button>
+
+
+
+          {cert.officialLink && (
+
+
+
+            <a
+
+
+
+              href={cert.officialLink}
+
+
+
+              target="_blank"
+
+
+
+              rel="noopener noreferrer"
+
+
+
+              className="px-5 py-2.5 text-sm font-bold bg-primary text-white rounded-xl hover:bg-blue-600 shadow-md shadow-primary/20 transition-all flex items-center gap-2"
+
+
+
+            >
+
+
+
+              <LinkIcon size={14} />
+
+
+
+              공식 사이트
+
+
+
+            </a>
+
+
+
+          )}
+
+
+
+        </div>
+
+
+
+      </div>
+
+
+
+    </div>
+
+
+
+  );
+
+
+
+};
+
+
+
+export default App;
 
 
 
