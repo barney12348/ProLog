@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /public/
+Sitemap: https://prolog-71v.pages.dev/sitemap.xml

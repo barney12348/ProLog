@@ -40,6 +40,14 @@ import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { toPng } from 'html-to-image';
 import download from 'downloadjs';
+import {
+  FacebookShareButton,
+  TwitterShareButton,
+  LinkedinShareButton,
+  FacebookIcon,
+  TwitterIcon,
+  LinkedinIcon,
+} from 'react-share';
 
 import Dashboard from './pages/Dashboard';
 import Dex from './pages/Dex';
@@ -260,6 +268,8 @@ const PersonaCard = ({ persona, onUpdate, editable = true }) => {
 
 const CardPreview = ({ image, categoryLabel, date, text, persona, onDownload }) => {
   const cardRef = useRef(null);
+  const [copied, setCopied] = useState(false);
+  const shareUrl = window.location.href;
 
   const handleDownload = async () => {
     if (cardRef.current) {
@@ -272,6 +282,12 @@ const CardPreview = ({ image, categoryLabel, date, text, persona, onDownload }) 
         alert('이미지 저장 중 오류가 발생했습니다.');
       }
     }
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(shareUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -330,15 +346,37 @@ const CardPreview = ({ image, categoryLabel, date, text, persona, onDownload }) 
         </div>
       </div>
 
-      {/* Action Button */}
-      <button 
-        onClick={handleDownload}
-        className="flex items-center gap-2 px-8 py-3 bg-gray-900 text-white rounded-full hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl active:scale-95 font-bold"
-      >
-        <Download size={18} />
-        이미지로 저장하기
-      </button>
-      <p className="text-xs text-gray-400">인스타그램(1:1) 사이즈에 최적화되어 있습니다.</p>
+      {/* Action Buttons */}
+      <div className="flex items-center gap-4">
+        <button 
+          onClick={handleDownload}
+          className="flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-full hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl active:scale-95 font-bold"
+        >
+          <Download size={18} />
+          이미지 저장
+        </button>
+        <button 
+          onClick={handleCopy}
+          className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-800 rounded-full hover:bg-gray-200 transition-all shadow-lg hover:shadow-xl active:scale-95 font-bold"
+        >
+          {copied ? <Check size={18} /> : <LinkIcon size={18} />}
+          {copied ? '복사됨!' : '링크 복사'}
+        </button>
+      </div>
+
+      <div className="flex items-center gap-4 mt-2">
+        <FacebookShareButton url={shareUrl} quote={text}>
+          <FacebookIcon size={40} round />
+        </FacebookShareButton>
+        <TwitterShareButton url={shareUrl} title={text}>
+          <TwitterIcon size={40} round />
+        </TwitterShareButton>
+        <LinkedinShareButton url={shareUrl} summary={text}>
+          <LinkedinIcon size={40} round />
+        </LinkedinShareButton>
+      </div>
+
+      <p className="text-xs text-gray-400 mt-2">인스타그램(1:1) 사이즈에 최적화되어 있습니다.</p>
     </div>
   );
 };
@@ -2853,179 +2891,5 @@ export default App;
 
 
 
-const CertDetailModal = ({ cert, onClose, onAcquire }) => { // Add onAcquire prop
-  if (!cert) return null;
-
-  const isAcquired = cert.status === 'acquired';
-  const isPending = cert.status === 'pending';
-
-  return (
-    <div 
-      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in"
-      onClick={onClose}
-    >
-      <div 
-        className="bg-white dark:bg-gray-900 w-full max-w-2xl max-h-[90vh] rounded-2xl shadow-2xl flex flex-col animate-in zoom-in-95"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex items-start justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center rounded-lg bg-gray-50 dark:bg-gray-800 text-3xl">
-              {cert.icon}
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">{cert.name}</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{cert.issuer}</p>
-            </div>
-          </div>
-          <button onClick={onClose} className="p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full">
-            <X size={20} />
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="p-6 space-y-6 overflow-y-auto">
-          <div>
-            <h3 className="font-bold text-gray-700 dark:text-gray-300 mb-2">자격증 설명</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{cert.description || '상세 설명이 없습니다.'}</p>
-          </div>
-
-          {cert.details?.subjects && (
-            <div>
-              <h3 className="font-bold text-gray-700 dark:text-gray-300 mb-3">주요 시험과목</h3>
-              <div className="flex flex-wrap gap-2">
-                {cert.details.subjects.map((subject, i) => (
-                  <span key={i} className="px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 dark:bg-blue-900/50 dark:text-blue-300 rounded-full">
-                    {subject}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {cert.details?.fee && (
-             <div>
-              <h3 className="font-bold text-gray-700 dark:text-gray-300 mb-2">응시료</h3>
-              <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                {Object.entries(cert.details.fee).map(([type, cost]) => (
-                  <p key={type}><span className="font-semibold w-16 inline-block">{type}:</span> {cost}</p>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-        
-        {/* Footer */}
-        <div className="p-6 mt-auto border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 flex justify-end gap-3">
-          {/* NEW: Acquire button */}
-          {!isAcquired && !isPending && ( // Only show if not already acquired or pending
-            <button
-              onClick={() => onAcquire(cert.id)}
-              className="px-5 py-2.5 text-sm font-bold bg-green-600 text-white rounded-xl hover:bg-green-700 shadow-md shadow-green-200 transition-all flex items-center gap-2"
-            >
-              <Check size={14} />
-              보유 자격증으로 등록하기
-            </button>
-          )}
-          {isPending && (
-            <button
-              disabled
-              className="px-5 py-2.5 text-sm font-bold bg-yellow-600 text-white rounded-xl cursor-not-allowed flex items-center gap-2"
-            >
-              <Loader2 size={14} className="animate-spin" />
-              인증 대기 중...
-            </button>
-          )}
-
-          <button 
-            onClick={onClose}
-            className="px-5 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
-          >
-            닫기
-          </button>
-          {cert.officialLink && (
-            <a
-              href={cert.officialLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-5 py-2.5 text-sm font-bold bg-primary text-white rounded-xl hover:bg-blue-600 shadow-md shadow-primary/20 transition-all flex items-center gap-2"
-            >
-              <Link size={14} />
-              공식 사이트
-            </a>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const RecommendationView = ({ certificates, wishlist, persona, onCertClick }) => {
-  const recommendations = React.useMemo(() => {
-    const acquiredCerts = certificates.filter(c => c.status === 'acquired');
-    const wishlistedCerts = certificates.filter(c => wishlist.includes(c.id));
-    
-    // 1. Gather user's keywords
-    let userKeywords = new Set();
-    [...acquiredCerts, ...wishlistedCerts].forEach(c => {
-      c.keywords.forEach(k => userKeywords.add(k.toLowerCase()));
-    });
-    if (persona.major) userKeywords.add(persona.major.toLowerCase());
-    if (persona.jobGoal) userKeywords.add(persona.jobGoal.toLowerCase());
-
-    if (userKeywords.size === 0) return [];
-
-    // 2. Score other certificates
-    const recommendations = certificates
-      .filter(c => c.status !== 'acquired' && !wishlist.includes(c.id))
-      .map(cert => {
-        let score = 0;
-        cert.keywords.forEach(k => {
-          if (userKeywords.has(k.toLowerCase())) {
-            score++;
-          }
-        });
-        return { ...cert, score };
-      })
-      .filter(c => c.score > 0)
-      .sort((a, b) => b.score - a.score);
-
-    // 3. Return top 3
-    return recommendations.slice(0, 3);
-  }, [certificates, wishlist, persona]);
-
-  if (recommendations.length === 0) {
-    return null; // Don't render if there's nothing to recommend
-  }
-
-  return (
-    <div className="bg-white dark:bg-gray-900 p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 mb-10">
-      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-        <Sparkles size={20} className="text-primary dark:text-accent" />
-        맞춤 자격증 추천
-      </h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {recommendations.map(cert => (
-          <div 
-            key={cert.id} 
-            onClick={() => onCertClick(cert)}
-            className="group flex items-center gap-4 p-4 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-700 hover:shadow-md cursor-pointer transition-all"
-          >
-            <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-lg bg-white dark:bg-gray-700 shadow-sm text-2xl group-hover:scale-110 transition-transform">
-              {cert.icon}
-            </div>
-            <div className="min-w-0">
-              <p className="font-bold text-sm text-gray-900 dark:text-white truncate">{cert.name}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{cert.issuer}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-export default App;
 
 

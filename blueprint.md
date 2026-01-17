@@ -1,51 +1,21 @@
-# ProLog - AI 커리어 에이전트 청사진
+# Blueprint
 
-## 개요
-ProLog는 취업 준비생이 업로드한 사진을 AI로 분석하여 SNS용 퍼스널 브랜딩 콘텐츠 생성을 돕는 웹 서비스입니다. 이 프로토타입은 이미지 업로드 및 플랫폼별(인스타그램, 블로그, 링크드인) 텍스트 생성을 포함한 프론트엔드 사용자 흐름에 집중합니다.
+## Overview
 
-## 미래 로드맵 (Vision & Features)
+This project is a web application that helps users track their career-related achievements and generate social media content based on them. It uses React and Tailwind CSS for the frontend.
 
-### 🎯 Phase 1: 자격증 도감 (Certificate Dex)
-*   **개요:** 자격증 취득을 '수집'하는 경험으로 게임화(Gamification)하여 사용자의 지속적인 방문과 동기부여를 유도.
-*   **핵심 기능:**
-    *   **도감 UI:** 포켓몬 도감 형태의 UI. 미보유 자격증은 흑백/실루엣 처리, 보유 시 컬러 카드 활성화 및 'New' 배지 부여.
-    *   **인증 시스템:** 사용자가 증빙 서류(합격증) 업로드 -> 관리자 승인 (추후 OCR AI 도입으로 자동화).
-    *   **범위:** 국가기술/전문자격증 우선 도입 후 국제 자격증 및 수료증으로 확장.
-    *   **세트 효과:** 관련 자격증 조합 완성 시 특별 배지 또는 테두리 제공.
+## Features
 
-### 🔗 Phase 2: 채용 공고 매칭 (Job Matching)
-*   **개요:** 수집한 자격증 데이터를 실제 채용 시장과 연결하여 실용적 가치 제공.
-*   **핵심 기능:**
-    *   **공고 매칭:** "사용자님의 [정보처리기사] 자격증은 현재 **네이버, 카카오** 공고에서 우대 중입니다." 알림.
-    *   **활용 가이드:** 도감 내 자격증 클릭 시, 해당 자격증을 활용할 수 있는 직무 및 기업 리스트 제공.
+-   **Dashboard:** Main interface for generating content.
+-   **Dex (Certificate Management):** A catalog of certificates that users can track.
+-   **Timeline:** A chronological view of the user's achievements.
+-   **Stats:** Visualizations of the user's progress.
+-   **History:** A log of all generated content.
+-   **My Page:** User's profile and settings.
+-   **Social Sharing:** Users can share their achievements on social media.
 
-### 📊 Phase 3: 데이터 기반 인사이트 (Data Analytics)
-*   **개요:** 사용자 데이터를 분석하여 취업 트렌드 및 경쟁력 리포트 제공.
-*   **핵심 기능:**
-    *   **트렌드 리포트:** "이번 달 개발자 직군에서 [AWS 자격증] 취득이 20% 증가했습니다."
-    *   **경쟁력 분석:** 희망 직무 경쟁자들의 평균 스펙(자격증 수, 종류) 비교 및 부족한 부분 추천.
+## Current Task: Add Social Media Sharing
 
-## 구현 상태 (React + Tailwind 프로토타입)
-- **저장소:** [GitHub Repository](https://github.com/barney12348/ProLog)에 코드 배포 완료.
-- **프레임워크:** React + Vite 초기화 완료.
-- **스타일링:** Tailwind CSS 구성 (Navy/Electric Blue 커스텀 컬러).
-- **SEO/검증:** Google Site Verification 메타 태그 추가.
-- **아이콘:** Lucide-React 통합.
-- **구현된 컴포넌트:**
-    -   `Sidebar`: 활성 상태를 포함한 네비게이션 및 **다크 모드 토글** 지원.
-    -   `PersonaCard`: 사용자 컨텍스트 표시 및 수정 기능.
-    -   `TimelineView`: 시간 순서대로 성취 기록을 시각화하는 세로형 타임라인.
-    -   `StatsView`: 활동 유형별 비율, 플랫폼 활용도, 월별 활동량 등을 시각화하여 보여주는 대시보드.
-    -   `HistoryView`: 저장된 콘텐츠 목록 표시 및 상세 보기 모달 지원.
-    -   `ImageResizer`: Instasize 스타일의 이미지 리사이징 도구 (Fit/Fill 모드 지원, 다크 모드 대응).
-    -   `App`: 메인 대시보드 로직 및 상태 관리.
-        -   **다크 모드 (New):** 시스템 설정 및 사용자 선택에 따른 테마 전환 (LocalStorage 저장).
-        -   **온보딩 힌트 (New):** 첫 방문 사용자를 위한 이미지 업로드 가이드 툴팁.
-        -   **이미지 업로드 및 편집:** 드래그 앤 드롭 업로드 및 Instasize 스타일의 리사이징 기능.
-        -   **AI 콘텐츠 생성:** 유형별/톤별 맞춤형 텍스트 생성 시뮬레이션.
-
-## 다음 단계
--   GitHub Pages 배포 (`gh-pages` 설정 및 배포 스크립트 추가).
--   `npm run dev`를 실행하여 개발 서버 시작.
--   사이드바 하단의 '테마 변경' 버튼을 눌러 다크 모드 확인.
--   실제 Gemini API 연동을 통한 실제 콘텐츠 생성 기능 추가.
+-   [x] Install `react-share` library.
+-   [x] Add share buttons (Facebook, Twitter, LinkedIn) and a copy link button to the `CardPreview` component.
+-   [x] The user can see the changes.
