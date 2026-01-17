@@ -27,8 +27,6 @@ const DexView = ({ certificates, wishlist = [], onToggleWishlist, onCertClick })
   const [activeTab, setActiveTab] = useState('all');
   const [selectedIssuer, setSelectedIssuer] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCert, setSelectedCert] = useState(null);
-  const [submission, setSubmission] = useState({ content: '', file: null });
 
   // 0. Extract Unique Issuers for current active tab
   const currentIssuers = ['all', ...new Set(
@@ -64,78 +62,6 @@ const DexView = ({ certificates, wishlist = [], onToggleWishlist, onCertClick })
   const acquiredCount = certificates.filter(c => c.status === 'acquired').length;
   const wishlistCount = wishlist.length;
   const progressPercentage = totalCount > 0 ? Math.round((acquiredCount / totalCount) * 100) : 0;
-  
-  if (selectedCert) {
-    const cert = selectedCert;
-    const isAcquired = cert.status === 'acquired';
-    const isPending = cert.status === 'pending';
-    
-    const handleFileChange = (e) => {
-      setSubmission({ ...submission, file: e.target.files[0] });
-    };
-
-    const handleSubmit = () => {
-      onCertClick(cert, submission);
-      setSelectedCert(null);
-    };
-
-    return (
-      <div className="bg-white dark:bg-gray-900 p-8 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
-        <button onClick={() => setSelectedCert(null)} className="text-sm font-bold text-gray-500 dark:text-gray-400 hover:text-primary mb-4">
-          &larr; 목록으로 돌아가기
-        </button>
-        <div className="flex items-center gap-4 mb-6">
-          <div className="w-16 h-16 flex-shrink-0 flex items-center justify-center rounded-lg bg-gray-50 dark:bg-gray-800 text-3xl">
-            {cert.icon}
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{cert.name}</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400">{cert.issuer}</p>
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          <div>
-            <h3 className="font-bold text-gray-700 dark:text-gray-300 mb-2">자격증 설명</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{cert.description || '상세 설명이 없습니다.'}</p>
-          </div>
-
-          {!isAcquired && !isPending && (
-            <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-              <h3 className="font-bold text-gray-700 dark:text-gray-300">자격증 인증 신청</h3>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">신청 내용</label>
-                <textarea
-                  value={submission.content}
-                  onChange={(e) => setSubmission({ ...submission, content: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm font-medium focus:bg-white dark:focus:bg-gray-700 focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all dark:text-white"
-                  rows="3"
-                  placeholder="자격증 취득과 관련된 내용을 입력해주세요."
-                ></textarea>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">첨부 파일</label>
-                <input
-                  type="file"
-                  onChange={handleFileChange}
-                  className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                />
-              </div>
-              <div className="flex justify-end">
-                <button
-                  onClick={handleSubmit}
-                  className="px-5 py-2.5 text-sm font-bold bg-green-600 text-white rounded-xl hover:bg-green-700 shadow-md shadow-green-200 transition-all flex items-center gap-2"
-                >
-                  <CheckCircle size={14} />
-                  신청하기
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -255,7 +181,7 @@ const DexView = ({ certificates, wishlist = [], onToggleWishlist, onCertClick })
             return (
               <div 
                 key={cert.id}
-                onClick={() => setSelectedCert(cert)}
+                onClick={() => onCertClick(cert)}
                 className={cn(
                   "group relative flex flex-col items-center p-6 rounded-2xl border transition-all duration-300 cursor-pointer overflow-hidden",
                   cert.status === 'acquired' 

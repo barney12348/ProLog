@@ -943,8 +943,6 @@ const SettingsView = ({ persona, onUpdate, darkMode, toggleDarkMode, history, se
 
 };
 
-
-
 const HistoryView = ({ history, onDelete, platforms }) => {
 
   const [selectedItem, setSelectedItem] = useState(null);
@@ -1285,8 +1283,6 @@ function App() {
 
 
 
-
-
   const [wishlist, setWishlist] = useState(() => {
 
 
@@ -1300,8 +1296,6 @@ function App() {
 
 
   });
-
-
 
 
 
@@ -1321,13 +1315,7 @@ function App() {
 
 
 
-
-
   const [certificates, setCertificates] = useState([]);
-
-
-
-
 
 
 
@@ -1348,8 +1336,6 @@ function App() {
     
     alert(`'${targetCert.name}'에 대한 인증 신청이 제출되었습니다. 관리자 승인을 기다려주세요.`);
   };
-
-
 
 
 
@@ -1421,8 +1407,6 @@ function App() {
 
 
 
-
-
         if (Object.keys(savedStatuses).length === 0) {
 
 
@@ -1475,13 +1459,13 @@ function App() {
 
 
 
+
+
     fetchCertificates();
 
 
 
   }, []);
-
-
 
 
 
@@ -1525,8 +1509,6 @@ function App() {
 
 
 
-
-
   useEffect(() => {
 
 
@@ -1548,8 +1530,6 @@ function App() {
 
 
   }, []);
-
-
 
 
 
@@ -1584,8 +1564,6 @@ function App() {
 
 
   }, [darkMode]);
-
-
 
 
 
@@ -1645,8 +1623,6 @@ function App() {
 
 
 
-
-
   const handleDeleteHistory = (id) => {
 
 
@@ -1669,8 +1645,6 @@ function App() {
 
 
 
-
-
   const platforms = [
 
 
@@ -1688,8 +1662,6 @@ function App() {
 
 
   ];
-
-
 
 
 
@@ -1721,8 +1693,6 @@ function App() {
 
 
 
-
-
   const tones = [
 
 
@@ -1740,8 +1710,6 @@ function App() {
 
 
   ];
-
-
 
 
 
@@ -1808,8 +1776,6 @@ function App() {
 
 
   };
-
-
 
 
 
@@ -1925,8 +1891,6 @@ function App() {
 
 
 
-
-
   const copyToClipboard = () => {
 
 
@@ -1940,8 +1904,6 @@ function App() {
 
 
   };
-
-
 
 
 
@@ -2049,8 +2011,6 @@ function App() {
 
 
 
-
-
   return (
 
 
@@ -2149,15 +2109,11 @@ function App() {
 
 
 
-
-
         <Routes>
 
 
 
-          <Route path="/" element={
-
-
+          <Route path="/" element={ 
 
             <Dashboard
 
@@ -2299,15 +2255,15 @@ function App() {
 
 
 
-            />} 
+            />}
 
-
+          
 
           />
 
 
 
-          <Route path="/dex" element={<Dex certificates={certificates} wishlist={wishlist} setWishlist={setWishlist} onCertClick={handleAcquireCert} />} />
+          <Route path="/dex" element={<Dex certificates={certificates} wishlist={wishlist} setWishlist={setWishlist} onCertClick={setSelectedCert} />} />
 
 
 
@@ -2332,10 +2288,6 @@ function App() {
 
 
         </Routes>
-
-
-
-
 
 
 
@@ -2433,15 +2385,4 @@ function App() {
 
 
 
-
-
-
-
-
-
 export default App;
-
-
-
-
-

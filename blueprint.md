@@ -13,11 +13,12 @@ This project is a web application that helps users track their career-related ac
 -   **History:** A log of all generated content.
 -   **My Page:** User's profile and settings.
 -   **Social Sharing:** Users can share their achievements on social media.
--   **Certificate Submission:** Users can submit their certificates for admin approval.
+-   **Certificate Submission:** Users can submit their certificates for admin approval via a modal.
 
-## Current Task: Modify Certificate Acquisition Process
+## Current Task: Modify Certificate Acquisition Process (Modal)
 
--   [x] Modified the `DexView` component to show a detail view with a submission form when a certificate is clicked.
--   [x] The submission is handled in `App.jsx` and the certificate status is set to 'pending'.
--   [x] Removed the `CertDetailModal` from `App.jsx`.
+-   [x] Reverted `DexView.jsx` to its previous state.
+-   [x] Re-introduced the `CertDetailModal` in `App.jsx` with a submission form.
+-   [x] The `Dex` component now opens the modal when a certificate is clicked.
+-   [x] The submission is handled in `App.jsx`, and the certificate status is set to 'pending'.
 -   [ ] The user can see the changes.
